@@ -1,15 +1,15 @@
-import './App.css';
-import { NaverMap } from './components/NaverMap';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Outlet } from 'react-router';
+import { AuthProvider } from '@/contexts/AuthContext';
 
-function App() {
-  return (
-    <div>
-      <h1 className='text-3xl font-bold underline'>Runddy</h1>
-      <div className='w-[400px] h-[300px] mt-4'>
-        <NaverMap className='w-full h-full rounded-xl' />
-      </div>
-    </div>
-  );
-}
+const queryClient = new QueryClient();
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <AuthProvider>
+      <Outlet />
+    </AuthProvider>
+  </QueryClientProvider>
+);
 
 export default App;
