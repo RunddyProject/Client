@@ -4,6 +4,7 @@ import App from '@/App';
 import Index from '@/pages/Index';
 import Login from '@/pages/Login';
 import NotFound from '@/pages/NotFound';
+import MyPage from '@/pages/MyPage';
 
 export const router = createBrowserRouter([
   {
@@ -13,6 +14,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, Component: Index },
       { path: 'login', Component: Login },
+      { path: 'mypage', Component: MyPage },
     ],
   },
 ]);

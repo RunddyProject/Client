@@ -12,6 +12,8 @@ export interface User {
   id: string;
   provider: string;
   roles: string[];
+  nickname?: string;
+  profileUrl?: string;
 }
 
 const SERVER_DOMAIN = import.meta.env.VITE_SERVER_DOMAIN;
