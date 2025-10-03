@@ -113,6 +113,16 @@ export class AuthService {
     const token = await this.getAccessToken();
     return !!token;
   }
+
+  // Dev only: Manually set access token (for local development)
+  setAccessTokenManually(token: string): void {
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[Auth] Manually setting access token');
+      this.accessToken = token;
+      this.user = this.decodeToken(token);
+      console.log('[Auth] Manually set user:', this.user);
+    }
+  }
 }
 
 export const authService = AuthService.getInstance();

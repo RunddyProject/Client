@@ -1,6 +1,10 @@
+import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router';
+import { Key } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { authService } from '@/lib/auth';
 import logoImgUrl from '@/assets/logo.png';
 import profileImgUrl from '@/assets/basic_profile.png';
 import menuImgUrl from '@/assets/menu.png';
@@ -10,20 +14,53 @@ import closeImgUrl from '@/assets/close.png';
 
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTrigger } from '@/components/ui/sheet';
+
+const isDevelopment = process.env.NODE_ENV !== 'production';
 
 const pageTitles: Record<string, string> = {};
 
 const menuTitles: Record<string, string> = {};
 
 const Header = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, refreshAuth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [devToken, setDevToken] = useState('');
+  const [isDevDialogOpen, setIsDevDialogOpen] = useState(false);
 
   const isHomePage = location.pathname === '/';
   const isHomeHeader = isHomePage || Object.keys(menuTitles).includes(location.pathname);
   const pageTitle = location.pathname.startsWith('/course/') ? '코스 상세' : pageTitles[location.pathname] || 'Runddy';
+
+  const handleDevTokenSubmit = async () => {
+    if (!devToken.trim()) {
+      toast('오류: 토큰을 입력해주세요');
+      return;
+    }
+
+    try {
+      authService.setAccessTokenManually(devToken.trim());
+      await refreshAuth();
+      setIsDevDialogOpen(false);
+      setDevToken('');
+      toast('성공: 개발용 토큰이 설정되었습니다');
+    } catch (error) {
+      toast('오류: 토큰 설정에 실패했습니다');
+    }
+  };
 
   return (
     <header className={isHomePage ? 'absolute top-0 left-0 w-full z-50' : 'sticky top-0 z-50'}>
@@ -36,6 +73,45 @@ const Header = () => {
             </Link>
 
             <div className='flex items-center'>
+              {/* Dev Token Button (only in development) */}
+              {isDevelopment && (
+                <Dialog open={isDevDialogOpen} onOpenChange={setIsDevDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant='ghost' size='icon' className='h-12 w-12'>
+                      <Key className='w-4 h-4' />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogPortal>
+                    <DialogOverlay className='fixed inset-0 z-[10000]' />
+                    <DialogContent className='fixed left-1/2 top-1/2 z-[10001] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-6 shadow-xl'>
+                      <DialogHeader>
+                        <DialogTitle>개발용 AccessToken 설정</DialogTitle>
+                        <DialogDescription>Swagger에서 받은 refreshToken을 입력하세요</DialogDescription>
+                      </DialogHeader>
+                      <div className='space-y-4 py-4'>
+                        <div className='space-y-2'>
+                          <Label htmlFor='token'>RefreshToken</Label>
+                          <Input
+                            id='token'
+                            placeholder='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+                            value={devToken}
+                            onChange={(e) => setDevToken(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                handleDevTokenSubmit();
+                              }
+                            }}
+                          />
+                        </div>
+                        <Button onClick={handleDevTokenSubmit} className='w-full'>
+                          토큰 설정
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </DialogPortal>
+                </Dialog>
+              )}
+
               <Avatar className='w-12 h-12 cursor-pointer' onClick={() => isAuthenticated && navigate('/mypage')}>
                 <AvatarFallback>
                   <img src={profileImgUrl} alt='Profile' width='28' height='28' />
