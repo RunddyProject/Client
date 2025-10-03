@@ -17,8 +17,8 @@ const mockSavedCourses = [
 const MyPage = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
-  const [savedCourses, setSavedCourses] = useState(mockSavedCourses);
-  const [savedPosts, setSavedPosts] = useState([]);
+  const [savedCourses] = useState(mockSavedCourses);
+  const [savedPosts] = useState([]);
 
   if (isLoading) {
     return (
