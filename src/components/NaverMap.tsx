@@ -21,15 +21,8 @@ export const NaverMap = ({ center = { lat: 37.5665, lng: 126.978 }, zoom = 12, g
     const mapOptions = {
       center: new window.naver.maps.LatLng(center.lat, center.lng),
       zoom: zoom,
-      zoomControl: true,
-      zoomControlOptions: {
-        position: window.naver.maps.Position.TOP_RIGHT,
-        style: window.naver.maps.ZoomControlStyle.SMALL,
-      },
-      mapTypeControl: true,
-      mapTypeControlOptions: {
-        position: window.naver.maps.Position.TOP_LEFT,
-      },
+      zoomControl: false,
+      mapTypeControl: false,
     };
 
     mapInstanceRef.current = new window.naver.maps.Map(mapRef.current, mapOptions);
