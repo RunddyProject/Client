@@ -30,10 +30,12 @@ import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTrigger } from '@/co
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
-const pageTitles: Record<string, string> = {};
+const pageTitles: Record<string, string> = {
+  '/me/edit': '프로필 수정',
+};
 
 const menuTitles: Record<string, string> = {
-  '/mypage': '마이페이지',
+  '/me': '마이페이지',
 };
 
 const Header = () => {
@@ -114,7 +116,7 @@ const Header = () => {
                 </Dialog>
               )}
 
-              <Avatar className='w-12 h-12 cursor-pointer' onClick={() => isAuthenticated && navigate('/mypage')}>
+              <Avatar className='w-12 h-12 cursor-pointer' onClick={() => isAuthenticated && navigate('/me')}>
                 <AvatarFallback>
                   <img src={profileImgUrl} alt='Profile' width='28' height='28' />
                 </AvatarFallback>

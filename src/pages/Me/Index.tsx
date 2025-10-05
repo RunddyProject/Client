@@ -14,7 +14,7 @@ const mockSavedCourses = [
   { id: '2', name: '냥냥 코스', keyword: '공원', distance: 12, level: 3 },
 ];
 
-const MyPage = () => {
+function Me() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const [savedCourses] = useState(mockSavedCourses);
@@ -38,14 +38,14 @@ const MyPage = () => {
       <div className='bg-card px-5 pt-6 mb-6'>
         <div className='flex items-center gap-3'>
           <Avatar className='w-20 h-20'>
-            <AvatarImage src={user.profileUrl || ''} />
+            <AvatarImage src={user?.profileUrl || ''} />
             <AvatarFallback className='bg-primary/10 text-primary text-2xl'>
               <img src={profileImgUrl} alt='Profile' width='80' height='80' />
             </AvatarFallback>
           </Avatar>
           <div className='flex flex-col'>
             <h2 className='text-lg font-semibold mb-2'>{user?.nickname || '런디'}</h2>
-            <Link to='/mypage/edit' className='flex items-center gap-1 text-sm text-primary hover:underline'>
+            <Link to='/me/edit' className='flex items-center gap-1 text-sm text-primary hover:underline'>
               <p className='text-sm text-muted-foreground'>프로필 수정</p>
               <img src={chevronRightImgUrl} width='14' height='14' />
             </Link>
@@ -110,6 +110,6 @@ const MyPage = () => {
       </Tabs>
     </div>
   );
-};
+}
 
-export default MyPage;
+export default Me;

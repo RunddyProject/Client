@@ -4,7 +4,9 @@ import App from '@/App';
 import Index from '@/pages/Index';
 import Login from '@/pages/Login';
 import NotFound from '@/pages/NotFound';
-import MyPage from '@/pages/MyPage';
+import Me from '@/pages/Me/Index';
+import ProfileEdit from '@/pages/Me/Edit';
+import AccountDelete from '@/pages/Me/Delete';
 
 export const router = createBrowserRouter([
   {
@@ -14,7 +16,13 @@ export const router = createBrowserRouter([
     children: [
       { index: true, Component: Index },
       { path: 'login', Component: Login },
-      { path: 'mypage', Component: MyPage },
+      {
+        path: 'me',
+        children: [
+          { index: true, Component: Me },
+          { path: 'edit', Component: ProfileEdit },
+        ],
+      },
     ],
   },
 ]);
