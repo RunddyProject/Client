@@ -6,7 +6,6 @@ import Login from '@/pages/Login';
 import NotFound from '@/pages/NotFound';
 import Me from '@/pages/Me/Index';
 import ProfileEdit from '@/pages/Me/Edit';
-import AccountDelete from '@/pages/Me/Delete';
 
 export const router = createBrowserRouter([
   {
