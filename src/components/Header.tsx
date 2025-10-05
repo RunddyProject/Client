@@ -88,11 +88,11 @@ const Header = () => {
                     <DialogContent className='fixed left-1/2 top-1/2 z-[10001] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-6 shadow-xl'>
                       <DialogHeader>
                         <DialogTitle>개발용 AccessToken 설정</DialogTitle>
-                        <DialogDescription>Swagger에서 받은 refreshToken을 입력하세요</DialogDescription>
+                        <DialogDescription>Swagger에서 받은 accessToken을 입력하세요</DialogDescription>
                       </DialogHeader>
                       <div className='space-y-4 py-4'>
                         <div className='space-y-2'>
-                          <Label htmlFor='token'>RefreshToken</Label>
+                          <Label htmlFor='token'>AccessToken</Label>
                           <Input
                             id='token'
                             placeholder='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
@@ -122,9 +122,7 @@ const Header = () => {
 
               <Sheet>
                 <SheetTrigger>
-                  <Button variant='ghost' size='icon' className='h-12 w-12'>
-                    <img src={menuImgUrl} alt='Menu' width='24' height='24' />
-                  </Button>
+                  <img src={menuImgUrl} alt='Menu' width='24' height='24' />
                 </SheetTrigger>
                 <SheetContent className='fixed z-[10002] bg-white w-full'>
                   <SheetHeader className='flex items-center justify-between pl-5 pr-2 h-13'>
