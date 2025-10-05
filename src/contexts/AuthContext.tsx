@@ -8,6 +8,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (provider: 'kakao' | 'naver') => void;
   logout: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
   refreshAuth: () => Promise<void>;
 }
 
@@ -51,6 +52,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
   };
 
+  const deleteAccount = async () => {
+    await authService.deleteAccount();
+    setUser(null);
+  };
+
   useEffect(() => {
     refreshAuth();
   }, []);
@@ -61,6 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isLoading,
     login,
     logout,
+    deleteAccount,
     refreshAuth,
   };
 

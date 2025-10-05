@@ -1,3 +1,5 @@
+import { api } from '@/lib/api';
+
 // Auth service for handling social login and token management
 export interface UserToken {
   iss: string;
@@ -40,10 +42,7 @@ export class AuthService {
   // Get access token from server
   async getAccessToken(): Promise<string | null> {
     try {
-      const response = await fetch(`${SERVER_DOMAIN}/auth/access-token`, {
-        method: 'POST',
-        credentials: 'include', // Include HttpOnly cookies
-      });
+      const response = await api.post('/auth/access-token', {}, { requiresAuth: false });
 
       if (response.ok) {
         const data = await response.json();
@@ -98,27 +97,36 @@ export class AuthService {
   // Logout
   async logout(): Promise<void> {
     try {
-      await fetch(`${SERVER_DOMAIN}/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-    } catch (error) {
-      console.error('Logout failed:', error);
-    } finally {
+      await api.post('/auth/logout');
       this.accessToken = null;
       this.user = null;
+      window.location.href = CLIENT_URL;
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  }
+
+  async deleteAccount(): Promise<void> {
+    try {
+      await api.delete('/users');
+      this.accessToken = null;
+      this.user = null;
+      window.location.href = CLIENT_URL;
+    } catch (error) {
+      console.error('Account deletion failed:', error);
     }
   }
 
   // Initialize auth state (check if already logged in)
   async initialize(): Promise<boolean> {
+    if (import.meta.env.DEV) return true;
     const token = await this.getAccessToken();
     return !!token;
   }
 
   // Dev only: Manually set access token (for local development)
   setAccessTokenManually(token: string): void {
-    if (process.env.NODE_ENV !== 'production') {
+    if (import.meta.env.DEV) {
       console.log('[Auth] Manually setting access token');
       this.accessToken = token;
       this.user = this.decodeToken(token);
