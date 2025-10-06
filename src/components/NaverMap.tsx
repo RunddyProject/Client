@@ -6,10 +6,17 @@ interface NaverMapProps {
   center?: { lat: number; lng: number };
   zoom?: number;
   gpxData?: GPXParser;
+  glassTopOverlay?: boolean;
   className?: string;
 }
 
-export const NaverMap = ({ center = { lat: 37.5665, lng: 126.978 }, zoom = 12, gpxData, className }: NaverMapProps) => {
+export const NaverMap = ({
+  center = { lat: 37.5665, lng: 126.978 },
+  zoom = 12,
+  gpxData,
+  glassTopOverlay = true,
+  className,
+}: NaverMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<naver.maps.Map | null>(null);
   const polylineRef = useRef<naver.maps.Polyline | null>(null);
@@ -62,5 +69,24 @@ export const NaverMap = ({ center = { lat: 37.5665, lng: 126.978 }, zoom = 12, g
     }
   }, [gpxData]);
 
-  return <div ref={mapRef} className={className} style={{ width: '100%', height: '100%' }} />;
+  return (
+    <>
+      <div ref={mapRef} className={className} style={{ width: '100%', height: '100%' }} />
+      {glassTopOverlay && (
+        <div
+          className="
+          absolute w-full top-0 z-10 h-13 pt-[env(safe-area-inset-top)] bg-transparent
+
+          before:content-[''] before:absolute before:inset-0 before:pointer-events-none
+          before:backdrop-blur-[20px]
+          before:[mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_85%)]
+          before:[-webkit-mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_85%)]
+
+          after:content-[''] after:absolute after:inset-0 after:pointer-events-none
+          after:bg-gradient-to-b after:from-white/60 after:via-white/15 after:to-transparent
+        "
+        />
+      )}
+    </>
+  );
 };
