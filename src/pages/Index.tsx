@@ -1,9 +1,17 @@
-import { NaverMap } from '@/components/NaverMap';
+import { useState } from 'react';
+import CourseList from '@/components/Course/List';
+import CourseMap from '@/components/Course/Map';
 
 function Index() {
+  const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
+
   return (
-    <div className='w-full h-screen'>
-      <NaverMap className='w-full h-full rounded-xl' />
+    <div className='h-screen flex flex-col'>
+      {viewMode === 'map' ? (
+        <CourseMap onViewModeChange={() => setViewMode('list')} />
+      ) : (
+        <CourseList onViewModeChange={() => setViewMode('map')} />
+      )}
     </div>
   );
 }

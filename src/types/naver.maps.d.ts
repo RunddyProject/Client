@@ -8,6 +8,12 @@ declare global {
         lng(): number;
       }
 
+      class Point {
+        constructor(x: number, y: number);
+        x(): number;
+        y(): number;
+      }
+
       class LatLngBounds {
         constructor(sw?: LatLng, ne?: LatLng);
         extend(latlng: LatLng): void;
@@ -71,6 +77,8 @@ declare global {
         setZoom(zoom: number, immediately?: boolean): void;
         getZoom(): number;
         getCenter(): LatLng;
+        getProjection(): MapSystemProjection | null;
+        panTo(latlng: LatLng, { duration: number }): void;
       }
 
       /* ========== Polyline ========== */
@@ -96,7 +104,7 @@ declare global {
         position: LatLng;
         map?: Map;
         title?: string;
-        icon?: string | { url: string };
+        icon?: string | { url?: string; content?: string; anchor?: Point };
         draggable?: boolean;
         visible?: boolean;
         zIndex?: number;
@@ -108,6 +116,60 @@ declare global {
         setMap(map: Map | null): void;
         getPosition(): LatLng;
         setPosition(pos: LatLng): void;
+        setIcon(icon: string | { url?: string; content?: string; anchor?: Point }): void;
+        setZIndex(zIndex: number): void;
+      }
+
+      /* ========== Event ========== */
+      type MapEventName =
+        | 'click'
+        | 'dblclick'
+        | 'rightclick'
+        | 'mousedown'
+        | 'mouseup'
+        | 'mousemove'
+        | 'dragstart'
+        | 'drag'
+        | 'dragend'
+        | 'idle'
+        | 'zoom_changed'
+        | 'bounds_changed'
+        | 'center_changed';
+
+      type MarkerEventName =
+        | 'click'
+        | 'dblclick'
+        | 'mousedown'
+        | 'mouseup'
+        | 'rightclick'
+        | 'dragstart'
+        | 'drag'
+        | 'dragend'
+        | 'mouseover'
+        | 'mouseout';
+
+      interface EventListener {
+        remove(): void;
+      }
+
+      namespace Event {
+        function addListener(target: any, name: string, listener: (evt?: any) => void): EventListener;
+
+        function removeListener(listener: EventListener): void;
+
+        function trigger(target: any, name: string, event?: any): void;
+
+        function addListener(
+          target: Map,
+          name: MapEventName,
+          listener: (evt: PointerEvent | undefined) => void
+        ): EventListener;
+
+        function addListener(
+          target: Marker,
+          name: MarkerEventName,
+          listener: (evt: PointerEvent | undefined) => void
+        ): EventListener;
       }
     }
   }

@@ -1,4 +1,4 @@
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/api';
 
 export interface UserToken {
   iss: string;

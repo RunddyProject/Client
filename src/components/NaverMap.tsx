@@ -2,39 +2,69 @@ import type { Point } from 'gpxparser';
 import type GPXParser from 'gpxparser';
 import { useEffect, useRef } from 'react';
 
+type MarkerInput = {
+  id: string;
+  lat: number;
+  lng: number;
+};
+
 interface NaverMapProps {
+  className?: string;
+  glassTopOverlay?: boolean;
   center?: { lat: number; lng: number };
   zoom?: number;
   gpxData?: GPXParser;
-  glassTopOverlay?: boolean;
-  className?: string;
+  markers?: MarkerInput[];
+  focusKey?: string; // active course id
+  onMarkerClick?: (id: string) => void;
 }
 
+// coordinate 광화문
+const DEFAULT_CENTER = {
+  lat: 37.575959,
+  lng: 126.97679,
+};
+
 export const NaverMap = ({
-  center = { lat: 37.5665, lng: 126.978 },
+  className,
+  glassTopOverlay = true,
+  center = DEFAULT_CENTER,
   zoom = 12,
   gpxData,
-  glassTopOverlay = true,
-  className,
+  markers = [],
+  focusKey,
+  onMarkerClick,
 }: NaverMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<naver.maps.Map | null>(null);
   const polylineRef = useRef<naver.maps.Polyline | null>(null);
 
+  const markerMapRef = useRef<Map<string, naver.maps.Marker>>(new Map());
+  const markerListenersRef = useRef<Map<string, naver.maps.EventListener>>(new Map());
+
+  // Map
   useEffect(() => {
     if (!mapRef.current || !window.naver?.maps) return;
 
     // Initialize map
-    const mapOptions = {
+    const mapOptions: naver.maps.MapOptions = {
       center: new window.naver.maps.LatLng(center.lat, center.lng),
-      zoom: zoom,
+      zoom,
       zoomControl: false,
       mapTypeControl: false,
     };
 
     mapInstanceRef.current = new window.naver.maps.Map(mapRef.current, mapOptions);
+
+    return () => {
+      markerListenersRef.current.forEach((l) => naver.maps.Event.removeListener(l));
+      markerListenersRef.current.clear();
+      markerMapRef.current.forEach((m) => m.setMap(null));
+      markerMapRef.current.clear();
+    };
   }, [center.lat, center.lng, zoom]);
 
+  // GPX
   useEffect(() => {
     if (!mapInstanceRef.current || !gpxData) return;
 
@@ -49,7 +79,7 @@ export const NaverMap = ({
 
     if (path.length > 0) {
       polylineRef.current = new window.naver.maps.Polyline({
-        path: path,
+        path,
         strokeColor: 'hsl(var(--primary))',
         strokeWeight: 4,
         strokeOpacity: 0.9,
@@ -58,16 +88,73 @@ export const NaverMap = ({
 
       // Fit map to track bounds with proper padding
       const bounds = new window.naver.maps.LatLngBounds();
-      path.forEach((coord: naver.maps.LatLng) => bounds.extend(coord));
+      path.forEach((coord) => bounds.extend(coord));
 
       // Use setTimeout to ensure map is fully rendered before fitting bounds
       setTimeout(() => {
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.fitBounds(bounds, { top: 80, right: 80, bottom: 80, left: 80 });
-        }
+        mapInstanceRef.current?.fitBounds(bounds, { top: 80, right: 80, bottom: 80, left: 80 });
       }, 100);
     }
   }, [gpxData]);
+
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+
+    const existing = markerMapRef.current;
+    const listeners = markerListenersRef.current;
+    const incomingIds = new Set(markers.map((m) => m.id));
+
+    for (const [id, mk] of existing) {
+      if (!incomingIds.has(id)) {
+        mk.setMap(null);
+        existing.delete(id);
+        const l = listeners.get(id);
+        if (l) {
+          naver.maps.Event.removeListener(l);
+          listeners.delete(id);
+        }
+      }
+    }
+
+    markers.forEach((m) => {
+      const pos = new naver.maps.LatLng(m.lat, m.lng);
+      let mk = existing.get(m.id);
+
+      if (!mk) {
+        mk = new naver.maps.Marker({
+          position: pos,
+          map,
+          icon: '/pin_default.svg',
+        });
+        existing.set(m.id, mk);
+
+        const l = naver.maps.Event.addListener(mk, 'click', () => onMarkerClick?.(m.id));
+        listeners.set(m.id, l);
+      } else {
+        mk.setPosition(pos);
+        mk.setIcon('/pin_default.svg');
+      }
+    });
+  }, [markers, onMarkerClick]);
+
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !focusKey) return;
+    const mk = markerMapRef.current.get(focusKey);
+    if (!mk) return;
+
+    const pos = mk.getPosition();
+    const proj = map.getProjection();
+    if (!proj) {
+      map.panTo(pos, { duration: 300 });
+      return;
+    }
+    const screen = proj.fromCoordToOffset(pos);
+    const nudgeY = 60; // px
+    const nudged = proj.fromOffsetToCoord(new naver.maps.Point(screen.x, screen.y - nudgeY));
+    map.panTo(nudged, { duration: 300 });
+  }, [focusKey]);
 
   return (
     <>
@@ -75,16 +162,14 @@ export const NaverMap = ({
       {glassTopOverlay && (
         <div
           className="
-          absolute w-full top-0 z-10 h-13 pt-[env(safe-area-inset-top)] bg-transparent
-
-          before:content-[''] before:absolute before:inset-0 before:pointer-events-none
-          before:backdrop-blur-[20px]
-          before:[mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_85%)]
-          before:[-webkit-mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_85%)]
-
-          after:content-[''] after:absolute after:inset-0 after:pointer-events-none
-          after:bg-gradient-to-b after:from-white/60 after:via-white/15 after:to-transparent
-        "
+            absolute w-full top-0 z-10 h-13 pt-[env(safe-area-inset-top)] bg-transparent
+            before:content-[''] before:absolute before:inset-0 before:pointer-events-none
+            before:backdrop-blur-[20px]
+            before:[mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_85%)]
+            before:[-webkit-mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_85%)]
+            after:content-[''] after:absolute after:inset-0 after:pointer-events-none
+            after:bg-gradient-to-b after:from-white/60 after:via-white/15 after:to-transparent
+          "
         />
       )}
     </>

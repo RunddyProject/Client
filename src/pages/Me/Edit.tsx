@@ -96,8 +96,8 @@ function ProfileEdit() {
               />
 
               {isTooLong && (
-                <div className='flex items-center text-red-600 space-x-1'>
-                  <Icon name='warning' size={16} color='red' />
+                <div className='flex items-center text-error space-x-1'>
+                  <Icon name='warning' size={16} color='currentColor' className='text-error' />
                   <p className='text-xs'>닉네임은 11자 이상 작성할 수 없어요</p>
                 </div>
               )}

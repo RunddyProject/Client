@@ -1,4 +1,4 @@
-import { authService } from './auth';
+import { authService } from '../auth';
 
 interface ApiRequestOptions extends RequestInit {
   requiresAuth?: boolean;
