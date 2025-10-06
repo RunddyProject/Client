@@ -1,7 +1,7 @@
 import { useFormContext, useController } from 'react-hook-form';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-import { CircleEraseIcon } from '@/components/icons/circle-erase-icon';
+import { Icon } from '@/components/ui/icon';
 
 type InputWithClearProps = Omit<
   React.ComponentProps<typeof Input>,
@@ -61,7 +61,7 @@ function ClearableInput({
           onClick={handleClear}
           className={cn('absolute inset-y-0 right-2 my-auto h-6 w-6', 'flex items-center justify-center rounded')}
         >
-          <CircleEraseIcon size={24} />
+          <Icon name='circle_erase' size={24} />
         </button>
       )}
     </div>

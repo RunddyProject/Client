@@ -8,9 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import profileImgUrl from '@/assets/basic_profile.png';
-import { WarningIcon } from '@/components/icons/warning-icon';
 import { ClearableInput } from '@/components/ui/input-clearable';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api/api';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,8 +19,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
+  AlertDialogDescription,
 } from '@/components/ui/alert-dialog';
-import { AlertDialogDescription } from '@radix-ui/react-alert-dialog';
+import { Icon } from '@/components/ui/icon';
 
 type FormValues = { userName: string };
 
@@ -97,7 +97,7 @@ function ProfileEdit() {
 
               {isTooLong && (
                 <div className='flex items-center text-red-600 space-x-1'>
-                  <WarningIcon size={16} color='red' />
+                  <Icon name='warning' size={16} color='red' />
                   <p className='text-xs'>닉네임은 11자 이상 작성할 수 없어요</p>
                 </div>
               )}
