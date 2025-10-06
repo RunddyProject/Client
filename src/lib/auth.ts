@@ -42,22 +42,23 @@ export class AuthService {
   // Get access token from server
   async getAccessToken(): Promise<string | null> {
     try {
-      const response = await api.post('/auth/access-token', {}, { requiresAuth: false });
+      const res = await api.post<{ accessToken: string }>('/auth/access-token', undefined, {
+        requiresAuth: false,
+      });
 
-      if (response.ok) {
-        const data = await response.json();
-        this.accessToken = data.accessToken;
-
-        // Decode token to get user info
-        if (this.accessToken) {
-          this.user = this.decodeToken(this.accessToken);
-        }
-
-        return this.accessToken;
+      if (!res || !res.accessToken) {
+        this.accessToken = null;
+        this.user = null;
+        return null;
       }
-      return null;
+
+      this.accessToken = res.accessToken;
+      this.user = this.decodeToken(res.accessToken);
+      return res.accessToken;
     } catch (error) {
       console.error('Failed to get access token:', error);
+      this.accessToken = null;
+      this.user = null;
       return null;
     }
   }
