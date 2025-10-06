@@ -1,2 +1,15 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+
+@theme {
+  --color--blue: '#04AEF1';
+  --color--green: '#2AC47E';
+  --color--orange: '#FF7534';
+  --color--pink: '#FD7FCD';
+  --color-error: #f45b50;
+
+  --color-text-primary: #0f0f11;
+  --color-text-secondary: #383b45;
+  --color-text-tertiary: #383b45;
+  --color-text-placeholder: ##979bab;
+}
