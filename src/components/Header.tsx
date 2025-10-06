@@ -2,16 +2,11 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router';
 import { Key } from 'lucide-react';
 import { toast } from 'sonner';
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { authService } from '@/lib/auth';
-import logoImgUrl from '@/assets/logo.png';
+import logoImgUrl from '/logo.svg';
 import profileImgUrl from '@/assets/basic_profile.png';
-import menuImgUrl from '@/assets/menu.png';
-import chevronLeftImgUrl from '@/assets/chevron_left.png';
-import chevronRightImgUrl from '@/assets/chevron_right.png';
-import closeImgUrl from '@/assets/close.png';
 
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -27,7 +22,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Icon } from '@/components/ui/icon';
+import Menu from '@/components/Menu';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -126,49 +122,19 @@ const Header = () => {
                 </AvatarFallback>
               </Avatar>
 
-              <Sheet>
-                <SheetTrigger>
-                  <img src={menuImgUrl} alt='Menu' width='24' height='24' />
-                </SheetTrigger>
-                <SheetContent className='fixed z-[10002] bg-white w-full'>
-                  <SheetHeader className='flex items-center justify-between pl-5 pr-2 h-13'>
-                    <VisuallyHidden asChild>
-                      <SheetTitle>메뉴</SheetTitle>
-                    </VisuallyHidden>
-                    <img src={logoImgUrl} width='90' />
-                    <SheetClose className='p-3'>
-                      <img src={closeImgUrl} alt='Close' width='24' height='24' />
-                      <span className='sr-only'>Close</span>
-                    </SheetClose>
-                  </SheetHeader>
-                  <ul className='p-1'>
-                    {Object.entries(menuTitles).map(([path, title]) => (
-                      <li key={path}>
-                        <SheetClose asChild>
-                          <Link to={path} className='p-5 flex items-center justify-between'>
-                            <span>{title}</span>
-                            <img src={chevronRightImgUrl} width='18' height='18' />
-                          </Link>
-                        </SheetClose>
-                      </li>
-                    ))}
-                  </ul>
-                </SheetContent>
-              </Sheet>
+              <Menu titles={menuTitles} />
             </div>
           </>
         ) : (
           // Depth 헤더: 뒤로가기 | 페이지 제목 | 메뉴
           <>
             <Button variant='ghost' size='icon' className='h-8 w-8' onClick={() => navigate(-1)}>
-              <img src={chevronLeftImgUrl} alt='Chevron Left' width='24' height='24' />
+              <Icon name='chevron_left' size={24} />
             </Button>
 
             <h1 className='absolute left-1/2 -translate-x-1/2 font-semibold text-base'>{pageTitle}</h1>
 
-            <Button variant='ghost' size='icon' className='h-12 w-12'>
-              <img src={menuImgUrl} alt='Menu' width='24' height='24' />
-            </Button>
+            <Menu titles={menuTitles} />
           </>
         )}
       </div>
