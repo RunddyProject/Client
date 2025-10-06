@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { Badge } from '@/components/ui/badge';
@@ -15,22 +15,10 @@ const mockSavedCourses = [
 ];
 
 function Me() {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [savedCourses] = useState(mockSavedCourses);
   const [savedPosts] = useState([]);
-
-  if (isLoading) {
-    return (
-      <div className='min-h-screen flex items-center justify-center'>
-        <div className='animate-spin rounded-full h-8 w-8'></div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated || !user) {
-    return <Navigate to='/login' replace />;
-  }
 
   return (
     <div className='min-h-screen bg-background pb-20'>

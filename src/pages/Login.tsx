@@ -1,22 +1,9 @@
-import { Navigate } from 'react-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const Login = () => {
-  const { isAuthenticated, login, isLoading } = useAuth();
-
-  if (isLoading) {
-    return (
-      <div className='min-h-screen flex items-center justify-center'>
-        <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary'></div>
-      </div>
-    );
-  }
-
-  if (isAuthenticated) {
-    return <Navigate to='/' replace />;
-  }
+  const { login } = useAuth();
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4'>
