@@ -35,7 +35,7 @@ export class AuthService {
 
   // Start social login flow
   startSocialLogin(provider: 'kakao' | 'naver') {
-    const authUrl = `${SERVER_DOMAIN}/oauth2/authorization/${provider}?redirect_uri=${CLIENT_URL}/`;
+    const authUrl = `${SERVER_DOMAIN}/oauth2/authorization/${provider}?redirect_uri=${CLIENT_URL}/login/success`;
     window.location.href = authUrl;
   }
 
