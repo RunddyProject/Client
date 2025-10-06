@@ -6,8 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import profileImgUrl from '@/assets/basic_profile.png';
-import chevronRightImgUrl from '@/assets/chevron_right.png';
-import saveOnImgUrl from '@/assets/save_on.png';
+import { Icon } from '@/components/ui/icon';
 
 const mockSavedCourses = [
   { id: '1', name: '한강 코스', keyword: '공원', distance: 10.5, level: 2 },
@@ -35,7 +34,7 @@ function Me() {
             <h2 className='text-lg font-semibold mb-2'>{user?.userName || '런디'}</h2>
             <Link to='/me/edit' className='flex items-center gap-1 text-sm text-primary hover:underline'>
               <p className='text-sm text-muted-foreground'>프로필 수정</p>
-              <img src={chevronRightImgUrl} width='14' height='14' />
+              <Icon name='chevron_right' size={14} />
             </Link>
           </div>
         </div>
@@ -68,7 +67,7 @@ function Me() {
                     <div className='flex flex-col gap-2 flex-1'>
                       <div className='flex items-center justify-between'>
                         <h3 className='font-semibold truncate'>{course.name}</h3>
-                        <img src={saveOnImgUrl} width='24' height='24' />
+                        <Icon name='save_on_solid' size={24} />
                       </div>
                       <div className='flex items-center gap-1'>
                         <Badge>Lv.{course.level}</Badge>
