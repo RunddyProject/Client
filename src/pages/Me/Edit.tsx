@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { AlertDialogDescription } from '@radix-ui/react-alert-dialog';
 
-type FormValues = { nickname: string };
+type FormValues = { userName: string };
 
 function ProfileEdit() {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ function ProfileEdit() {
   const { logout, deleteAccount } = useAuth();
 
   const methods = useForm<FormValues>({
-    defaultValues: { nickname: user?.nickname || '' },
+    defaultValues: { userName: user?.userName || '' },
     mode: 'onChange',
   });
 
@@ -42,17 +42,17 @@ function ProfileEdit() {
     formState: { isSubmitting, isValid },
   } = methods;
 
-  const nickname = watch('nickname');
-  const isTooLong = (nickname?.length ?? 0) > 10;
-  const disableSave = isSubmitting || !nickname?.trim() || isTooLong || !isValid;
+  const userName = watch('userName');
+  const isTooLong = (userName?.length ?? 0) > 10;
+  const disableSave = isSubmitting || !userName?.trim() || isTooLong || !isValid;
 
   useEffect(() => {
-    if (user?.nickname != null) reset({ nickname: user.nickname });
-  }, [user?.nickname, reset]);
+    if (user?.userName != null) reset({ userName: user.userName });
+  }, [user?.userName, reset]);
 
   const onSubmit = async () => {
     try {
-      await api.patch('/users/info', { nickname });
+      await api.patch('/users/info', { userName });
       toast.success('프로필이 저장되었습니다');
       console.log('profile updated');
       navigate('/me');
@@ -79,13 +79,13 @@ function ProfileEdit() {
             </div>
 
             <div className='space-y-2'>
-              <Label htmlFor='nickname' className='text-xs text-muted-foreground'>
+              <Label htmlFor='userName' className='text-xs text-muted-foreground'>
                 닉네임
               </Label>
 
               <ClearableInput
-                id='nickname'
-                name='nickname'
+                id='userName'
+                name='userName'
                 placeholder='닉네임은 10자 이내로 작성'
                 className='h-14'
                 aria-invalid={isTooLong || undefined}
@@ -103,7 +103,7 @@ function ProfileEdit() {
               )}
             </div>
           </div>
-
+          {/* TODO: sticky footer */}
           <div className='p-5 fixed bottom-0 w-full'>
             <Button type='submit' size='lg' disabled={disableSave} className='w-full'>
               저장

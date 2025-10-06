@@ -44,7 +44,7 @@ function Me() {
             </AvatarFallback>
           </Avatar>
           <div className='flex flex-col'>
-            <h2 className='text-lg font-semibold mb-2'>{user?.nickname || '런디'}</h2>
+            <h2 className='text-lg font-semibold mb-2'>{user?.userName || '런디'}</h2>
             <Link to='/me/edit' className='flex items-center gap-1 text-sm text-primary hover:underline'>
               <p className='text-sm text-muted-foreground'>프로필 수정</p>
               <img src={chevronRightImgUrl} width='14' height='14' />

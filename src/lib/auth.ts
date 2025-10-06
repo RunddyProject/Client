@@ -14,7 +14,7 @@ export interface User {
   id: string;
   provider: string;
   roles: string[];
-  nickname?: string;
+  userName?: string;
   profileUrl?: string;
 }
 
