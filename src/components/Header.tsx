@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router';
 import { Key } from 'lucide-react';
 import { toast } from 'sonner';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { authService } from '@/lib/auth';
@@ -26,7 +27,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -38,6 +39,8 @@ const menuTitles: Record<string, string> = {
   '/me': '마이페이지',
 };
 
+const normalizePath = (p: string) => p.replace(/\/+$/, '') || '/';
+
 const Header = () => {
   const { isAuthenticated, refreshAuth } = useAuth();
   const navigate = useNavigate();
@@ -45,9 +48,10 @@ const Header = () => {
   const [devToken, setDevToken] = useState('');
   const [isDevDialogOpen, setIsDevDialogOpen] = useState(false);
 
-  const isHomePage = location.pathname === '/';
-  const isHomeHeader = isHomePage || Object.keys(menuTitles).includes(location.pathname);
-  const pageTitle = location.pathname.startsWith('/course/') ? '코스 상세' : pageTitles[location.pathname] || 'Runddy';
+  const path = normalizePath(location.pathname);
+  const isHomePage = path === '/';
+  const isHomeHeader = isHomePage || Object.keys(menuTitles).includes(path);
+  const pageTitle = path.startsWith('/course/') ? '코스 상세' : pageTitles[path] || 'Runddy';
 
   const handleDevTokenSubmit = async () => {
     if (!devToken.trim()) {
@@ -128,6 +132,9 @@ const Header = () => {
                 </SheetTrigger>
                 <SheetContent className='fixed z-[10002] bg-white w-full'>
                   <SheetHeader className='flex items-center justify-between pl-5 pr-2 h-13'>
+                    <VisuallyHidden asChild>
+                      <SheetTitle>메뉴</SheetTitle>
+                    </VisuallyHidden>
                     <img src={logoImgUrl} width='90' />
                     <SheetClose className='p-3'>
                       <img src={closeImgUrl} alt='Close' width='24' height='24' />
