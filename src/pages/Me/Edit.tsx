@@ -140,7 +140,19 @@ function ProfileEdit() {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>닫기</AlertDialogCancel>
-              <AlertDialogAction onClick={deleteAccount}>회원탈퇴</AlertDialogAction>
+              {/* TODO: update user reasonList */}
+              <AlertDialogAction
+                onClick={() =>
+                  deleteAccount([
+                    '러닝 코스가 도움이 되지 않아서',
+                    '커뮤니티 기능이 별로여서',
+                    '사용하기 불편해서',
+                    '자주 사용하지 않아서',
+                  ])
+                }
+              >
+                회원탈퇴
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

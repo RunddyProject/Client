@@ -107,9 +107,11 @@ export class AuthService {
     }
   }
 
-  async deleteAccount(): Promise<void> {
+  async deleteAccount(data: string[]): Promise<void> {
     try {
-      await api.delete('/users');
+      await api.delete('/users', {
+        reasonList: data,
+      });
       this.accessToken = null;
       this.user = null;
       window.location.href = CLIENT_URL;
