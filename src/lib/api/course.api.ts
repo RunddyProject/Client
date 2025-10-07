@@ -23,7 +23,7 @@ export interface CoursesResponse {
 }
 
 export const CoursesApi = {
-  getCourses: async (lat: number, lng: number): Promise<CoursesResponse> => {
-    return api.get<CoursesResponse>(`/course?lat=${lat}&lng=${lng}`, { requiresAuth: false });
+  getCourses: async (lat: number, lng: number, radius?: number): Promise<CoursesResponse> => {
+    return api.get<CoursesResponse>(`/course?lat=${lat}&lng=${lng}&dist=${radius || 10}`, { requiresAuth: false });
   },
 };
