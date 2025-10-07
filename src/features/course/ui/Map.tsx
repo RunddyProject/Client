@@ -1,13 +1,15 @@
 import { useEffect, useState, useRef } from 'react';
-import { toast } from 'sonner';
 
 import { useCourses } from '@/features/course/hooks/useCourses';
 import CourseFilter from '@/features/course/ui/Filter';
 import CourseInfoCard from '@/features/course/ui/InfoCard';
+import { useGeolocation } from '@/features/map/hooks/useGeolocation';
+import { useLocationStore } from '@/features/map/model/location.store';
 import { NaverMap } from '@/features/map/ui/NaverMap';
 import { Icon } from '@/shared/icons/icon';
 import { Button } from '@/shared/ui/primitives/button';
 import { Input } from '@/shared/ui/primitives/input';
+
 interface CourseMapProps {
   onViewModeChange: () => void;
 }
@@ -16,14 +18,9 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
-  // TODO: store userLocation in localStorage
-  const [userLocation, setUserLocation] = useState<{
-    lat: number;
-    lng: number;
-  }>({
-    lat: 37.5665,
-    lng: 126.978
-  });
+  const { userLocation } = useLocationStore();
+  const { getCurrentLocation } = useGeolocation();
+
   const { courses } = useCourses(userLocation);
   const [activeCourseId, setActiveCourseId] = useState<string | null>(
     courses[0]?.uuid ?? null
@@ -70,36 +67,11 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
     });
   }, [courses, activeCourseId]);
 
-  const handleCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const newLocation = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-          setUserLocation(newLocation);
-
-          if (mapInstanceRef.current) {
-            mapInstanceRef.current.setCenter(
-              new window.naver.maps.LatLng(newLocation.lat, newLocation.lng)
-            );
-          }
-
-          toast.success('현재 위치 설정 완료');
-        },
-        (error) => {
-          console.error('Failed to get location:', error);
-          toast.error('위치 정보 가져오기 실패');
-        }
-      );
-    }
-  };
-
   return (
     <div className='relative h-[100dvh]'>
       <NaverMap
         className='absolute inset-0'
+        center={userLocation}
         markers={courses.map((c) => ({
           id: c.uuid,
           lat: c.lat,
@@ -108,6 +80,8 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
         focusKey={activeCourseId ?? undefined}
         onMarkerClick={(id) => setActiveCourseId(id)}
       />
+
+      {/* TODO: add button 현재 위치에서 검색 */}
 
       <div className='pointer-events-none absolute top-[calc(env(safe-area-inset-top)+52px)] right-0 bottom-0 left-0 z-10 grid grid-rows-[auto_1fr_auto]'>
         {/* Search bar */}
@@ -133,7 +107,7 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
         </div>
 
         {/* Bottom */}
-        <div className='pointer-events-auto space-y-2 px-5 pb-[calc(env(safe-area-inset-bottom)+20px)]'>
+        <div className='space-y-2 px-5 pb-[calc(env(safe-area-inset-bottom)+20px)]'>
           {/* Controls */}
           <div className='flex items-end justify-between'>
             <div className='flex flex-col gap-2'>
@@ -148,8 +122,8 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
               <Button
                 size='icon'
                 variant='secondary'
-                className='h-9.5 w-9.5 rounded-full bg-white shadow-lg'
-                onClick={handleCurrentLocation}
+                className='pointer-events-auto h-9.5 w-9.5 rounded-full bg-white shadow-lg'
+                onClick={getCurrentLocation}
               >
                 <Icon name='my_location' size={24} />
               </Button>
@@ -157,7 +131,7 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
 
             <Button
               variant='secondary'
-              className='rounded-full bg-white px-3 shadow-lg'
+              className='pointer-events-auto rounded-full bg-white px-3 shadow-lg'
               onClick={onViewModeChange}
             >
               <Icon
