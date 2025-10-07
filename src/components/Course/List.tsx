@@ -46,7 +46,7 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
         <div>
           {courses.map((course) => (
             <CourseInfoCard
-              key={course.courseUuid}
+              key={course.uuid}
               course={course}
               className='py-5.5 border-b border-b-gray-200 last:border-0'
             />

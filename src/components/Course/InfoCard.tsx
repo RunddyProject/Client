@@ -27,14 +27,14 @@ const CourseInfoCard = ({ course, className }: CourseInfoCardProps) => {
   // const navigate = useNavigate();
 
   const handleClick = () => {
-    // navigate(`/course/${course.courseUuid}`)
+    // navigate(`/course/${course.uuid}`)
     toast('코스 상세 기능은 준비중입니다');
   };
 
   return (
     <div className={cn('flex justify-between gap-4 bg-white cursor-pointer', className)} onClick={handleClick}>
-      {courseImageUrl[course.courseType] ? (
-        <img src={courseImageUrl[course.courseType]} width='60' height='60' className='rounded-xl' />
+      {courseImageUrl[course.shapeType] ? (
+        <img src={courseImageUrl[course.shapeType]} width='60' height='60' className='rounded-xl' />
       ) : (
         <div className='w-15 h-15 rounded-xl bg-gray-900' />
       )}
@@ -47,9 +47,9 @@ const CourseInfoCard = ({ course, className }: CourseInfoCardProps) => {
           </Button>
         </div>
         <div className='flex items-center gap-1 text-sm overflow-x-auto'>
-          <Badge>Lv. {course?.level || 1}</Badge>
-          <Badge>{course?.category || '공원'}</Badge>
-          <Badge>{((course?.distance || 5000) / 1000).toFixed(0)}km</Badge>
+          <Badge>Lv. {course?.grade || 1}</Badge>
+          <Badge>{course?.envTypeName || '공원'}</Badge>
+          <Badge>{((course?.totalDistance || 5000) / 1000).toFixed(0)}km</Badge>
         </div>
       </div>
     </div>

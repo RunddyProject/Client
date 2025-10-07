@@ -52,7 +52,7 @@ function Me() {
               {savedCourses.map((course) => {
                 return (
                   <CourseInfoCard
-                    key={course.courseUuid}
+                    key={course.uuid}
                     course={course}
                     className='py-5.5 border-b border-b-gray-200 last:border-0 cursor-pointer'
                   />

@@ -45,8 +45,8 @@ export const calculateGPXStats = (gpxData: GPXParser) => {
   // Calculate average pace (min/km)
   const avgPace = duration > 0 ? formatPace(duration / (distance / 1000)) : 'N/A';
 
-  // Calculate difficulty
-  const difficulty = calculateDifficulty(distance, elevationGain);
+  // Calculate grade
+  const grade = calculateGrade(distance, elevationGain);
 
   return {
     distance: Math.round(distance),
@@ -55,7 +55,7 @@ export const calculateGPXStats = (gpxData: GPXParser) => {
     avgPace,
     maxElevation: Math.round(maxElevation),
     minElevation: Math.round(minElevation),
-    difficulty,
+    grade,
   };
 };
 
@@ -82,13 +82,13 @@ const formatPace = (paceInSeconds: number): string => {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 };
 
-// Unified difficulty calculation based on average gradient
-export const calculateDifficultyFromGradient = (
+// Unified grade calculation based on average gradient
+export const calculateGradeFromGradient = (
   distanceKm: number,
   elevationGain: number
 ): {
-  level: SavedGPX['difficulty'];
-  levelKo: string;
+  grade: SavedGPX['grade'];
+  gradeKo: string;
   color: string;
   bgColor: string;
   description: string;
@@ -98,8 +98,8 @@ export const calculateDifficultyFromGradient = (
 
   if (avgGradient < 2) {
     return {
-      level: 1,
-      levelKo: '쉬움',
+      grade: 1,
+      gradeKo: '쉬움',
       color: 'text-green-600',
       bgColor: 'bg-green-50',
       description: '평탄한 코스로 초보자도 편하게 달릴 수 있습니다.',
@@ -107,8 +107,8 @@ export const calculateDifficultyFromGradient = (
     };
   } else if (avgGradient < 5) {
     return {
-      level: 2,
-      levelKo: '보통',
+      grade: 2,
+      gradeKo: '보통',
       color: 'text-yellow-600',
       bgColor: 'bg-yellow-50',
       description: '적당한 경사가 있어 재미있는 러닝을 즐길 수 있습니다.',
@@ -116,8 +116,8 @@ export const calculateDifficultyFromGradient = (
     };
   } else if (avgGradient < 8) {
     return {
-      level: 3,
-      levelKo: '어려움',
+      grade: 3,
+      gradeKo: '어려움',
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
       description: '경사가 가파른 구간이 있어 체력 관리가 필요합니다.',
@@ -125,8 +125,8 @@ export const calculateDifficultyFromGradient = (
     };
   } else {
     return {
-      level: 4,
-      levelKo: '매우 어려움',
+      grade: 4,
+      gradeKo: '매우 어려움',
       color: 'text-red-600',
       bgColor: 'bg-red-50',
       description: '매우 가파른 경사로 고급 러너에게 추천합니다.',
@@ -135,15 +135,15 @@ export const calculateDifficultyFromGradient = (
   }
 };
 
-// Make calculateDifficulty function exportable
-export const calculateDifficulty = (distance: number, elevationGain: number): SavedGPX['difficulty'] => {
+// Make calculateGrade function exportable
+export const calculateGrade = (distance: number, elevationGain: number): SavedGPX['grade'] => {
   const distanceKm = distance / 1000;
-  return calculateDifficultyFromGradient(distanceKm, elevationGain).level;
+  return calculateGradeFromGradient(distanceKm, elevationGain).grade;
 };
 
-// Convert English difficulty to Korean
-export const getDifficultyInKorean = (difficulty: SavedGPX['difficulty']): string => {
-  switch (difficulty) {
+// Convert English grade to Korean
+export const getGradeInKorean = (grade: SavedGPX['grade']): string => {
+  switch (grade) {
     case 1:
       return '쉬움';
     case 2:
@@ -226,7 +226,7 @@ export const generateElevationChartData = (gpxData: GPXParser) => {
     minElevation,
     maxElevation,
     elevationGain,
-    difficultyInfo: calculateDifficultyFromGradient(totalDistance, elevationGain),
+    gradeInfo: calculateGradeFromGradient(totalDistance, elevationGain),
   };
 
   return { chartData, keyPoints, stats };

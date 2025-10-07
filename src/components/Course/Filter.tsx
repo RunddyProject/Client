@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { envTypeNames, grades, shapeTypeNames } from '@/lib/api/course.api';
 
 type Tuple2 = [number, number];
 
@@ -44,10 +45,6 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
   const [draft, setDraft] = useState<FilterState>(DEFAULTS);
   const [open, setOpen] = useState(false);
   const [count, setCount] = useState(initialCount);
-
-  const grades = useMemo(() => ['1', '2', '3'], []);
-  const envTypes = useMemo(() => ['공원', '산책로', '트랙', '도심', '해변', '산', '숲', '기타'], []);
-  const shapeTypes = useMemo(() => ['순환코스', '직선코스', '왕복코스', '아트코스'], []);
 
   // ----- helpers -----
   const toggleInArray = (arr: string[], value: string) =>
@@ -147,7 +144,7 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
         <DialogContent fullWidth className='z-[10001] bg-white flex flex-col min-h-screen'>
           <DialogHeader>
             <DialogTitle>상세 필터</DialogTitle>
-            <DialogClose className='col-start-3 justify-self-end'>
+            <DialogClose className='col-start-3 justify-self-end p-3 rounded'>
               <Button variant='ghost' size='icon' className='p-3 rounded'>
                 <Icon name='close' size={24} />
               </Button>
@@ -159,16 +156,18 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
               <h3 className='text-base font-semibold mb-5'>난이도</h3>
               <div className='flex gap-2'>
                 <ToggleGroup type='multiple' value={draft.grade}>
-                  {grades.map((grd) => (
-                    <ToggleGroupItem
-                      key={grd}
-                      value={grd}
-                      aria-label={`Toggle Level ${grd}`}
-                      onClick={() => toggleGrade(grd)}
-                    >
-                      Lv. {grd}
-                    </ToggleGroupItem>
-                  ))}
+                  {grades
+                    .map((grd) => String(grd))
+                    .map((grd) => (
+                      <ToggleGroupItem
+                        key={grd}
+                        value={grd}
+                        aria-label={`Toggle Level ${grd}`}
+                        onClick={() => toggleGrade(grd)}
+                      >
+                        Lv. {grd}
+                      </ToggleGroupItem>
+                    ))}
                 </ToggleGroup>
               </div>
             </div>
@@ -177,7 +176,7 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
               <h3 className='text-base font-semibold mb-5'>러닝 장소</h3>
               <div className='flex flex-wrap gap-2'>
                 <ToggleGroup type='multiple' value={draft.envType}>
-                  {envTypes.map((env) => (
+                  {envTypeNames.map((env) => (
                     <ToggleGroupItem key={env} value={env} className='rounded-full' onClick={() => toggleEnvType(env)}>
                       {env}
                     </ToggleGroupItem>
@@ -190,14 +189,14 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
               <h3 className='text-base font-semibold mb-5'>코스 모양</h3>
               <div className='flex flex-wrap gap-2'>
                 <ToggleGroup type='multiple' value={draft.shapeType}>
-                  {shapeTypes.map((shape) => (
+                  {shapeTypeNames.map((shape) => (
                     <ToggleGroupItem
                       key={shape}
                       value={shape}
                       className='rounded-full'
                       onClick={() => toggleShapeType(shape)}
                     >
-                      {shape}
+                      {shape}코스
                     </ToggleGroupItem>
                   ))}
                 </ToggleGroup>

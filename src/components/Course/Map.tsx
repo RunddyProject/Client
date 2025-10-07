@@ -22,8 +22,8 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
     lng: 126.978,
   });
   const { courses } = useCourses(userLocation);
-  const [activeCourseId, setActiveCourseId] = useState<string | null>(courses[0]?.courseUuid ?? null);
-  // const activeCourse = courses.find((c) => c.courseUuid === activeCourseId) ?? courses[0];
+  const [activeCourseId, setActiveCourseId] = useState<string | null>(courses[0]?.uuid ?? null);
+  // const activeCourse = courses.find((c) => c.uuid === activeCourseId) ?? courses[0];
 
   // Initialize map
   useEffect(() => {
@@ -55,7 +55,7 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
       });
 
       window.naver.maps.Event.addListener(marker, 'click', () => {
-        setActiveCourseId(course.courseUuid);
+        setActiveCourseId(course.uuid);
       });
 
       markersRef.current.push(marker);
@@ -91,7 +91,7 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
       <NaverMap
         className='absolute inset-0'
         markers={courses.map((c) => ({
-          id: c.courseUuid,
+          id: c.uuid,
           lat: c.lat,
           lng: c.lng,
         }))}
@@ -176,7 +176,7 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
             onWheel={(e) => e.stopPropagation()}
           >
             {courses.map((course) => (
-              <div key={course.courseUuid} className='shrink-0 snap-start w-[85%] max-w-[420px]'>
+              <div key={course.uuid} className='shrink-0 snap-start w-[85%] max-w-[420px]'>
                 <CourseInfoCard course={course} className='rounded-2xl shadow-xl p-5' />
               </div>
             ))}

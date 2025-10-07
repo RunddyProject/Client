@@ -8,7 +8,7 @@ export interface SavedGPX {
   avgPace: string;
   maxElevation: number;
   minElevation: number;
-  difficulty: 1 | 2 | 3 | 4 | 5;
+  grade: 1 | 2 | 3 | 4 | 5;
   gpxData: any; // The parsed GPX data
   miniMapSvg?: string; // SVG representation of the route
 }
