@@ -1,4 +1,8 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient
+} from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 
@@ -16,6 +20,7 @@ export function useCourses(userLocation: UserLocation | null = DEFAULT_CENTER) {
     staleTime: 60_000,
     gcTime: 5 * 60_000,
     retry: 1,
+    placeholderData: keepPreviousData,
     queryFn: async () => {
       if (!userLocation) return [];
       const res: CoursesResponse = await CoursesApi.getCourses(
