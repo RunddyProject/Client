@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Icon } from '@/components/ui/icon';
 import CourseInfoCard from '@/components/Course/InfoCard';
 import CourseDropdownMenu, { type SortType } from '@/components/Course/DropdownMenu';
+import CourseFilter from '@/components/Course/Filter';
 import { useCourses } from '@/hooks/useCourses';
 
 interface CourseListProps {
@@ -16,14 +17,10 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
   const { courses } = useCourses();
   const [sortBy, setSortBy] = useState<SortType>('distance');
 
-  const handleFilter = () => {
-    // TODO
-    toast('필터 기능은 준비중입니다');
-  };
-
   const handleChange = (value: SortType) => {
     // TODO: API
     setSortBy(value);
+    toast('정렬 기능은 준비중입니다');
   };
 
   return (
@@ -42,14 +39,7 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
         <div className='flex items-center gap-3 mt-3'>
           <CourseDropdownMenu checkedValue={sortBy} onCheckedChange={handleChange} />
           <span className='text-gray-200'>|</span>
-          <Button
-            variant='ghost'
-            className='flex items-center gap-1 px-3 py-2 bg-gray-100 rounded-full'
-            onClick={handleFilter}
-          >
-            <span className='text-sm'>필터</span>
-            <Icon name='filter' size={12} color='currentColor' className='text-gray-600' />
-          </Button>
+          <CourseFilter initialCount={courses.length} />
         </div>
 
         {/* Course List */}

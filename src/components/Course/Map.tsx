@@ -6,8 +6,8 @@ import { Input } from '@/components/ui/input';
 import { NaverMap } from '@/components/NaverMap';
 import { Icon } from '@/components/ui/icon';
 import CourseInfoCard from '@/components/Course/InfoCard';
+import CourseFilter from '@/components/Course/Filter';
 import { useCourses } from '@/hooks/useCourses';
-
 interface CourseMapProps {
   onViewModeChange: () => void;
 }
@@ -86,11 +86,6 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
     }
   };
 
-  const handleFilter = () => {
-    // TODO
-    toast('필터 기능은 준비중입니다');
-  };
-
   return (
     <div className='relative h-[100dvh]'>
       <NaverMap
@@ -115,14 +110,7 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
 
         {/* Filter */}
         <div className='px-5 mt-3'>
-          <Button
-            size='icon'
-            variant='secondary'
-            className='rounded-full h-8.5 flex items-center gap-1 px-3 w-fit shadow-lg bg-white pointer-events-auto'
-            onClick={handleFilter}
-          >
-            <Icon name='filter' size={18} /> <span>필터</span>
-          </Button>
+          <CourseFilter initialCount={courses.length} />
         </div>
 
         {/* Bottom */}
@@ -157,8 +145,8 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
 
         {/* Course info card */}
         {courses.length === 0 && (
-          <div className='bg-white rounded-2xl shadow-xl p-5 [touch-action:none]'>
-            <div className='flex gap-4'>
+          <div className='px-4 pb-5 '>
+            <div className='p-5 flex gap-4 bg-white rounded-2xl shadow-xl [touch-action:none]'>
               <div className='w-12 h-12 rounded-xl bg-muted/60 flex items-center justify-center'>course</div>
               <div className='flex-1'>
                 <p className='font-semibold'>조건에 맞는 코스가 없어요</p>
@@ -169,7 +157,7 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
         )}
 
         {courses.length === 1 && (
-          <div className='p-5'>
+          <div className='px-4 pb-5 '>
             <CourseInfoCard course={courses[0]} className='rounded-2xl shadow-xl p-5' />
           </div>
         )}
