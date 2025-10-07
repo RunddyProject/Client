@@ -1,16 +1,12 @@
+import { Key } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router';
-import { Key } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { useAuth } from '@/contexts/AuthContext';
-import { authService } from '@/lib/auth';
-import logoImgUrl from '/logo.svg';
 import profileImgUrl from '@/assets/basic_profile.png';
-
-import { Button } from '@/components/ui/button';
+import Menu from '@/components/Menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -19,11 +15,14 @@ import {
   DialogOverlay,
   DialogPortal,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
 import { Icon } from '@/components/ui/icon';
-import Menu from '@/components/Menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useAuth } from '@/contexts/AuthContext';
+import { authService } from '@/lib/auth';
+import logoImgUrl from '/logo.svg';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -32,7 +31,7 @@ const pageTitles: Record<string, string> = {
 };
 
 const menuTitles: Record<string, string> = {
-  '/me': '마이페이지',
+  '/me': '마이페이지'
 };
 
 const normalizePath = (p: string) => p.replace(/\/+$/, '') || '/';
@@ -47,7 +46,9 @@ const Header = () => {
   const path = normalizePath(location.pathname);
   const isHomePage = path === '/';
   const isHomeHeader = isHomePage || Object.keys(menuTitles).includes(path);
-  const pageTitle = path.startsWith('/course/') ? '코스 상세' : pageTitles[path] || 'Runddy';
+  const pageTitle = path.startsWith('/course/')
+    ? '코스 상세'
+    : pageTitles[path] || 'Runddy';
 
   const handleDevTokenSubmit = async () => {
     if (!devToken.trim()) {
@@ -67,8 +68,12 @@ const Header = () => {
   };
 
   return (
-    <header className={isHomePage ? 'absolute top-0 left-0 w-full z-50' : 'sticky top-0 z-50'}>
-      <div className='px-4 h-13 flex items-center justify-between'>
+    <header
+      className={
+        isHomePage ? 'absolute top-0 left-0 z-50 w-full' : 'sticky top-0 z-50'
+      }
+    >
+      <div className='flex h-13 items-center justify-between px-4'>
         {isHomeHeader ? (
           // Home 헤더: Runddy 로고 | 프로필 | 메뉴
           <>
@@ -79,18 +84,23 @@ const Header = () => {
             <div className='flex items-center'>
               {/* Dev Token Button (only in development) */}
               {isDevelopment && (
-                <Dialog open={isDevDialogOpen} onOpenChange={setIsDevDialogOpen}>
+                <Dialog
+                  open={isDevDialogOpen}
+                  onOpenChange={setIsDevDialogOpen}
+                >
                   <DialogTrigger asChild>
                     <Button variant='ghost' size='icon' className='h-12 w-12'>
-                      <Key className='w-4 h-4' />
+                      <Key className='h-4 w-4' />
                     </Button>
                   </DialogTrigger>
                   <DialogPortal>
                     <DialogOverlay className='fixed inset-0 z-[10000]' />
-                    <DialogContent className='fixed left-1/2 top-1/2 z-[10001] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-6 shadow-xl'>
+                    <DialogContent className='fixed top-1/2 left-1/2 z-[10001] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-6 shadow-xl'>
                       <DialogHeader>
                         <DialogTitle>개발용 AccessToken 설정</DialogTitle>
-                        <DialogDescription>Swagger에서 받은 accessToken을 입력하세요</DialogDescription>
+                        <DialogDescription>
+                          Swagger에서 받은 accessToken을 입력하세요
+                        </DialogDescription>
                       </DialogHeader>
                       <div className='space-y-4 py-4'>
                         <div className='space-y-2'>
@@ -107,7 +117,10 @@ const Header = () => {
                             }}
                           />
                         </div>
-                        <Button onClick={handleDevTokenSubmit} className='w-full'>
+                        <Button
+                          onClick={handleDevTokenSubmit}
+                          className='w-full'
+                        >
                           토큰 설정
                         </Button>
                       </div>
@@ -116,9 +129,17 @@ const Header = () => {
                 </Dialog>
               )}
 
-              <Avatar className='w-12 h-12 cursor-pointer' onClick={() => isAuthenticated && navigate('/me')}>
+              <Avatar
+                className='h-12 w-12 cursor-pointer'
+                onClick={() => isAuthenticated && navigate('/me')}
+              >
                 <AvatarFallback>
-                  <img src={profileImgUrl} alt='Profile' width='28' height='28' />
+                  <img
+                    src={profileImgUrl}
+                    alt='Profile'
+                    width='28'
+                    height='28'
+                  />
                 </AvatarFallback>
               </Avatar>
 
@@ -128,11 +149,18 @@ const Header = () => {
         ) : (
           // Depth 헤더: 뒤로가기 | 페이지 제목 | 메뉴
           <>
-            <Button variant='ghost' size='icon' className='h-8 w-8' onClick={() => navigate(-1)}>
+            <Button
+              variant='ghost'
+              size='icon'
+              className='h-8 w-8'
+              onClick={() => navigate(-1)}
+            >
               <Icon name='chevron_left' size={24} />
             </Button>
 
-            <h1 className='absolute left-1/2 -translate-x-1/2 font-semibold text-base'>{pageTitle}</h1>
+            <h1 className='absolute left-1/2 -translate-x-1/2 text-base font-semibold'>
+              {pageTitle}
+            </h1>
 
             <Menu titles={menuTitles} />
           </>

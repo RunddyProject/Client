@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { icons } from '@/icons/registry';
 
 type IconVars = {
@@ -20,7 +21,15 @@ function Icon({ name, size = 24, color, secondary, className, title }: Props) {
   if (!SvgAny) return null;
 
   if (typeof SvgAny === 'string') {
-    return <img src={SvgAny} width={+size} height={+size} className={className} alt={title ?? ''} />;
+    return (
+      <img
+        src={SvgAny}
+        width={+size}
+        height={+size}
+        className={className}
+        alt={title ?? ''}
+      />
+    );
   }
 
   const Svg = SvgAny as React.ComponentType<React.SVGProps<SVGSVGElement>>;

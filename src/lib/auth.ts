@@ -68,7 +68,11 @@ export class AuthService {
   // Get access token from server
   async getAccessToken(): Promise<string | null> {
     try {
-      const res = await api.post<{ accessToken: string }>('/auth/access-token', undefined, { requiresAuth: false });
+      const res = await api.post<{ accessToken: string }>(
+        '/auth/access-token',
+        undefined,
+        { requiresAuth: false }
+      );
 
       if (!res?.accessToken) return null;
 

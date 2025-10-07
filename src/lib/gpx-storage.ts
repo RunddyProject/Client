@@ -32,7 +32,7 @@ export const gpxStorage = {
     const newCourse: SavedGPX = {
       ...course,
       id: Date.now().toString(),
-      uploadDate: new Date(),
+      uploadDate: new Date()
     };
 
     courses.push(newCourse);
@@ -63,5 +63,5 @@ export const gpxStorage = {
     courses[index] = { ...courses[index], ...updates };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(courses));
     return courses[index];
-  },
+  }
 };

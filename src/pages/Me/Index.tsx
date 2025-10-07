@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 
-import { useAuth } from '@/contexts/AuthContext';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import profileImgUrl from '@/assets/basic_profile.png';
-import { Icon } from '@/components/ui/icon';
-import { useCourses } from '@/hooks/useCourses';
 import CourseInfoCard from '@/components/Course/InfoCard';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Icon } from '@/components/ui/icon';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAuth } from '@/contexts/AuthContext';
+import { useCourses } from '@/hooks/useCourses';
 
 function Me() {
   const { user } = useAuth();
@@ -15,20 +15,25 @@ function Me() {
   const [savedPosts] = useState([]);
 
   return (
-    <div className='min-h-screen bg-background pb-20'>
+    <div className='bg-background min-h-screen pb-20'>
       {/* Profile Section */}
-      <div className='bg-card px-5 pt-6 mb-6'>
+      <div className='bg-card mb-6 px-5 pt-6'>
         <div className='flex items-center gap-3'>
-          <Avatar className='w-20 h-20'>
+          <Avatar className='h-20 w-20'>
             <AvatarImage src={user?.profileUrl || ''} />
             <AvatarFallback className='bg-primary/10 text-primary text-2xl'>
               <img src={profileImgUrl} alt='Profile' width='80' height='80' />
             </AvatarFallback>
           </Avatar>
           <div className='flex flex-col'>
-            <h2 className='text-lg font-semibold mb-2'>{user?.userName || '런디'}</h2>
-            <Link to='/me/edit' className='flex items-center gap-1 text-sm text-primary hover:underline'>
-              <p className='text-sm text-muted-foreground'>프로필 수정</p>
+            <h2 className='mb-2 text-lg font-semibold'>
+              {user?.userName || '런디'}
+            </h2>
+            <Link
+              to='/me/edit'
+              className='text-primary flex items-center gap-1 text-sm hover:underline'
+            >
+              <p className='text-muted-foreground text-sm'>프로필 수정</p>
               <Icon name='chevron_right' size={14} />
             </Link>
           </div>
@@ -54,7 +59,7 @@ function Me() {
                   <CourseInfoCard
                     key={course.uuid}
                     course={course}
-                    className='py-5.5 border-b border-b-gray-200 last:border-0 cursor-pointer'
+                    className='cursor-pointer border-b border-b-gray-200 py-5.5 last:border-0'
                   />
                 );
               })}

@@ -1,13 +1,15 @@
-import * as React from 'react';
 import * as ToggleGroupPrimitive from '@radix-ui/react-toggle-group';
 import { type VariantProps } from 'class-variance-authority';
+import * as React from 'react';
 
-import { cn } from '@/lib/utils';
 import { toggleVariants } from '@/components/ui/toggle';
+import { cn } from '@/lib/utils';
 
-const ToggleGroupContext = React.createContext<VariantProps<typeof toggleVariants>>({
+const ToggleGroupContext = React.createContext<
+  VariantProps<typeof toggleVariants>
+>({
   size: 'default',
-  variant: 'default',
+  variant: 'default'
 });
 
 function ToggleGroup({
@@ -16,16 +18,22 @@ function ToggleGroup({
   size,
   children,
   ...props
-}: React.ComponentProps<typeof ToggleGroupPrimitive.Root> & VariantProps<typeof toggleVariants>) {
+}: React.ComponentProps<typeof ToggleGroupPrimitive.Root> &
+  VariantProps<typeof toggleVariants>) {
   return (
     <ToggleGroupPrimitive.Root
       data-slot='toggle-group'
       data-variant={variant}
       data-size={size}
-      className={cn('group/toggle-group flex gap-2 w-fit items-center', className)}
+      className={cn(
+        'group/toggle-group flex w-fit items-center gap-2',
+        className
+      )}
       {...props}
     >
-      <ToggleGroupContext.Provider value={{ variant, size }}>{children}</ToggleGroupContext.Provider>
+      <ToggleGroupContext.Provider value={{ variant, size }}>
+        {children}
+      </ToggleGroupContext.Provider>
     </ToggleGroupPrimitive.Root>
   );
 }
@@ -36,7 +44,8 @@ function ToggleGroupItem({
   variant,
   size,
   ...props
-}: React.ComponentProps<typeof ToggleGroupPrimitive.Item> & VariantProps<typeof toggleVariants>) {
+}: React.ComponentProps<typeof ToggleGroupPrimitive.Item> &
+  VariantProps<typeof toggleVariants>) {
   const context = React.useContext(ToggleGroupContext);
 
   return (
@@ -47,9 +56,9 @@ function ToggleGroupItem({
       className={cn(
         toggleVariants({
           variant: context.variant || variant,
-          size: context.size || size,
+          size: context.size || size
         }),
-        'min-w-0 shrink-0 py-2 px-3.5 focus:z-10 focus-visible:z-10  rounded-full bg-gray-100 data-[state=on]:bg-gray-900 data-[state=on]:text-white',
+        'min-w-0 shrink-0 rounded-full bg-gray-100 px-3.5 py-2 focus:z-10 focus-visible:z-10 data-[state=on]:bg-gray-900 data-[state=on]:text-white',
         className
       )}
       {...props}

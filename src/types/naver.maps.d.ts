@@ -34,12 +34,12 @@ declare global {
         RIGHT_BOTTOM,
         BOTTOM_LEFT,
         BOTTOM_CENTER,
-        BOTTOM_RIGHT,
+        BOTTOM_RIGHT
       }
 
       enum ZoomControlStyle {
         LARGE,
-        SMALL,
+        SMALL
       }
 
       /* ========== Map Options ========== */
@@ -67,7 +67,9 @@ declare global {
         [key: string]: unknown;
       }
 
-      type BoundsPadding = number | { top: number; right: number; bottom: number; left: number };
+      type BoundsPadding =
+        | number
+        | { top: number; right: number; bottom: number; left: number };
 
       /* ========== Map ========== */
       class Map {
@@ -116,7 +118,9 @@ declare global {
         setMap(map: Map | null): void;
         getPosition(): LatLng;
         setPosition(pos: LatLng): void;
-        setIcon(icon: string | { url?: string; content?: string; anchor?: Point }): void;
+        setIcon(
+          icon: string | { url?: string; content?: string; anchor?: Point }
+        ): void;
         setZIndex(zIndex: number): void;
       }
 
@@ -153,7 +157,11 @@ declare global {
       }
 
       namespace Event {
-        function addListener(target: any, name: string, listener: (evt?: any) => void): EventListener;
+        function addListener(
+          target: any,
+          name: string,
+          listener: (evt?: any) => void
+        ): EventListener;
 
         function removeListener(listener: EventListener): void;
 

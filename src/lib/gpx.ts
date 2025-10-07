@@ -1,6 +1,6 @@
+import type { SavedGPX } from '@/lib/gpx-storage';
 import type GPXParser from 'gpxparser';
 import type { Point } from 'gpxparser';
-import type { SavedGPX } from '@/lib/gpx-storage';
 
 // Calculate course statistics from GPX data
 export const calculateGPXStats = (gpxData: GPXParser) => {
@@ -43,7 +43,8 @@ export const calculateGPXStats = (gpxData: GPXParser) => {
   }
 
   // Calculate average pace (min/km)
-  const avgPace = duration > 0 ? formatPace(duration / (distance / 1000)) : 'N/A';
+  const avgPace =
+    duration > 0 ? formatPace(duration / (distance / 1000)) : 'N/A';
 
   // Calculate grade
   const grade = calculateGrade(distance, elevationGain);
@@ -55,19 +56,26 @@ export const calculateGPXStats = (gpxData: GPXParser) => {
     avgPace,
     maxElevation: Math.round(maxElevation),
     minElevation: Math.round(minElevation),
-    grade,
+    grade
   };
 };
 
 // Haversine formula for distance calculation
-const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+const getDistance = (
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+): number => {
   const R = 6371e3; // Earth's radius in meters
   const φ1 = (lat1 * Math.PI) / 180;
   const φ2 = (lat2 * Math.PI) / 180;
   const Δφ = ((lat2 - lat1) * Math.PI) / 180;
   const Δλ = ((lon2 - lon1) * Math.PI) / 180;
 
-  const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
   return R * c;
@@ -94,7 +102,8 @@ export const calculateGradeFromGradient = (
   description: string;
   gradient: number;
 } => {
-  const avgGradient = distanceKm > 0 ? (elevationGain / (distanceKm * 1000)) * 100 : 0;
+  const avgGradient =
+    distanceKm > 0 ? (elevationGain / (distanceKm * 1000)) * 100 : 0;
 
   if (avgGradient < 2) {
     return {
@@ -103,7 +112,7 @@ export const calculateGradeFromGradient = (
       color: 'text-green-600',
       bgColor: 'bg-green-50',
       description: '평탄한 코스로 초보자도 편하게 달릴 수 있습니다.',
-      gradient: avgGradient,
+      gradient: avgGradient
     };
   } else if (avgGradient < 5) {
     return {
@@ -112,7 +121,7 @@ export const calculateGradeFromGradient = (
       color: 'text-yellow-600',
       bgColor: 'bg-yellow-50',
       description: '적당한 경사가 있어 재미있는 러닝을 즐길 수 있습니다.',
-      gradient: avgGradient,
+      gradient: avgGradient
     };
   } else if (avgGradient < 8) {
     return {
@@ -121,7 +130,7 @@ export const calculateGradeFromGradient = (
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
       description: '경사가 가파른 구간이 있어 체력 관리가 필요합니다.',
-      gradient: avgGradient,
+      gradient: avgGradient
     };
   } else {
     return {
@@ -130,13 +139,16 @@ export const calculateGradeFromGradient = (
       color: 'text-red-600',
       bgColor: 'bg-red-50',
       description: '매우 가파른 경사로 고급 러너에게 추천합니다.',
-      gradient: avgGradient,
+      gradient: avgGradient
     };
   }
 };
 
 // Make calculateGrade function exportable
-export const calculateGrade = (distance: number, elevationGain: number): SavedGPX['grade'] => {
+export const calculateGrade = (
+  distance: number,
+  elevationGain: number
+): SavedGPX['grade'] => {
   const distanceKm = distance / 1000;
   return calculateGradeFromGradient(distanceKm, elevationGain).grade;
 };
@@ -175,7 +187,12 @@ export const generateElevationChartData = (gpxData: GPXParser) => {
       const curr = points[i];
 
       // Haversine formula for distance calculation (returns meters)
-      cumulativeDistanceMeters += getDistance(prev.lat, prev.lon, curr.lat, curr.lon);
+      cumulativeDistanceMeters += getDistance(
+        prev.lat,
+        prev.lon,
+        curr.lat,
+        curr.lon
+      );
     }
 
     return {
@@ -184,13 +201,14 @@ export const generateElevationChartData = (gpxData: GPXParser) => {
       elevation: point.ele || 0,
       lat: point.lat,
       lon: point.lon,
-      index: index,
+      index: index
     };
   });
 
   // Calculate stats
   const totalDistance = chartData[chartData.length - 1]?.distance || 0;
-  const totalDistanceMeters = chartData[chartData.length - 1]?.distanceMeters || 0;
+  const totalDistanceMeters =
+    chartData[chartData.length - 1]?.distanceMeters || 0;
   const minElevation = Math.min(...chartData.map((d) => d.elevation));
   const maxElevation = Math.max(...chartData.map((d) => d.elevation));
 
@@ -206,18 +224,23 @@ export const generateElevationChartData = (gpxData: GPXParser) => {
   }
 
   // Get key points (start, middle, end, highest, lowest)
-  const minElevationPoint = chartData.reduce((min, point) => (point.elevation < min.elevation ? point : min));
-  const maxElevationPoint = chartData.reduce((max, point) => (point.elevation > max.elevation ? point : max));
+  const minElevationPoint = chartData.reduce((min, point) =>
+    point.elevation < min.elevation ? point : min
+  );
+  const maxElevationPoint = chartData.reduce((max, point) =>
+    point.elevation > max.elevation ? point : max
+  );
 
   const keyPoints = [
     { ...chartData[0], label: '시작점', type: 'start' },
     { ...minElevationPoint, label: '최저점', type: 'lowest' },
     { ...maxElevationPoint, label: '최고점', type: 'highest' },
-    { ...chartData[chartData.length - 1], label: '도착점', type: 'end' },
+    { ...chartData[chartData.length - 1], label: '도착점', type: 'end' }
   ].filter(
     (point, index, arr) =>
       // Remove duplicates based on distance
-      arr.findIndex((p) => Math.abs(p.distance - point.distance) < 0.01) === index
+      arr.findIndex((p) => Math.abs(p.distance - point.distance) < 0.01) ===
+      index
   );
 
   const stats = {
@@ -226,14 +249,18 @@ export const generateElevationChartData = (gpxData: GPXParser) => {
     minElevation,
     maxElevation,
     elevationGain,
-    gradeInfo: calculateGradeFromGradient(totalDistance, elevationGain),
+    gradeInfo: calculateGradeFromGradient(totalDistance, elevationGain)
   };
 
   return { chartData, keyPoints, stats };
 };
 
 // Generate SVG mini-map from GPX data
-export const generateMiniMapSVG = (gpxData: GPXParser, width = 200, height = 120): string => {
+export const generateMiniMapSVG = (
+  gpxData: GPXParser,
+  width = 200,
+  height = 120
+): string => {
   if (!gpxData?.tracks?.[0]?.points?.length) {
     return '';
   }
@@ -260,8 +287,10 @@ export const generateMiniMapSVG = (gpxData: GPXParser, width = 200, height = 120
   // Create path
   const pathPoints = points
     .map((point: Point, index: number) => {
-      const x = padding + ((point.lon - minLon) / (maxLon - minLon)) * drawWidth;
-      const y = padding + ((maxLat - point.lat) / (maxLat - minLat)) * drawHeight;
+      const x =
+        padding + ((point.lon - minLon) / (maxLon - minLon)) * drawWidth;
+      const y =
+        padding + ((maxLat - point.lat) / (maxLat - minLat)) * drawHeight;
       return index === 0 ? `M ${x} ${y}` : `L ${x} ${y}`;
     })
     .join(' ');

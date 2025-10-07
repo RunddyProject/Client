@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
-import { Icon } from '@/components/ui/icon';
 import {
   Dialog,
   DialogClose,
@@ -13,8 +11,10 @@ import {
   DialogOverlay,
   DialogPortal,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 } from '@/components/ui/dialog';
+import { Icon } from '@/components/ui/icon';
+import { Slider } from '@/components/ui/slider';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { envTypeNames, grades, shapeTypeNames } from '@/lib/api/course.api';
 
@@ -37,7 +37,7 @@ const DEFAULTS: FilterState = {
   envType: [],
   shapeType: [],
   distanceRange: [0, 40],
-  elevationRange: [0, 1000],
+  elevationRange: [0, 1000]
 };
 
 const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
@@ -133,7 +133,7 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
         <Button
           size='icon'
           variant='secondary'
-          className='rounded-full h-8.5 flex items-center gap-1 px-3 w-fit pointer-events-auto'
+          className='pointer-events-auto flex h-8.5 w-fit items-center gap-1 rounded-full px-3'
         >
           <Icon name='filter' size={18} /> <span>필터</span>
         </Button>
@@ -141,11 +141,14 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
 
       <DialogPortal>
         <DialogOverlay className='fixed inset-0 z-[10000]' />
-        <DialogContent fullWidth className='z-[10001] bg-white flex flex-col min-h-screen'>
+        <DialogContent
+          fullWidth
+          className='z-[10001] flex min-h-screen flex-col bg-white'
+        >
           <DialogHeader>
             <DialogTitle>상세 필터</DialogTitle>
-            <DialogClose className='col-start-3 justify-self-end p-3 rounded'>
-              <Button variant='ghost' size='icon' className='p-3 rounded'>
+            <DialogClose className='col-start-3 justify-self-end rounded p-3'>
+              <Button variant='ghost' size='icon' className='rounded p-3'>
                 <Icon name='close' size={24} />
               </Button>
             </DialogClose>
@@ -153,7 +156,7 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
 
           <div className='flex-1 overflow-y-auto'>
             <div className='p-5'>
-              <h3 className='text-base font-semibold mb-5'>난이도</h3>
+              <h3 className='mb-5 text-base font-semibold'>난이도</h3>
               <div className='flex gap-2'>
                 <ToggleGroup type='multiple' value={draft.grade}>
                   {grades
@@ -173,11 +176,16 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
             </div>
 
             <div className='p-5'>
-              <h3 className='text-base font-semibold mb-5'>러닝 장소</h3>
+              <h3 className='mb-5 text-base font-semibold'>러닝 장소</h3>
               <div className='flex flex-wrap gap-2'>
                 <ToggleGroup type='multiple' value={draft.envType}>
                   {envTypeNames.map((env) => (
-                    <ToggleGroupItem key={env} value={env} className='rounded-full' onClick={() => toggleEnvType(env)}>
+                    <ToggleGroupItem
+                      key={env}
+                      value={env}
+                      className='rounded-full'
+                      onClick={() => toggleEnvType(env)}
+                    >
                       {env}
                     </ToggleGroupItem>
                   ))}
@@ -186,7 +194,7 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
             </div>
 
             <div className='p-5'>
-              <h3 className='text-base font-semibold mb-5'>코스 모양</h3>
+              <h3 className='mb-5 text-base font-semibold'>코스 모양</h3>
               <div className='flex flex-wrap gap-2'>
                 <ToggleGroup type='multiple' value={draft.shapeType}>
                   {shapeTypeNames.map((shape) => (
@@ -204,9 +212,9 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
             </div>
 
             <div className='p-5'>
-              <div className='flex items-center gap-1 mb-5'>
+              <div className='mb-5 flex items-center gap-1'>
                 <h3 className='text-base font-semibold'>코스 길이</h3>
-                <span className='text-sm text-text-secondary'>
+                <span className='text-text-secondary text-sm'>
                   {draft.distanceRange[0]}km - {draft.distanceRange[1]}km
                 </span>
               </div>
@@ -218,7 +226,7 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
                 step={1}
                 className='mb-2'
               />
-              <div className='flex justify-between text-sm text-text-tertiary'>
+              <div className='text-text-tertiary flex justify-between text-sm'>
                 <span>0km</span>
                 <span>20km</span>
                 <span>40km 이상</span>
@@ -226,9 +234,9 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
             </div>
 
             <div className='p-5'>
-              <div className='flex items-center gap-1 mb-5'>
+              <div className='mb-5 flex items-center gap-1'>
                 <h3 className='text-base font-semibold'>코스 경사</h3>
-                <span className='text-sm text-text-secondary'>
+                <span className='text-text-secondary text-sm'>
                   {draft.elevationRange[0]}km - {draft.elevationRange[1]}km
                 </span>
               </div>
@@ -240,7 +248,7 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
                 step={10}
                 className='mb-2'
               />
-              <div className='flex justify-between text-sm text-text-ter티ary'>
+              <div className='text-text-ter티ary flex justify-between text-sm'>
                 <span>0km</span>
                 <span>500km</span>
                 <span>1000km 이상</span>
@@ -248,8 +256,13 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
             </div>
           </div>
 
-          <DialogFooter className='p-5 w-full flex gap-3'>
-            <Button variant='secondary' size='lg' className='flex-1' onClick={handleReset}>
+          <DialogFooter className='flex w-full gap-3 p-5'>
+            <Button
+              variant='secondary'
+              size='lg'
+              className='flex-1'
+              onClick={handleReset}
+            >
               초기화
             </Button>
 

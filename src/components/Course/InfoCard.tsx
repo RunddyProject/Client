@@ -1,13 +1,14 @@
 // import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
-import { type Course } from '@/lib/api/course.api';
+
+import CourseArtImageUrl from '@/assets/course_art.png';
 import CourseLinearImageUrl from '@/assets/course_linear.png';
 import CourseLoopImageUrl from '@/assets/course_loop.png';
 import CourseOutandbackImageUrl from '@/assets/course_outandback.png';
-import CourseArtImageUrl from '@/assets/course_art.png';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
-import { Badge } from '@/components/ui/badge';
+import { type Course } from '@/lib/api/course.api';
 import { cn } from '@/lib/utils';
 
 interface CourseInfoCardProps {
@@ -20,7 +21,7 @@ const courseImageUrl = {
   LOOP: CourseLoopImageUrl,
   OUT_AND_BACK: CourseOutandbackImageUrl,
   ART: CourseArtImageUrl,
-  ETC: '',
+  ETC: ''
 };
 
 const CourseInfoCard = ({ course, className }: CourseInfoCardProps) => {
@@ -32,21 +33,37 @@ const CourseInfoCard = ({ course, className }: CourseInfoCardProps) => {
   };
 
   return (
-    <div className={cn('flex justify-between gap-4 bg-white cursor-pointer', className)} onClick={handleClick}>
+    <div
+      className={cn(
+        'flex cursor-pointer justify-between gap-4 bg-white',
+        className
+      )}
+      onClick={handleClick}
+    >
       {courseImageUrl[course.shapeType] ? (
-        <img src={courseImageUrl[course.shapeType]} width='60' height='60' className='rounded-xl' />
+        <img
+          src={courseImageUrl[course.shapeType]}
+          width='60'
+          height='60'
+          className='rounded-xl'
+        />
       ) : (
-        <div className='w-15 h-15 rounded-xl bg-gray-900' />
+        <div className='h-15 w-15 rounded-xl bg-gray-900' />
       )}
 
-      <div className='flex-1 min-w-0 flex flex-col gap-2'>
+      <div className='flex min-w-0 flex-1 flex-col gap-2'>
         <div className='flex items-center justify-between gap-1'>
-          <h3 className='font-semibold text-md truncate'>{course?.name || '코스이름'}</h3>
-          <Button variant='ghost' className='w-6 h-6 p-0'>
-            <Icon name={course.isBookmarked ? 'save_on_solid' : 'save_off_solid'} size={24} />
+          <h3 className='text-md truncate font-semibold'>
+            {course?.name || '코스이름'}
+          </h3>
+          <Button variant='ghost' className='h-6 w-6 p-0'>
+            <Icon
+              name={course.isBookmarked ? 'save_on_solid' : 'save_off_solid'}
+              size={24}
+            />
           </Button>
         </div>
-        <div className='flex items-center gap-1 text-sm overflow-x-auto'>
+        <div className='flex items-center gap-1 overflow-x-auto text-sm'>
           <Badge>Lv. {course?.grade || 1}</Badge>
           <Badge>{course?.envTypeName || '공원'}</Badge>
           <Badge>{((course?.totalDistance || 5000) / 1000).toFixed(0)}km</Badge>

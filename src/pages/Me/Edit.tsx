@@ -1,15 +1,9 @@
 import { useEffect } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
-import { FormProvider, useForm } from 'react-hook-form';
 
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useAuth } from '@/contexts/AuthContext';
 import profileImgUrl from '@/assets/basic_profile.png';
-import { ClearableInput } from '@/components/ui/input-clearable';
-import { api } from '@/lib/api/api';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,9 +13,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-  AlertDialogDescription,
+  AlertDialogDescription
 } from '@/components/ui/alert-dialog';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
+import { ClearableInput } from '@/components/ui/input-clearable';
+import { Label } from '@/components/ui/label';
+import { useAuth } from '@/contexts/AuthContext';
+import { api } from '@/lib/api/api';
 
 type FormValues = { userName: string };
 
@@ -32,19 +32,20 @@ function ProfileEdit() {
 
   const methods = useForm<FormValues>({
     defaultValues: { userName: user?.userName || '' },
-    mode: 'onChange',
+    mode: 'onChange'
   });
 
   const {
     handleSubmit,
     watch,
     reset,
-    formState: { isSubmitting, isValid },
+    formState: { isSubmitting, isValid }
   } = methods;
 
   const userName = watch('userName');
   const isTooLong = (userName?.length ?? 0) > 10;
-  const disableSave = isSubmitting || !userName?.trim() || isTooLong || !isValid;
+  const disableSave =
+    isSubmitting || !userName?.trim() || isTooLong || !isValid;
 
   useEffect(() => {
     if (user?.userName != null) reset({ userName: user.userName });
@@ -62,24 +63,39 @@ function ProfileEdit() {
     }
   };
 
-  const handleImageChange = () => toast.info('이미지 업로드 기능은 준비중입니다');
+  const handleImageChange = () =>
+    toast.info('이미지 업로드 기능은 준비중입니다');
 
   return (
-    <div className='min-h-[calc(100dvh-52px)] flex flex-col overflow-hidden'>
+    <div className='flex min-h-[calc(100dvh-52px)] flex-col overflow-hidden'>
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col flex-1 overflow-hidden'>
-          <div className='flex-1 overflow-auto px-5 py-6 space-y-8'>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className='flex flex-1 flex-col overflow-hidden'
+        >
+          <div className='flex-1 space-y-8 overflow-auto px-5 py-6'>
             <div className='flex justify-center'>
-              <Avatar onClick={handleImageChange} className='w-30 h-30 cursor-pointer'>
+              <Avatar
+                onClick={handleImageChange}
+                className='h-30 w-30 cursor-pointer'
+              >
                 <AvatarImage src={user?.profileUrl || ''} />
                 <AvatarFallback className='bg-primary/10 text-primary text-2xl'>
-                  <img src={profileImgUrl} alt='Profile' width='80' height='80' />
+                  <img
+                    src={profileImgUrl}
+                    alt='Profile'
+                    width='80'
+                    height='80'
+                  />
                 </AvatarFallback>
               </Avatar>
             </div>
 
             <div className='space-y-2'>
-              <Label htmlFor='userName' className='text-xs text-muted-foreground'>
+              <Label
+                htmlFor='userName'
+                className='text-muted-foreground text-xs'
+              >
                 닉네임
               </Label>
 
@@ -96,23 +112,33 @@ function ProfileEdit() {
               />
 
               {isTooLong && (
-                <div className='flex items-center text-error space-x-1'>
-                  <Icon name='warning' size={16} color='currentColor' className='text-error' />
+                <div className='text-error flex items-center space-x-1'>
+                  <Icon
+                    name='warning'
+                    size={16}
+                    color='currentColor'
+                    className='text-error'
+                  />
                   <p className='text-xs'>닉네임은 11자 이상 작성할 수 없어요</p>
                 </div>
               )}
             </div>
           </div>
           {/* TODO: sticky footer */}
-          <div className='p-5 fixed bottom-0 w-full'>
-            <Button type='submit' size='lg' disabled={disableSave} className='w-full'>
+          <div className='fixed bottom-0 w-full p-5'>
+            <Button
+              type='submit'
+              size='lg'
+              disabled={disableSave}
+              className='w-full'
+            >
               저장
             </Button>
           </div>
         </form>
       </FormProvider>
 
-      <div className='text-gray-500 pb-27 pt-6 flex items-center justify-center gap-3 text-sm'>
+      <div className='flex items-center justify-center gap-3 pt-6 pb-27 text-sm text-gray-500'>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant='ghost'>로그아웃</Button>
@@ -136,7 +162,9 @@ function ProfileEdit() {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>정말 계정을 삭제하시겠어요?</AlertDialogTitle>
-              <AlertDialogDescription>계정을 삭제하시면 모든 활동 정보가 삭제돼요</AlertDialogDescription>
+              <AlertDialogDescription>
+                계정을 삭제하시면 모든 활동 정보가 삭제돼요
+              </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>닫기</AlertDialogCancel>
@@ -147,7 +175,7 @@ function ProfileEdit() {
                     '러닝 코스가 도움이 되지 않아서',
                     '커뮤니티 기능이 별로여서',
                     '사용하기 불편해서',
-                    '자주 사용하지 않아서',
+                    '자주 사용하지 않아서'
                   ])
                 }
               >

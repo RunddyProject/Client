@@ -1,12 +1,13 @@
 import { createBrowserRouter } from 'react-router';
+
 import App from '@/App';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import Index from '@/pages/Index';
 import Login from '@/pages/Login';
-import NotFound from '@/pages/NotFound';
-import Me from '@/pages/Me/Index';
-import ProfileEdit from '@/pages/Me/Edit';
 import LoginSuccess from '@/pages/LoginSuccess';
-import ProtectedRoute from '@/components/ProtectedRoute';
+import ProfileEdit from '@/pages/Me/Edit';
+import Me from '@/pages/Me/Index';
+import NotFound from '@/pages/NotFound';
 
 export const router = createBrowserRouter([
   {
@@ -24,10 +25,10 @@ export const router = createBrowserRouter([
               <ProtectedRoute requireAuth={false}>
                 <Login />
               </ProtectedRoute>
-            ),
+            )
           },
-          { path: 'success', element: <LoginSuccess /> },
-        ],
+          { path: 'success', element: <LoginSuccess /> }
+        ]
       },
       {
         path: 'me',
@@ -38,7 +39,7 @@ export const router = createBrowserRouter([
               <ProtectedRoute>
                 <Me />
               </ProtectedRoute>
-            ),
+            )
           },
           {
             path: 'edit',
@@ -46,10 +47,10 @@ export const router = createBrowserRouter([
               <ProtectedRoute>
                 <ProfileEdit />
               </ProtectedRoute>
-            ),
-          },
-        ],
-      },
-    ],
-  },
+            )
+          }
+        ]
+      }
+    ]
+  }
 ]);

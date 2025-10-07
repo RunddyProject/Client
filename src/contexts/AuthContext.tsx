@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+
 import { authService } from '@/lib/auth';
+
 import type { User } from '@/lib/auth';
 
 interface AuthContextType {
@@ -22,7 +24,9 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -68,7 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     logout,
     deleteAccount,
-    refreshAuth,
+    refreshAuth
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

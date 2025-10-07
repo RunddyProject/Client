@@ -1,7 +1,8 @@
 import { useFormContext, useController } from 'react-hook-form';
-import { cn } from '@/lib/utils';
-import { Input } from '@/components/ui/input';
+
 import { Icon } from '@/components/ui/icon';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 type InputWithClearProps = Omit<
   React.ComponentProps<typeof Input>,
@@ -59,7 +60,10 @@ function ClearableInput({
           type='button'
           aria-label='입력 초기화'
           onClick={handleClear}
-          className={cn('absolute inset-y-0 right-2 my-auto h-6 w-6', 'flex items-center justify-center rounded')}
+          className={cn(
+            'absolute inset-y-0 right-2 my-auto h-6 w-6',
+            'flex items-center justify-center rounded'
+          )}
         >
           <Icon name='circle_erase' size={24} />
         </button>

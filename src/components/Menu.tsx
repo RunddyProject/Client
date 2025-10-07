@@ -1,7 +1,15 @@
-import { Link } from 'react-router';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Link } from 'react-router';
+
 import { Icon } from '@/components/ui/icon';
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger
+} from '@/components/ui/sheet';
 import logoImgUrl from '/logo.svg';
 
 interface MenuProps {
@@ -14,8 +22,8 @@ const Menu = ({ titles }: MenuProps) => {
       <SheetTrigger>
         <Icon name='menu' size={24} />
       </SheetTrigger>
-      <SheetContent className='fixed z-[10002] bg-white w-full'>
-        <SheetHeader className='flex items-center justify-between pl-5 pr-2 h-13'>
+      <SheetContent className='fixed z-[10002] w-full bg-white'>
+        <SheetHeader className='flex h-13 items-center justify-between pr-2 pl-5'>
           <VisuallyHidden asChild>
             <SheetTitle>메뉴</SheetTitle>
           </VisuallyHidden>
@@ -29,7 +37,10 @@ const Menu = ({ titles }: MenuProps) => {
           {Object.entries(titles).map(([path, title]) => (
             <li key={path}>
               <SheetClose asChild>
-                <Link to={path} className='p-5 flex items-center justify-between'>
+                <Link
+                  to={path}
+                  className='flex items-center justify-between p-5'
+                >
                   <span>{title}</span>
                   <Icon name='chevron_right' size={24} />
                 </Link>

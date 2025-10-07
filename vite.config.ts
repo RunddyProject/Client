@@ -1,7 +1,8 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
+
+import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
 import svgr from 'vite-plugin-svgr';
 
 // https://vite.dev/config/
@@ -25,22 +26,29 @@ export default defineConfig({
           black: 'var(--icon-secondary, #000)',
           '#000': 'var(--icon-secondary, #000)',
 
-          currentColor: 'var(--icon-primary, currentColor)',
+          currentColor: 'var(--icon-primary, currentColor)'
         },
         svgo: true,
         svgoConfig: {
           plugins: [
             { name: 'removeDimensions', active: true },
             { name: 'removeXMLNS', active: true },
-            { name: 'convertColors', params: { currentColor: false, names2hex: false, shorthex: false } },
-          ],
-        },
-      },
-    }),
+            {
+              name: 'convertColors',
+              params: {
+                currentColor: false,
+                names2hex: false,
+                shorthex: false
+              }
+            }
+          ]
+        }
+      }
+    })
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
+      '@': path.resolve(__dirname, './src')
+    }
+  }
 });

@@ -1,5 +1,7 @@
 import { Navigate } from 'react-router';
+
 import { useAuth } from '@/contexts/AuthContext';
+
 import LoadingSpinner from './LoadingSpinner';
 
 interface ProtectedRouteProps {
@@ -7,7 +9,10 @@ interface ProtectedRouteProps {
   requireAuth?: boolean;
 }
 
-const ProtectedRoute = ({ children, requireAuth = true }: ProtectedRouteProps) => {
+const ProtectedRoute = ({
+  children,
+  requireAuth = true
+}: ProtectedRouteProps) => {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {

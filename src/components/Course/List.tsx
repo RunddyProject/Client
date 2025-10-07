@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Icon } from '@/components/ui/icon';
-import CourseInfoCard from '@/components/Course/InfoCard';
-import CourseDropdownMenu, { type SortType } from '@/components/Course/DropdownMenu';
+import CourseDropdownMenu, {
+  type SortType
+} from '@/components/Course/DropdownMenu';
 import CourseFilter from '@/components/Course/Filter';
+import CourseInfoCard from '@/components/Course/InfoCard';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
+import { Input } from '@/components/ui/input';
 import { useCourses } from '@/hooks/useCourses';
 
 interface CourseListProps {
@@ -24,20 +26,27 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
   };
 
   return (
-    <div className='min-h-screen flex flex-col bg-background px-5 pt-[calc(env(safe-area-inset-top)+52px)]'>
+    <div className='bg-background flex min-h-screen flex-col px-5 pt-[calc(env(safe-area-inset-top)+52px)]'>
       {/* <div className='left-0 right-0 bottom-0 z-10 pointer-events-none flex flex-col top-[calc(env(safe-area-inset-top)+52px)]'> */}
       {/* Search bar */}
-      <div className='pt-[calc(env(safe-area-inset-top)+12px)] pointer-events-auto'>
+      <div className='pointer-events-auto pt-[calc(env(safe-area-inset-top)+12px)]'>
         <div className='relative'>
-          <Icon name='search' size={24} className='absolute left-4 top-1/2 -translate-y-1/2' />
-          <Input placeholder='원하는 지역 검색' className='pl-13 bg-gray-100' />
+          <Icon
+            name='search'
+            size={24}
+            className='absolute top-1/2 left-4 -translate-y-1/2'
+          />
+          <Input placeholder='원하는 지역 검색' className='bg-gray-100 pl-13' />
         </div>
       </div>
 
       <div className='overflow-y-auto'>
         {/* Filter */}
-        <div className='flex items-center gap-3 mt-3'>
-          <CourseDropdownMenu checkedValue={sortBy} onCheckedChange={handleChange} />
+        <div className='mt-3 flex items-center gap-3'>
+          <CourseDropdownMenu
+            checkedValue={sortBy}
+            onCheckedChange={handleChange}
+          />
           <span className='text-gray-200'>|</span>
           <CourseFilter initialCount={courses.length} />
         </div>
@@ -48,15 +57,18 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
             <CourseInfoCard
               key={course.uuid}
               course={course}
-              className='py-5.5 border-b border-b-gray-200 last:border-0'
+              className='border-b border-b-gray-200 py-5.5 last:border-0'
             />
           ))}
         </div>
       </div>
 
       {/* Bottom Button */}
-      <div className='absolute bottom-5 left-1/2 transform -translate-x-1/2'>
-        <Button className='rounded-full px-6 shadow-lg' onClick={onViewModeChange}>
+      <div className='absolute bottom-5 left-1/2 -translate-x-1/2 transform'>
+        <Button
+          className='rounded-full px-6 shadow-lg'
+          onClick={onViewModeChange}
+        >
           <Icon name='map' size={20} color='#E7E9F0' secondary='#272930' />
           지도 보기
         </Button>
