@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Icon } from '@/components/ui/icon';
 import CourseInfoCard from '@/components/Course/InfoCard';
+import CourseDropdownMenu, { type SortType } from '@/components/Course/DropdownMenu';
 import { useCourses } from '@/hooks/useCourses';
 
 interface CourseListProps {
@@ -13,11 +14,16 @@ interface CourseListProps {
 
 const CourseList = ({ onViewModeChange }: CourseListProps) => {
   const { courses } = useCourses();
-  const [sortBy, setSortBy] = useState<'distance' | 'difficulty'>('distance');
+  const [sortBy, setSortBy] = useState<SortType>('distance');
 
   const handleFilter = () => {
     // TODO
     toast('필터 기능은 준비중입니다');
+  };
+
+  const handleChange = (value: SortType) => {
+    // TODO: API
+    setSortBy(value);
   };
 
   return (
@@ -34,17 +40,8 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
       <div className='overflow-y-auto'>
         {/* Filter */}
         <div className='flex items-center gap-3 mt-3'>
-          <Button
-            variant='ghost'
-            className='flex items-center gap-1 px-3 py-2 bg-gray-100 rounded-full'
-            onClick={() => setSortBy(sortBy === 'distance' ? 'difficulty' : 'distance')}
-          >
-            <span className='text-sm'>가까운 순</span>
-            <Icon name='drop_down' size={12} color='currentColor' className='text-gray-600' />
-          </Button>
-
+          <CourseDropdownMenu checkedValue={sortBy} onCheckedChange={handleChange} />
           <span className='text-gray-200'>|</span>
-
           <Button
             variant='ghost'
             className='flex items-center gap-1 px-3 py-2 bg-gray-100 rounded-full'
