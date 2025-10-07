@@ -14,26 +14,35 @@ export default tseslint.config([
       js.configs.recommended,
       tseslint.configs.recommended,
       reactHooks.configs['recommended-latest'],
-      reactRefresh.configs.vite,
+      reactRefresh.configs.vite
     ],
     languageOptions: {
       ecmaVersion: 2020,
-      globals: globals.browser,
+      globals: globals.browser
     },
     plugins: { import: importPlugin },
     rules: {
-      'import/order': ['error', {
-        groups: ['builtin', 'external', 'internal', ['parent','sibling','index'], 'type'],
-        'newlines-between': 'always',
-        alphabetize: { order: 'asc', caseInsensitive: true },
-      }],
+      'import/order': [
+        'error',
+        {
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            ['parent', 'sibling', 'index'],
+            'type'
+          ],
+          'newlines-between': 'always',
+          alphabetize: { order: 'asc', caseInsensitive: true }
+        }
+      ],
 
       '@typescript-eslint/no-unused-vars': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
       'react-refresh/only-export-components': 'warn'
     },
     settings: {
-      'import/resolver': { typescript: { project: './tsconfig.json' } },
-    },
-  },
+      'import/resolver': { typescript: { project: './tsconfig.json' } }
+    }
+  }
 ]);

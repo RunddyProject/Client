@@ -1,13 +1,22 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 
-import profileImgUrl from '@/assets/basic_profile.png';
-import CourseInfoCard from '@/components/Course/InfoCard';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Icon } from '@/components/ui/icon';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useAuth } from '@/contexts/AuthContext';
-import { useCourses } from '@/hooks/useCourses';
+import { useAuth } from '@/app/providers/AuthContext';
+import { useCourses } from '@/features/course/hooks/useCourses';
+import CourseInfoCard from '@/features/course/ui/InfoCard';
+import profileImgUrl from '@/shared/assets/basic_profile.png';
+import { Icon } from '@/shared/icons/icon';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage
+} from '@/shared/ui/primitives/avatar';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
+} from '@/shared/ui/primitives/tabs';
 
 function Me() {
   const { user } = useAuth();

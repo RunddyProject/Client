@@ -3,7 +3,11 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
-import profileImgUrl from '@/assets/basic_profile.png';
+import { useAuth } from '@/app/providers/AuthContext';
+import profileImgUrl from '@/shared/assets/basic_profile.png';
+import { Icon } from '@/shared/icons/icon';
+import { api } from '@/shared/lib/http';
+import { ClearableInput } from '@/shared/ui/composites/input-clearable';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,18 +18,18 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
   AlertDialogDescription
-} from '@/components/ui/alert-dialog';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/ui/icon';
-import { ClearableInput } from '@/components/ui/input-clearable';
-import { Label } from '@/components/ui/label';
-import { useAuth } from '@/contexts/AuthContext';
-import { api } from '@/lib/api/api';
+} from '@/shared/ui/primitives/alert-dialog';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage
+} from '@/shared/ui/primitives/avatar';
+import { Button } from '@/shared/ui/primitives/button';
+import { Label } from '@/shared/ui/primitives/label';
 
 type FormValues = { userName: string };
 
-function ProfileEdit() {
+function MeEdit() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { logout, deleteAccount } = useAuth();
@@ -189,4 +193,4 @@ function ProfileEdit() {
   );
 }
 
-export default ProfileEdit;
+export default MeEdit;
