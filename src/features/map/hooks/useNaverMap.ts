@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 export type LatLng = { lat: number; lng: number };
 
-export function useNaverMap(center: LatLng, zoom: number) {
+export function useNaverMap(center: LatLng, zoom = 12) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<naver.maps.Map | null>(null);
   const polylineRef = useRef<naver.maps.Polyline | null>(null);

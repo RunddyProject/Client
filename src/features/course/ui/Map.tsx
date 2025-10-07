@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useState } from 'react';
 
 import { useCourses } from '@/features/course/hooks/useCourses';
 import CourseFilter from '@/features/course/ui/Filter';
@@ -15,10 +15,7 @@ interface CourseMapProps {
 }
 
 const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<any>(null);
-  const markersRef = useRef<any[]>([]);
-  const { userLocation } = useLocationStore();
+  const { userLocation, isLocationLoading } = useLocationStore();
   const { getCurrentLocation } = useGeolocation();
 
   const { courses } = useCourses(userLocation);
@@ -27,45 +24,10 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
   );
   // const activeCourse = courses.find((c) => c.uuid === activeCourseId) ?? courses[0];
 
-  // Initialize map
-  useEffect(() => {
-    if (!mapRef.current || !window.naver?.maps) return;
-
-    const mapOptions = {
-      center: new window.naver.maps.LatLng(userLocation.lat, userLocation.lng),
-      zoom: 13,
-      zoomControl: false,
-      mapTypeControl: false
-    };
-
-    mapInstanceRef.current = new window.naver.maps.Map(
-      mapRef.current,
-      mapOptions
-    );
-  }, [userLocation]);
-
-  // Add markers
-  useEffect(() => {
-    if (!mapInstanceRef.current || courses.length === 0) return;
-
-    // Clear existing markers
-    markersRef.current.forEach((marker) => marker.setMap(null));
-    markersRef.current = [];
-
-    // Add new markers
-    courses.forEach((course) => {
-      const marker = new window.naver.maps.Marker({
-        position: new window.naver.maps.LatLng(course.lat, course.lng),
-        map: mapInstanceRef.current
-      });
-
-      window.naver.maps.Event.addListener(marker, 'click', () => {
-        setActiveCourseId(course.uuid);
-      });
-
-      markersRef.current.push(marker);
-    });
-  }, [courses, activeCourseId]);
+  // TODO: set userLocation when activeCourseId changes
+  const handleActiveCourseId = (uuid: string) => {
+    setActiveCourseId(uuid);
+  };
 
   return (
     <div className='relative h-[100dvh]'>
@@ -78,7 +40,7 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
           lng: c.lng
         }))}
         focusKey={activeCourseId ?? undefined}
-        onMarkerClick={(id) => setActiveCourseId(id)}
+        onMarkerClick={handleActiveCourseId}
       />
 
       {/* TODO: add button 현재 위치에서 검색 */}
@@ -122,6 +84,7 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
               <Button
                 size='icon'
                 variant='secondary'
+                disabled={isLocationLoading}
                 className='pointer-events-auto h-9.5 w-9.5 rounded-full bg-white shadow-lg'
                 onClick={getCurrentLocation}
               >
