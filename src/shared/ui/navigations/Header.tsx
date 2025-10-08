@@ -8,6 +8,7 @@ import { useHeader } from '@/app/providers/HeaderContext';
 import { authService } from '@/features/auth/api/auth';
 import profileImgUrl from '@/shared/assets/basic_profile.png';
 import { Icon } from '@/shared/icons/icon';
+import { cn } from '@/shared/lib/utils';
 import Menu from '@/shared/ui/navigations/Menu';
 import { Avatar, AvatarFallback } from '@/shared/ui/primitives/avatar';
 import { Button } from '@/shared/ui/primitives/button';
@@ -108,9 +109,10 @@ const Header = () => {
 
   return (
     <header
-      className={
-        isCoursePage ? 'absolute top-0 left-0 z-50 w-full' : 'sticky top-0 z-50'
-      }
+      className={cn(
+        'top-0 z-50 w-full',
+        isCoursePage ? 'absolute left-0' : 'sticky bg-white'
+      )}
     >
       <div className='flex h-13 items-center justify-between px-4'>
         {isHomeHeader ? (
