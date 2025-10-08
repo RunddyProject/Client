@@ -151,7 +151,7 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
         <DialogOverlay className='fixed inset-0 z-[10000]' />
         <DialogContent
           fullWidth
-          className='z-[10001] flex min-h-screen flex-col bg-white'
+          className='z-[10001] flex h-full flex-col bg-white'
         >
           <DialogHeader>
             <DialogTitle>상세 필터</DialogTitle>
@@ -166,7 +166,11 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
             <div className='p-5'>
               <h3 className='mb-5 text-base font-semibold'>난이도</h3>
               <div className='flex gap-2'>
-                <ToggleGroup type='multiple' value={draft.grade}>
+                <ToggleGroup
+                  type='multiple'
+                  value={draft.grade}
+                  className='overflow-x-auto'
+                >
                   {grades
                     .map((grd) => String(grd))
                     .map((grd) => (
@@ -186,7 +190,11 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
             <div className='p-5'>
               <h3 className='mb-5 text-base font-semibold'>러닝 장소</h3>
               <div className='flex flex-wrap gap-2'>
-                <ToggleGroup type='multiple' value={draft.envType}>
+                <ToggleGroup
+                  type='multiple'
+                  value={draft.envType}
+                  className='overflow-x-auto'
+                >
                   {envTypeNames.map((env) => (
                     <ToggleGroupItem
                       key={env}
@@ -219,7 +227,11 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
                 />
               </div>
               <div className='flex flex-wrap gap-2'>
-                <ToggleGroup type='multiple' value={draft.shapeType}>
+                <ToggleGroup
+                  type='multiple'
+                  value={draft.shapeType}
+                  className='overflow-x-auto'
+                >
                   {shapeTypeNames.map((shape) => (
                     <ToggleGroupItem
                       key={shape}

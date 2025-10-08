@@ -9,8 +9,8 @@ export type EnvType =
   | 'URBAN'
   | 'BEACH'
   | 'MOUNTAIN'
-  | 'FOREST'
-  | 'ETC';
+  | 'FOREST';
+// | 'ETC';
 export type EnvTypeName =
   | '공원'
   | '산책로'
@@ -18,10 +18,10 @@ export type EnvTypeName =
   | '도심'
   | '해변'
   | '산'
-  | '숲'
-  | '기타';
-export type ShapeType = 'LOOP' | 'LINEAR' | 'OUT_AND_BACK' | 'ART' | 'ETC';
-export type ShapeTypeName = '순환' | '직선' | '왕복' | '아트' | '기타';
+  | '숲';
+// | '기타';
+export type ShapeType = 'LOOP' | 'LINEAR' | 'OUT_AND_BACK' | 'ART'; // | 'ETC';
+export type ShapeTypeName = '순환' | '직선' | '왕복' | '아트'; // | '기타';
 
 export interface Course {
   uuid: string;

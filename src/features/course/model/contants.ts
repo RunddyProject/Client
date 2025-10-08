@@ -17,8 +17,8 @@ export const ENV_TYPE_TO_NAME: Record<EnvType, EnvTypeName> = {
   URBAN: '도심',
   BEACH: '해변',
   MOUNTAIN: '산',
-  FOREST: '숲',
-  ETC: '기타'
+  FOREST: '숲'
+  // ETC: '기타'
 } as const;
 
 export const ENV_NAME_TO_TYPE: Record<EnvTypeName, EnvType> = {
@@ -28,24 +28,24 @@ export const ENV_NAME_TO_TYPE: Record<EnvTypeName, EnvType> = {
   도심: 'URBAN',
   해변: 'BEACH',
   산: 'MOUNTAIN',
-  숲: 'FOREST',
-  기타: 'ETC'
+  숲: 'FOREST'
+  // 기타: 'ETC'
 } as const;
 
 export const SHAPE_TYPE_TO_NAME: Record<ShapeType, ShapeTypeName> = {
   LOOP: '순환',
   LINEAR: '직선',
   OUT_AND_BACK: '왕복',
-  ART: '아트',
-  ETC: '기타'
+  ART: '아트'
+  // ETC: '기타'
 } as const;
 
 export const SHAPE_NAME_TO_TYPE: Record<ShapeTypeName, ShapeType> = {
   순환: 'LOOP',
   직선: 'LINEAR',
   왕복: 'OUT_AND_BACK',
-  아트: 'ART',
-  기타: 'ETC'
+  아트: 'ART'
+  // 기타: 'ETC'
 } as const;
 
 export const grades = [1, 2, 3];
