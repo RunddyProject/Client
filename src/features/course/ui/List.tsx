@@ -49,7 +49,9 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
             onCheckedChange={handleChange}
           />
           <span className='text-gray-200'>|</span>
-          <CourseFilter />
+          <div className='overflow-x-auto'>
+            <CourseFilter />
+          </div>
         </div>
 
         {/* Course List */}
