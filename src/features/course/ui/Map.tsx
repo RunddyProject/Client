@@ -65,8 +65,8 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
         </div>
 
         {/* Filter */}
-        <div className='mt-3 px-5'>
-          <CourseFilter initialCount={courses.length} />
+        <div className='mt-3 overflow-x-auto px-5'>
+          <CourseFilter />
         </div>
 
         {/* Bottom */}

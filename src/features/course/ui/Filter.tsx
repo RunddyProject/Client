@@ -6,7 +6,9 @@ import {
   envTypeNames,
   shapeTypeNames
 } from '@/features/course/model/contants';
+import { useFilterStore } from '@/features/course/model/filter.store';
 import { Icon } from '@/shared/icons/icon';
+import { deepEqual } from '@/shared/lib/utils';
 import Tooltip from '@/shared/ui/composites/tooltip';
 import { Button } from '@/shared/ui/primitives/button';
 import {
@@ -36,10 +38,6 @@ interface FilterState {
   elevationRange: Tuple2; // [min, max]
 }
 
-interface CourseFilterProps {
-  initialCount: number;
-}
-
 const DEFAULTS: FilterState = {
   grade: [],
   envType: [],
@@ -48,104 +46,129 @@ const DEFAULTS: FilterState = {
   elevationRange: [0, 1000]
 };
 
-const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
-  const [applied, setApplied] = useState<FilterState>(DEFAULTS);
-  const [draft, setDraft] = useState<FilterState>(DEFAULTS);
+const FilterChipsBar = () => {
+  const {
+    applied,
+    removeGrade,
+    removeEnvType,
+    removeShapeType,
+    resetDistanceRange,
+    resetElevationRange
+  } = useFilterStore();
+
+  const isSameRange = (a: [number, number], b: [number, number]) =>
+    a[0] === b[0] && a[1] === b[1];
+
+  const Chip = ({
+    children,
+    onClick
+  }: {
+    children: React.ReactNode;
+    onClick: () => void;
+  }) => (
+    <Button
+      aria-label='remove'
+      onClick={onClick}
+      className='pointer-events-auto flex h-8.5 items-center gap-1 rounded-full bg-gray-900 px-3 py-2'
+    >
+      <span className='text-sm'>{children}</span>
+      <Icon
+        name='close'
+        size={14}
+        color='currentColor'
+        className='text-gray-200'
+      />
+    </Button>
+  );
+
+  return (
+    <div className='flex items-center gap-2'>
+      {applied.grade.map((g) => (
+        <Chip key={`grade-${g}`} onClick={() => removeGrade(g)}>
+          Lv. {g}
+        </Chip>
+      ))}
+
+      {applied.envType.map((env) => (
+        <Chip key={`env-${env}`} onClick={() => removeEnvType(env)}>
+          {env}
+        </Chip>
+      ))}
+
+      {applied.shapeType.map((shape) => (
+        <Chip key={`shape-${shape}`} onClick={() => removeShapeType(shape)}>
+          {shape}
+        </Chip>
+      ))}
+
+      {!isSameRange(applied.distanceRange, DEFAULTS.distanceRange) && (
+        <Chip onClick={resetDistanceRange}>
+          {applied.distanceRange[0]}–{applied.distanceRange[1]}km
+        </Chip>
+      )}
+
+      {!isSameRange(applied.elevationRange, DEFAULTS.elevationRange) && (
+        <Chip onClick={resetElevationRange}>
+          {applied.elevationRange[0]}–{applied.elevationRange[1]}m
+        </Chip>
+      )}
+    </div>
+  );
+};
+
+const CourseFilter = () => {
   const [open, setOpen] = useState(false);
-  const [count, setCount] = useState(initialCount);
 
-  // ----- helpers -----
-  const toggleInArray = (arr: string[], value: string) =>
-    arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value];
+  const {
+    applied,
+    draft,
+    count,
+    toggleGrade,
+    toggleEnvType,
+    toggleShapeType,
+    setDistanceRange,
+    setElevationRange,
+    resetDraft,
+    loadDraftFromApplied,
+    apply
+  } = useFilterStore();
 
-  // change only draft
-  const toggleGrade = (grd: string) => {
-    setDraft((prev) => {
-      const next = { ...prev, grade: toggleInArray(prev.grade, grd) };
-      handlePreviewCount(next);
-      return next;
-    });
-  };
-
-  const toggleEnvType = (env: string) => {
-    setDraft((prev) => {
-      const next = { ...prev, envType: toggleInArray(prev.envType, env) };
-      handlePreviewCount(next);
-      return next;
-    });
-  };
-
-  const toggleShapeType = (shape: string) => {
-    setDraft((prev) => {
-      const next = { ...prev, shapeType: toggleInArray(prev.shapeType, shape) };
-      handlePreviewCount(next);
-      return next;
-    });
-  };
-
-  const handleChangeDistanceRange = (range: number[]) => {
-    const r: Tuple2 = [range[0], range[1]];
-    setDraft((prev) => {
-      const next = { ...prev, distanceRange: r };
-      handlePreviewCount(next);
-      return next;
-    });
-  };
-
-  const handleChangeElevationRange = (range: number[]) => {
-    const r: Tuple2 = [range[0], range[1]];
-    setDraft((prev) => {
-      const next = { ...prev, elevationRange: r };
-      handlePreviewCount(next);
-      return next;
-    });
-  };
-
-  const handleReset = () => {
-    setDraft(DEFAULTS);
-    handlePreviewCount(DEFAULTS);
-  };
-
-  const handlePreviewCount = (f: FilterState) => {
-    // TODO: GET /course/count
-    // mock data
-    const base = 10;
-    const penalty =
-      f.grade.length +
-      f.envType.length +
-      f.shapeType.length +
-      Math.round((f.distanceRange[0] + f.distanceRange[1]) / 40) +
-      Math.round((f.elevationRange[0] + f.elevationRange[1]) / 1000);
-    const coursesCount = Math.max(0, base - penalty);
-    setCount(coursesCount);
+  const handleOpenChange = (next: boolean) => {
+    setOpen(next);
+    if (next) loadDraftFromApplied();
   };
 
   const handleSubmit = () => {
-    setApplied(draft);
+    apply();
     toast('필터 기능은 준비중입니다');
-    // TODO: GET /course using draft(applied)
-    // e.g. onChange?.(draft) or liftup
-  };
-
-  const handleOpenChange = (nextOpen: boolean) => {
-    setOpen(nextOpen);
-    if (nextOpen) {
-      setDraft(applied);
-      handlePreviewCount(applied);
-    }
   };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button
-          size='icon'
-          variant='secondary'
-          className='pointer-events-auto flex h-8.5 w-fit items-center gap-1 rounded-full px-3'
-        >
-          <Icon name='filter' size={18} /> <span>필터</span>
-        </Button>
-      </DialogTrigger>
+      <div className='flex items-center gap-2'>
+        <DialogTrigger asChild>
+          {deepEqual(applied, DEFAULTS) ? (
+            <Button
+              size='icon'
+              variant='secondary'
+              className='pointer-events-auto flex h-8.5 w-fit items-center gap-1 rounded-full px-3'
+            >
+              <Icon name='filter' size={18} />
+              <span>필터</span>
+            </Button>
+          ) : (
+            <Button
+              size='icon'
+              variant='secondary'
+              className='pointer-events-auto flex h-8.5 w-fit items-center gap-1 rounded-full px-3'
+            >
+              <Icon name='filter' size={18} />
+            </Button>
+          )}
+        </DialogTrigger>
+
+        {!open && !deepEqual(applied, DEFAULTS) && <FilterChipsBar />}
+      </div>
 
       <DialogPortal>
         <DialogOverlay className='fixed inset-0 z-[10000]' />
@@ -255,7 +278,7 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
               </div>
               <Slider
                 value={draft.distanceRange}
-                onValueChange={handleChangeDistanceRange}
+                onValueChange={setDistanceRange}
                 min={0}
                 max={40}
                 step={1}
@@ -277,7 +300,7 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
               </div>
               <Slider
                 value={draft.elevationRange}
-                onValueChange={handleChangeElevationRange}
+                onValueChange={setElevationRange}
                 min={0}
                 max={1000}
                 step={10}
@@ -296,7 +319,7 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
               variant='secondary'
               size='lg'
               className='flex-1'
-              onClick={handleReset}
+              onClick={resetDraft}
             >
               초기화
             </Button>

@@ -15,6 +15,7 @@ interface CourseListProps {
   onViewModeChange: () => void;
 }
 
+// TODO: revalidate courses when CourseMap courses change
 const CourseList = ({ onViewModeChange }: CourseListProps) => {
   const { courses } = useCourses();
   const [sortBy, setSortBy] = useState<SortType>('distance');
@@ -48,7 +49,7 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
             onCheckedChange={handleChange}
           />
           <span className='text-gray-200'>|</span>
-          <CourseFilter initialCount={courses.length} />
+          <CourseFilter />
         </div>
 
         {/* Course List */}
