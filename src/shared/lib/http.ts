@@ -1,7 +1,10 @@
 import { authService } from '../../features/auth/api/auth';
 
+type ResponseType = 'json' | 'text' | 'blob' | 'arrayBuffer';
+
 interface ApiRequestOptions extends RequestInit {
   requiresAuth?: boolean;
+  responseType?: ResponseType;
 }
 
 // Fetch wrapper that automatically adds JWT token to headers
@@ -9,7 +12,12 @@ export async function apiRequest<T = any>(
   endpoint: string,
   options: ApiRequestOptions = {}
 ): Promise<T> {
-  const { requiresAuth = true, headers = {}, ...restOptions } = options;
+  const {
+    requiresAuth = true,
+    headers = {},
+    responseType = 'json',
+    ...restOptions
+  } = options;
 
   const config: RequestInit = {
     ...restOptions,
@@ -45,6 +53,26 @@ export async function apiRequest<T = any>(
   if (response.status === 204 || response.status === 205) {
     return null as T;
   }
+
+  if (responseType === 'blob') {
+    const blob = await response.blob();
+    const filename = getFilenameFromContentDisposition(
+      response.headers.get('content-disposition')
+    );
+    return { blob, filename } as T;
+  }
+
+  if (responseType === 'arrayBuffer') {
+    const buffer = await response.arrayBuffer();
+    return buffer as T;
+  }
+
+  if (responseType === 'text') {
+    const text = await response.text();
+    return (text || null) as T;
+  }
+
+  // default: json
   const raw = await response.text();
   if (!raw) {
     return null as T;
@@ -87,5 +115,37 @@ export const api = {
       ...options,
       method: 'PATCH',
       body: data ? JSON.stringify(data) : undefined
-    })
+    }),
+
+  getBlob: (endpoint: string, options?: ApiRequestOptions) =>
+    apiRequest<{ blob: Blob; filename?: string }>(endpoint, {
+      ...options,
+      method: 'GET',
+      responseType: 'blob'
+    }),
+
+  download: async (
+    endpoint: string,
+    opts?: ApiRequestOptions & { fallbackName?: string }
+  ) => {
+    const { fallbackName, ...options } = opts || {};
+    const { blob, filename } = await api.getBlob(endpoint, options);
+    const finalName = filename || fallbackName || 'download';
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = finalName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
 };
+
+function getFilenameFromContentDisposition(cd?: string | null) {
+  if (!cd) return undefined;
+  const star = /filename\*\s*=\s*([^'"]*)''([^;]+)/i.exec(cd);
+  if (star?.[2]) return decodeURIComponent(star[2]);
+  const normal = /filename\s*=\s*"?([^";]+)"?/i.exec(cd);
+  return normal?.[1];
+}
