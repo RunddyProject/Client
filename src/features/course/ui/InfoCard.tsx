@@ -1,5 +1,4 @@
-// import { useNavigate } from 'react-router';
-import { toast } from 'sonner';
+import { useNavigate } from 'react-router';
 
 import CourseArtImageUrl from '@/shared/assets/course_art.png';
 import CourseLinearImageUrl from '@/shared/assets/course_linear.png';
@@ -26,11 +25,10 @@ const courseImageUrl = {
 };
 
 const CourseInfoCard = ({ course, className }: CourseInfoCardProps) => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleClick = () => {
-    // navigate(`/course/${course.uuid}`)
-    toast('코스 상세 기능은 준비중입니다');
+    navigate(`/course/${course.uuid}`);
   };
 
   return (

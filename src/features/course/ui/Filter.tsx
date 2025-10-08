@@ -7,6 +7,7 @@ import {
   shapeTypeNames
 } from '@/features/course/model/contants';
 import { Icon } from '@/shared/icons/icon';
+import Tooltip from '@/shared/ui/composites/tooltip';
 import { Button } from '@/shared/ui/primitives/button';
 import {
   Dialog,
@@ -201,7 +202,22 @@ const CourseFilter = ({ initialCount = 0 }: CourseFilterProps) => {
             </div>
 
             <div className='p-5'>
-              <h3 className='mb-5 text-base font-semibold'>코스 모양</h3>
+              <div className='mb-5 flex items-center gap-1'>
+                <h3 className='text-base font-semibold'>코스 모양</h3>
+                <Tooltip
+                  title={'코스 모양에 대해 설명해 드릴게요'}
+                  body={
+                    <ul className='list-disc space-y-1 pl-4 marker:text-white/70'>
+                      <li>순환코스: 출발한 곳으로 돌아오는 원형 코스</li>
+                      <li>
+                        직선코스: 한방향으로 쭉 달리는 형태(출발, 도착 다름)
+                      </li>
+                      <li>왕복코스: 같은 길을 따라 갔다가 되돌아오는 코스</li>
+                      <li>아트코스: 러닝 루트가 그림처럼 그려지는 코스</li>
+                    </ul>
+                  }
+                />
+              </div>
               <div className='flex flex-wrap gap-2'>
                 <ToggleGroup type='multiple' value={draft.shapeType}>
                   {shapeTypeNames.map((shape) => (

@@ -33,6 +33,7 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
     <div className='relative h-[100dvh]'>
       <NaverMap
         className='absolute inset-0'
+        glassTopOverlay
         center={userLocation}
         markers={courses.map((c) => ({
           id: c.uuid,

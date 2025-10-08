@@ -2,7 +2,8 @@ import { createBrowserRouter } from 'react-router';
 
 import App from '@/app/App';
 import ProtectedRoute from '@/app/routing/ProtectedRoute';
-import Home from '@/pages/home';
+import CourseDetail from '@/pages/course/detail';
+import Course from '@/pages/course/index';
 import Login from '@/pages/login/index';
 import LoginSuccess from '@/pages/login/success';
 import MeEdit from '@/pages/me/edit';
@@ -26,14 +27,19 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Home />
+        element: <Course />
       },
       {
         path: 'course',
         children: [
           {
             index: true,
-            element: <Home />
+            element: <Course />
+          },
+          {
+            path: ':uuid',
+            element: <CourseDetail />,
+            handle: { header: { title: '코스 정보' } }
           }
         ]
       },

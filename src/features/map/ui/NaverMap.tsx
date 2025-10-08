@@ -20,7 +20,7 @@ const DEFAULT_CENTER = { lat: 37.575959, lng: 126.97679 };
 
 export function NaverMap({
   className,
-  glassTopOverlay = true,
+  glassTopOverlay = false,
   center = DEFAULT_CENTER,
   zoom = 12,
   gpxData,

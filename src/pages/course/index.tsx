@@ -3,7 +3,7 @@ import { useState } from 'react';
 import CourseList from '@/features/course/ui/List';
 import CourseMap from '@/features/course/ui/Map';
 
-function Home() {
+function Course() {
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
 
   return (
@@ -17,4 +17,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Course;

@@ -1,6 +1,6 @@
 import { api } from '@/shared/lib/http';
 
-import type { CoursesResponse } from '@/features/course/model/types';
+import type { Course, CoursesResponse } from '@/features/course/model/types';
 
 export const CoursesApi = {
   getCourses: async (
@@ -15,6 +15,21 @@ export const CoursesApi = {
       dist: String(dist)
     });
     return api.get<CoursesResponse>(`/course?${params.toString()}`, {
+      requiresAuth: false
+    });
+  },
+  getCourseDetail: async (uuid: Course['uuid']): Promise<void> => {
+    // api.get<CoursesResponse>(`/course/${id}`, {
+    //   requiresAuth: false
+    // })
+    setTimeout(() => {
+      console.log('id>>>', uuid);
+    }, 500);
+  },
+  getCourseGpx: async (uuid: Course['uuid']): Promise<void> => {
+    return api.download(`/course/${uuid}/gpx`, {
+      headers: { Accept: 'application/gpx+xml' },
+      fallbackName: 'route.gpx',
       requiresAuth: false
     });
   }
