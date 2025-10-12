@@ -1,16 +1,19 @@
 import { useEffect, type RefObject } from 'react';
 
-import type { Point } from 'gpxparser';
-import type GPXParser from 'gpxparser';
+import { runddyColor } from '@/shared/model/constants';
+
+import type { CoursePoint } from '@/features/course/model/types';
+import type { RUNDDY_COLOR } from '@/shared/model/types';
 
 export function useGpxPolyline(
   mapRef: RefObject<naver.maps.Map | null>,
   polylineRef: RefObject<naver.maps.Polyline | null>,
-  gpxData?: GPXParser
+  points?: CoursePoint[],
+  color?: RUNDDY_COLOR
 ) {
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !gpxData) return;
+    if (!map || !points) return;
 
     const _polylineRef = polylineRef;
 
@@ -20,15 +23,15 @@ export function useGpxPolyline(
     }
 
     const path =
-      gpxData.tracks[0]?.points?.map(
-        (p: Point) => new window.naver.maps.LatLng(p.lat, p.lon)
+      points?.map(
+        (p: CoursePoint) => new window.naver.maps.LatLng(p.lat, p.lng)
       ) ?? [];
 
     if (path.length === 0) return;
 
     _polylineRef.current = new window.naver.maps.Polyline({
       path,
-      strokeColor: 'hsl(var(--primary))',
+      strokeColor: runddyColor[color ?? 'blue'],
       strokeWeight: 4,
       strokeOpacity: 0.9,
       map
@@ -48,5 +51,5 @@ export function useGpxPolyline(
         _polylineRef.current = null;
       }
     };
-  }, [gpxData, mapRef, polylineRef]);
+  }, [points, mapRef, polylineRef]);
 }

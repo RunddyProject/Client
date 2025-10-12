@@ -1,14 +1,23 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
 
+import { useCoursePoint } from '@/features/course/hooks/useCoursePoint';
 import { useCourses } from '@/features/course/hooks/useCourses';
+import { SHAPE_TYPE_COLOR } from '@/features/course/model/contants';
 import CourseFilter from '@/features/course/ui/Filter';
 import CourseInfoCard from '@/features/course/ui/InfoCard';
 import { useGeolocation } from '@/features/map/hooks/useGeolocation';
 import { useLocationStore } from '@/features/map/model/location.store';
 import { NaverMap } from '@/features/map/ui/NaverMap';
+import { useCenteredActiveByScroll } from '@/shared/hooks/useCenteredActiveByScroll';
+import { useScrollItemToCenter } from '@/shared/hooks/useScrollItemToCenter';
 import { Icon } from '@/shared/icons/icon';
+import { runddyColor } from '@/shared/model/constants';
 import { Button } from '@/shared/ui/primitives/button';
 import { Input } from '@/shared/ui/primitives/input';
+
+import type { Course } from '@/features/course/model/types';
+import type { MarkerInput } from '@/features/map/model/types';
+import type { RUNDDY_COLOR } from '@/shared/model/types';
 
 interface CourseMapProps {
   onViewModeChange: () => void;
@@ -19,15 +28,41 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
   const { getCurrentLocation } = useGeolocation();
 
   const { courses } = useCourses(userLocation);
-  const [activeCourseId, setActiveCourseId] = useState<string | null>(
-    courses[0]?.uuid ?? null
+  const [activeCourseId, setActiveCourseId] = useState<string>(
+    courses[0]?.uuid ?? ''
   );
-  // const activeCourse = courses.find((c) => c.uuid === activeCourseId) ?? courses[0];
+  const { coursePointList } = useCoursePoint(activeCourseId);
+  const activeCourse =
+    courses.find((c) => c.uuid === activeCourseId) ?? courses[0];
+  const activeColor: RUNDDY_COLOR = activeCourse
+    ? SHAPE_TYPE_COLOR[activeCourse.shapeType]
+    : runddyColor['blue'];
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const scrollToCenter = useScrollItemToCenter(
+    scrollerRef as RefObject<HTMLElement>,
+    'uuid'
+  );
 
-  // TODO: set userLocation when activeCourseId changes
-  const handleActiveCourseId = (uuid: string) => {
+  const handleActiveCourseId = (uuid: Course['uuid']) => {
     setActiveCourseId(uuid);
   };
+
+  const handleMarkerClick = (uuid: Course['uuid']) => {
+    handleActiveCourseId(uuid);
+    requestAnimationFrame(() => scrollToCenter(uuid));
+  };
+
+  useCenteredActiveByScroll({
+    container: scrollerRef as RefObject<HTMLElement>,
+    itemAttr: 'uuid',
+    onChange: handleActiveCourseId
+  });
+
+  useEffect(() => {
+    if (courses.length > 0) {
+      setActiveCourseId(courses[0].uuid);
+    }
+  }, [courses]);
 
   return (
     <div className='relative h-[100dvh]'>
@@ -35,13 +70,29 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
         className='absolute inset-0'
         glassTopOverlay
         center={userLocation}
-        markers={courses.map((c) => ({
-          id: c.uuid,
-          lat: c.lat,
-          lng: c.lng
-        }))}
+        points={coursePointList}
+        color={activeColor}
+        markers={courses.flatMap((c) => {
+          const start: MarkerInput = {
+            id: c.uuid,
+            lat: c.lat,
+            lng: c.lng,
+            kind: 'start'
+          };
+          const endPoint = coursePointList[coursePointList.length - 1];
+          if (c.uuid === activeCourseId && endPoint?.lat && endPoint?.lng) {
+            const end: MarkerInput = {
+              id: `${c.uuid}__end`,
+              lat: endPoint.lat,
+              lng: endPoint.lng,
+              kind: 'end'
+            };
+            return [start, end];
+          }
+          return [start];
+        })}
         focusKey={activeCourseId ?? undefined}
-        onMarkerClick={handleActiveCourseId}
+        onMarkerClick={handleMarkerClick}
       />
 
       {/* TODO: add button 현재 위치에서 검색 */}
@@ -137,6 +188,7 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
 
         {courses.length > 1 && (
           <div
+            ref={scrollerRef}
             className='no-scrollbar pointer-events-auto flex touch-pan-x snap-x snap-mandatory [scroll-padding-right:16px] [scroll-padding-left:16px] gap-4 overflow-x-auto [overscroll-behavior-x:contain] px-4 pb-5'
             onPointerDown={(e) => e.stopPropagation()}
             onPointerMove={(e) => e.stopPropagation()}
@@ -147,7 +199,8 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
             {courses.map((course) => (
               <div
                 key={course.uuid}
-                className='w-[85%] max-w-[420px] shrink-0 snap-start'
+                data-uuid={course.uuid}
+                className='w-[85%] max-w-[420px] shrink-0 snap-center'
               >
                 <CourseInfoCard
                   course={course}

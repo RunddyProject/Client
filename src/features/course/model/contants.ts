@@ -4,6 +4,7 @@ import type {
   ShapeType,
   ShapeTypeName
 } from '@/features/course/model/types';
+import type { RUNDDY_COLOR } from '@/shared/model/types';
 
 export const DEFAULT_CENTER = {
   lat: 37.575959,
@@ -47,6 +48,13 @@ export const SHAPE_NAME_TO_TYPE: Record<ShapeTypeName, ShapeType> = {
   아트: 'ART'
   // 기타: 'ETC'
 } as const;
+
+export const SHAPE_TYPE_COLOR: Record<ShapeType, RUNDDY_COLOR> = {
+  LOOP: 'blue',
+  LINEAR: 'green',
+  OUT_AND_BACK: 'orange',
+  ART: 'pink'
+};
 
 export const grades = [1, 2, 3];
 export const envTypeNames = Object.keys(ENV_NAME_TO_TYPE) as EnvTypeName[];

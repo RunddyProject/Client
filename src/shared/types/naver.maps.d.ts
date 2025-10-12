@@ -8,17 +8,23 @@ declare global {
         lng(): number;
       }
 
+      class LatLngBounds {
+        constructor(sw?: LatLng, ne?: LatLng);
+        extend(latlng: LatLng): void;
+        getNE(): LatLng;
+        getSW(): LatLng;
+      }
+
       class Point {
         constructor(x: number, y: number);
         x(): number;
         y(): number;
       }
 
-      class LatLngBounds {
-        constructor(sw?: LatLng, ne?: LatLng);
-        extend(latlng: LatLng): void;
-        getNE(): LatLng;
-        getSW(): LatLng;
+      class Size {
+        constructor(width: number, height: number);
+        width(): number;
+        height(): number;
       }
 
       /* ========== Enums ========== */
@@ -106,7 +112,9 @@ declare global {
         position: LatLng;
         map?: Map;
         title?: string;
-        icon?: string | { url?: string; content?: string; anchor?: Point };
+        icon?:
+          | string
+          | { url?: string; content?: string; anchor?: Point; size?: Size }; // ImageIcon
         draggable?: boolean;
         visible?: boolean;
         zIndex?: number;

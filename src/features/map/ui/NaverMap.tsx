@@ -1,18 +1,21 @@
 import { useFocusPan } from '@/features/map/hooks/useFocusPan';
 import { useGpxPolyline } from '@/features/map/hooks/useGpxPolyline';
-import { useMarkers, type MarkerInput } from '@/features/map/hooks/useMarkers';
+import { useMarkers } from '@/features/map/hooks/useMarkers';
 import { useNaverMap } from '@/features/map/hooks/useNaverMap';
 
-import type GPXParser from 'gpxparser';
+import type { Course, CoursePoint } from '@/features/course/model/types';
+import type { MarkerInput } from '@/features/map/model/types';
+import type { RUNDDY_COLOR } from '@/shared/model/types';
 
 type Props = {
   className?: string;
   glassTopOverlay?: boolean;
   center?: { lat: number; lng: number };
   zoom?: number;
-  gpxData?: GPXParser;
+  points?: CoursePoint[];
+  color?: RUNDDY_COLOR;
   markers?: MarkerInput[];
-  focusKey?: string;
+  focusKey?: Course['uuid'];
   onMarkerClick?: (id: string) => void;
 };
 
@@ -23,7 +26,8 @@ export function NaverMap({
   glassTopOverlay = false,
   center = DEFAULT_CENTER,
   zoom = 12,
-  gpxData,
+  points,
+  color,
   markers = [],
   focusKey,
   onMarkerClick
@@ -31,8 +35,11 @@ export function NaverMap({
   const { mapRef, map, markerMapRef, markerListenersRef, polylineRef } =
     useNaverMap(center, zoom);
 
-  useGpxPolyline(map, polylineRef, gpxData);
-  useMarkers(map, markerMapRef, markerListenersRef, markers, onMarkerClick);
+  useGpxPolyline(map, polylineRef, points, color);
+  useMarkers(map, markerMapRef, markerListenersRef, markers, onMarkerClick, {
+    focusKey,
+    focusColor: color
+  });
   useFocusPan(map, markerMapRef, focusKey, 60);
 
   return (
