@@ -39,6 +39,29 @@ export interface Course {
   isBookmarked?: boolean;
 }
 
+export interface CoursePoint {
+  pointSeq: number;
+  lat: number;
+  lng: number;
+  ele: number;
+}
+
+export interface CourseDetail extends Course, CoursePoint {
+  startAddress: string;
+  endAddress: string;
+  elevationGain: number;
+  elevationLoss: number;
+  recommendCount: number;
+}
+
 export interface CoursesResponse {
   courseList: Course[];
+}
+
+export interface CoursePointResponse {
+  minLat: number;
+  minLng: number;
+  maxLat: number;
+  maxLng: number;
+  coursePointList: CoursePoint[];
 }
