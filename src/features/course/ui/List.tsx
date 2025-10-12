@@ -67,7 +67,7 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
       </div>
 
       {/* Bottom Button */}
-      <div className='absolute bottom-5 left-1/2 -translate-x-1/2 transform'>
+      <div className='fixed bottom-5 left-1/2 z-50 -translate-x-1/2 transform'>
         <Button
           className='rounded-full px-6 shadow-lg'
           onClick={onViewModeChange}
