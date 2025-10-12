@@ -46,7 +46,7 @@ export interface CoursePoint {
   ele: number;
 }
 
-export interface CourseDetail extends Course, CoursePoint {
+export interface CourseDetail extends Course, CoursePointResponse {
   startAddress: string;
   endAddress: string;
   elevationGain: number;

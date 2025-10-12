@@ -1,59 +1,45 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 
 import { CoursesApi } from '@/features/course/api/course.api';
-import { useCourses } from '@/features/course/hooks/useCourses';
+import { useCourseDetail } from '@/features/course/hooks/useCourseDetail';
+import { useCoursePoint } from '@/features/course/hooks/useCoursePoint';
+import { SHAPE_TYPE_COLOR } from '@/features/course/model/contants';
 import { NaverMap } from '@/features/map/ui/NaverMap';
 import { Icon } from '@/shared/icons/icon';
+import { runddyColor } from '@/shared/model/constants';
 import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
 import Tooltip from '@/shared/ui/composites/tooltip';
 import { Button } from '@/shared/ui/primitives/button';
 
 import type { Course } from '@/features/course/model/types';
+import type { MarkerInput } from '@/features/map/model/types';
+import type { RUNDDY_COLOR } from '@/shared/model/types';
 
 const CourseDetail = () => {
   const { uuid } = useParams<{ uuid: Course['uuid'] }>();
   const navigate = useNavigate();
-  const { courses } = useCourses();
-  const course = courses.find((c) => c.uuid === uuid) ?? null;
-  const mockCourse = {
-    ...course,
-    elevationAsc: 30,
-    elevationDesc: 20,
-    startName: '서울 용산구 대사관로34길 12 1, 2층',
-    endName: '서울시 중랑구',
-    recommendedCount: 20
-  };
+  const { courseDetail: course } = useCourseDetail(uuid ?? '');
+  const { coursePointList } = useCoursePoint(uuid ?? '');
 
   const [isCopying, setIsCopying] = useState<Record<string, boolean>>({});
 
-  useEffect(() => {
-    const fetchCourse = async () => {
-      if (!uuid) return;
-
-      try {
-        // const detail = await CoursesApi.getCourseDetail(uuid);
-        // setCourse(detail);
-      } catch (error) {
-        console.error('Failed to fetch course detail:', error);
-        toast.error('코스 불러오기 실패');
-        navigate('/');
-      }
-    };
-
-    fetchCourse();
-  }, [uuid, navigate]);
+  if (!course) {
+    toast.error('코스 불러오기 실패');
+    navigate('/');
+    return null;
+  }
 
   const handleClickBookmark = () => {
     toast('북마크 기능은 준비중입니다.');
     // TODO: API
   };
 
-  const handleClickCopy = (text: 'startName' | 'endName') => {
+  const handleClickCopy = (text: 'startAddress' | 'endAddress') => {
     setIsCopying({ ...isCopying, [text]: true });
 
-    navigator.clipboard.writeText(mockCourse[text]);
+    navigator.clipboard.writeText(course[text]);
     toast('주소가 복사되었습니다.');
 
     setTimeout(() => {
@@ -76,6 +62,24 @@ const CourseDetail = () => {
     return <LoadingSpinner />;
   }
 
+  const activeColor: RUNDDY_COLOR = course
+    ? SHAPE_TYPE_COLOR[course.shapeType]
+    : runddyColor['blue'];
+  const startPoint = coursePointList[0];
+  const startMarker: MarkerInput = {
+    id: course.uuid,
+    lat: startPoint.lat,
+    lng: startPoint.lng,
+    kind: 'start'
+  };
+  const endPoint = coursePointList[coursePointList.length - 1];
+  const endMarker: MarkerInput = {
+    id: `${course.uuid}__end`,
+    lat: endPoint?.lat,
+    lng: endPoint?.lng,
+    kind: 'end'
+  };
+
   return (
     <div className='bg-background flex min-h-screen flex-col'>
       {/* Header */}
@@ -84,6 +88,10 @@ const CourseDetail = () => {
         <div className='h-78 px-5 pt-3'>
           <NaverMap
             center={{ lat: course.lat, lng: course.lng }}
+            points={coursePointList}
+            markers={[startMarker, endMarker]}
+            focusKey={course.uuid}
+            color={activeColor}
             className='h-full w-full rounded-xl'
           />
         </div>
@@ -151,15 +159,11 @@ const CourseDetail = () => {
           <div className='grid grid-cols-2'>
             <div className='flex items-center gap-2'>
               <span className='text-text-tertiary text-sm'>상승 고도</span>
-              <span className='text-lg font-bold'>
-                {mockCourse.elevationAsc}m
-              </span>
+              <span className='text-lg font-bold'>{course.elevationGain}m</span>
             </div>
             <div className='flex items-center gap-2'>
               <span className='text-text-tertiary text-sm'>하강 고도</span>
-              <span className='text-lg font-bold'>
-                {mockCourse.elevationDesc}m
-              </span>
+              <span className='text-lg font-bold'>{course.elevationLoss}m</span>
             </div>
           </div>
         </div>
@@ -175,12 +179,12 @@ const CourseDetail = () => {
                 color='currentColor'
                 className='flex-shrink-0 text-gray-800'
               />
-              <span className='truncate'>{mockCourse.startName}</span>
-              {!isCopying['startName'] ? (
+              <span className='truncate'>{course.startAddress}</span>
+              {!isCopying['startAddress'] ? (
                 <Button
                   variant='ghost'
                   className='h-5 justify-start p-0'
-                  onClick={() => handleClickCopy('startName')}
+                  onClick={() => handleClickCopy('startAddress')}
                 >
                   <span className='text-blue text-sm'>복사</span>
                 </Button>
@@ -198,12 +202,12 @@ const CourseDetail = () => {
                 color='currentColor'
                 className='flex-shrink-0 text-gray-800'
               />
-              <span className='truncate'>{mockCourse.endName}</span>
-              {!isCopying['endName'] ? (
+              <span className='truncate'>{course.endAddress}</span>
+              {!isCopying['endAddress'] ? (
                 <Button
                   variant='ghost'
                   className='h-5 p-0'
-                  onClick={() => handleClickCopy('endName')}
+                  onClick={() => handleClickCopy('endAddress')}
                 >
                   <span className='text-blue text-sm'>복사</span>
                 </Button>
@@ -227,7 +231,7 @@ const CourseDetail = () => {
               <Icon name='heart_off' size={24}></Icon>
               <div className='flex items-center gap-1'>
                 <span>추천</span>
-                <span className='text-sm'>{mockCourse.recommendedCount}</span>
+                <span className='text-sm'>{course.recommendCount}</span>
               </div>
             </Button>
             <div className='flex items-center bg-gray-100'>

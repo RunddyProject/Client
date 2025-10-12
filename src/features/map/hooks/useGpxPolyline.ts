@@ -32,8 +32,7 @@ export function useGpxPolyline(
     _polylineRef.current = new window.naver.maps.Polyline({
       path,
       strokeColor: runddyColor[color ?? 'blue'],
-      strokeWeight: 4,
-      strokeOpacity: 0.9,
+      strokeWeight: 7,
       map
     });
 
@@ -51,5 +50,5 @@ export function useGpxPolyline(
         _polylineRef.current = null;
       }
     };
-  }, [points, mapRef, polylineRef]);
+  }, [points, mapRef, polylineRef, color]);
 }
