@@ -1,7 +1,7 @@
-import { useFocusPan } from '@/features/map/hooks/useFocusPan';
 import { useGpxPolyline } from '@/features/map/hooks/useGpxPolyline';
 import { useMarkers } from '@/features/map/hooks/useMarkers';
 import { useNaverMap } from '@/features/map/hooks/useNaverMap';
+import { usePanToActiveMarker } from '@/features/map/hooks/usePanToActiveMarker';
 
 import type { Course, CoursePoint } from '@/features/course/model/types';
 import type { MarkerInput } from '@/features/map/model/types';
@@ -40,7 +40,7 @@ export function NaverMap({
     focusKey,
     focusColor: color
   });
-  useFocusPan(map, markerMapRef, focusKey, 60);
+  usePanToActiveMarker(map, markerMapRef, focusKey);
 
   return (
     <>

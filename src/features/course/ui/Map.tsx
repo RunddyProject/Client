@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type RefObject } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type RefObject
+} from 'react';
 
 import { useCoursePoint } from '@/features/course/hooks/useCoursePoint';
 import { useCourses } from '@/features/course/hooks/useCourses';
@@ -43,9 +49,9 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
     'uuid'
   );
 
-  const handleActiveCourseId = (uuid: Course['uuid']) => {
+  const handleActiveCourseId = useCallback((uuid: Course['uuid']) => {
     setActiveCourseId(uuid);
-  };
+  }, []);
 
   const handleMarkerClick = (uuid: Course['uuid']) => {
     handleActiveCourseId(uuid);

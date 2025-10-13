@@ -2,18 +2,30 @@ import { useEffect, useRef } from 'react';
 
 type Options = {
   container: React.RefObject<HTMLElement>;
+  /** data attribute name that holds the item id (e.g., 'uuid' → data-uuid) */
   itemAttr?: string;
+  /** called when the active (centered) item changes */
   onChange: (id: string) => void;
+  /** minimum visible ratio (0~1) to be considered "visible" */
   minVisibleRatio?: number;
+  /** debounce delay after scrolling settles (ms) */
+  settleDelay?: number;
+  /** list axis */
+  axis?: 'x' | 'y';
 };
 
 export function useCenteredActiveByScroll({
   container,
   itemAttr = 'uuid',
   onChange,
-  minVisibleRatio = 0.3
+  minVisibleRatio = 0.3,
+  settleDelay = 200,
+  axis = 'x'
 }: Options) {
   const onChangeRef = useRef(onChange);
+  const lastActiveRef = useRef<string | null>(null);
+  const timerRef = useRef<number | null>(null);
+
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
@@ -22,57 +34,117 @@ export function useCenteredActiveByScroll({
     const root = container.current;
     if (!root) return;
 
-    let rafId = 0;
+    const clearTimer = () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
 
-    const pickCentered = () => {
+    const computeCentered = (): string | null => {
       const rect = root.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
+      const centerMain =
+        axis === 'x' ? rect.left + rect.width / 2 : rect.top + rect.height / 2;
 
-      let bestId: string | null = null;
-      let bestDist = Number.POSITIVE_INFINITY;
+      let bestIdByRatio: string | null = null;
+      let bestRatio = -1;
+      let nearestId: string | null = null;
+      let nearestDist = Number.POSITIVE_INFINITY;
 
-      const items = root.querySelectorAll<HTMLElement>(`[data-${itemAttr}]`);
-      for (const el of Array.from(items)) {
+      const nodes = root.querySelectorAll<HTMLElement>(`[data-${itemAttr}]`);
+      for (const el of nodes) {
         const r = el.getBoundingClientRect();
-        const visibleWidth = Math.max(
-          0,
-          Math.min(r.right, rect.right) - Math.max(r.left, rect.left)
-        );
-        const ratio = visibleWidth / r.width;
-        if (ratio < minVisibleRatio) continue;
 
-        const itemCenterX = r.left + r.width / 2;
-        const dist = Math.abs(itemCenterX - centerX);
-        if (dist < bestDist) {
-          bestDist = dist;
-          bestId = el.dataset[itemAttr] ?? null;
+        const visibleMain = Math.max(
+          0,
+          Math.min(
+            axis === 'x' ? r.right : r.bottom,
+            axis === 'x' ? rect.right : rect.bottom
+          ) -
+            Math.max(
+              axis === 'x' ? r.left : r.top,
+              axis === 'x' ? rect.left : rect.top
+            )
+        );
+        const sizeMain = axis === 'x' ? r.width : r.height;
+        const ratio = sizeMain > 0 ? visibleMain / sizeMain : 0;
+
+        const itemCenterMain =
+          axis === 'x' ? r.left + r.width / 2 : r.top + r.height / 2;
+        const dist = Math.abs(itemCenterMain - centerMain);
+
+        if (ratio >= minVisibleRatio && ratio > bestRatio) {
+          bestRatio = ratio;
+          bestIdByRatio = el.dataset[itemAttr] ?? null;
+        }
+        if (dist < nearestDist) {
+          nearestDist = dist;
+          nearestId = el.dataset[itemAttr] ?? null;
         }
       }
-
-      if (bestId) onChangeRef.current(bestId);
+      return bestIdByRatio ?? nearestId ?? null;
     };
 
-    const onScroll = () => {
-      cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(pickCentered);
+    const pickCentered = () => {
+      // wait 2 rAFs to let snap/inertia settle and layout repaint
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const id = computeCentered();
+          if (id && id !== lastActiveRef.current) {
+            lastActiveRef.current = id;
+            onChangeRef.current(id);
+          }
+        });
+      });
     };
 
-    const onResize = () => {
-      cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(pickCentered);
+    const schedulePick = () => {
+      clearTimer();
+      timerRef.current = window.setTimeout(pickCentered, settleDelay);
     };
 
-    pickCentered();
-    root.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onResize);
-    const ro = new ResizeObserver(() => onResize());
+    // Always use scroll (debounced)
+    root.addEventListener('scroll', schedulePick, { passive: true });
+
+    // Use scrollend when available (bonus)
+    const supportsScrollEnd = 'onscrollend' in document;
+    if (supportsScrollEnd) {
+      root.addEventListener('scrollend', pickCentered as any);
+    }
+
+    // Trackpad/wheel & input end corrections
+    root.addEventListener('wheel', schedulePick, { passive: true });
+    root.addEventListener('pointerup', schedulePick);
+    root.addEventListener('touchend', schedulePick, { passive: true });
+
+    // Layout changes
+    window.addEventListener('resize', schedulePick);
+    const ro = new ResizeObserver(() => schedulePick());
     ro.observe(root);
 
+    // Initial pick
+    pickCentered();
+
     return () => {
-      cancelAnimationFrame(rafId);
-      root.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onResize);
+      clearTimer();
+      root.removeEventListener('scroll', schedulePick);
+      if (supportsScrollEnd)
+        root.removeEventListener('scrollend', pickCentered as any);
+      root.removeEventListener('wheel', schedulePick);
+      root.removeEventListener('pointerup', schedulePick);
+      root.removeEventListener('touchend', schedulePick);
+      window.removeEventListener('resize', schedulePick);
       ro.disconnect();
     };
-  }, [container, itemAttr, minVisibleRatio]);
+  }, [container.current, itemAttr, minVisibleRatio, settleDelay, axis]); // eslint-disable-line
+
+  // Re-pick when item set changes (after layout settles)
+  useEffect(() => {
+    const root = container.current;
+    if (!root) return;
+    const id = window.requestAnimationFrame(() => {
+      root.dispatchEvent(new Event('scroll'));
+    });
+    return () => cancelAnimationFrame(id);
+  }, [container.current]); // eslint-disable-line
 }
