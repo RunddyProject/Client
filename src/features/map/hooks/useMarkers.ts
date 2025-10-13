@@ -10,7 +10,7 @@ const ACTIVE_Z_START = ACTIVE_Z + 1;
 export function useMarkers(
   mapRef: RefObject<naver.maps.Map | null>,
   markerMapRef: RefObject<Map<string, naver.maps.Marker>>,
-  markerListenersRef: RefObject<Map<string, naver.maps.EventListener>>,
+  markerListenersRef: RefObject<Map<string, naver.maps.MapEventListener>>,
   markers: MarkerInput[],
   onMarkerClick?: (id: string) => void,
   options?: {

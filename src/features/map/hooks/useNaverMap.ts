@@ -8,7 +8,7 @@ export function useNaverMap(center: LatLng, zoom = 12) {
   const polylineRef = useRef<naver.maps.Polyline | null>(null);
   const markerMapRef = useRef(new Map<string, naver.maps.Marker>());
   const markerListenersRef = useRef(
-    new Map<string, naver.maps.EventListener>()
+    new Map<string, naver.maps.MapEventListener>()
   );
 
   useEffect(() => {
