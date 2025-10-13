@@ -1,10 +1,4 @@
-import { useState } from 'react';
-import { toast } from 'sonner';
-
 import { useCourses } from '@/features/course/hooks/useCourses';
-import CourseDropdownMenu, {
-  type SortType
-} from '@/features/course/ui/DropdownMenu';
 import CourseFilter from '@/features/course/ui/Filter';
 import CourseInfoCard from '@/features/course/ui/InfoCard';
 import { Icon } from '@/shared/icons/icon';
@@ -18,13 +12,6 @@ interface CourseListProps {
 // TODO: revalidate courses when CourseMap courses change
 const CourseList = ({ onViewModeChange }: CourseListProps) => {
   const { courses } = useCourses();
-  const [sortBy, setSortBy] = useState<SortType>('distance');
-
-  const handleChange = (value: SortType) => {
-    // TODO: API
-    setSortBy(value);
-    toast('정렬 기능은 준비중입니다');
-  };
 
   return (
     <div className='bg-background flex min-h-screen flex-col px-5 pt-[calc(env(safe-area-inset-top)+52px)]'>
@@ -43,15 +30,8 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
 
       <div className='overflow-y-auto'>
         {/* Filter */}
-        <div className='mt-3 flex items-center gap-3'>
-          <CourseDropdownMenu
-            checkedValue={sortBy}
-            onCheckedChange={handleChange}
-          />
-          <span className='text-gray-200'>|</span>
-          <div className='overflow-x-auto'>
-            <CourseFilter />
-          </div>
+        <div className='mt-3 overflow-x-auto'>
+          <CourseFilter />
         </div>
 
         {/* Course List */}
