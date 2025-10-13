@@ -65,3 +65,17 @@ export interface CoursePointResponse {
   maxLng: number;
   coursePointList: CoursePoint[];
 }
+
+export interface ElevationChartPoint {
+  distance: number;
+  distanceMeters: number;
+  elevation: number;
+  lat: number;
+  lng: number;
+  index: number;
+}
+
+export interface KeyPoint extends ElevationChartPoint {
+  label: string;
+  type: 'start' | 'end' | 'highest' | 'lowest';
+}

@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 
 import { CoursesApi } from '@/features/course/api/course.api';
 import { useCourseDetail } from '@/features/course/hooks/useCourseDetail';
 import { useCoursePoint } from '@/features/course/hooks/useCoursePoint';
+import { buildElevationChartData } from '@/features/course/lib/elevation';
 import { SHAPE_TYPE_COLOR } from '@/features/course/model/contants';
+import { ElevationChart } from '@/features/course/ui/ElevationChart';
 import { NaverMap } from '@/features/map/ui/NaverMap';
 import { Icon } from '@/shared/icons/icon';
 import { runddyColor } from '@/shared/model/constants';
@@ -18,18 +20,51 @@ import type { MarkerInput } from '@/features/map/model/types';
 import type { RUNDDY_COLOR } from '@/shared/model/types';
 
 const CourseDetail = () => {
-  const { uuid } = useParams<{ uuid: Course['uuid'] }>();
   const navigate = useNavigate();
-  const { courseDetail: course } = useCourseDetail(uuid ?? '');
+
+  const { uuid } = useParams<{ uuid: Course['uuid'] }>();
+
+  const { courseDetail: course, isLoading } = useCourseDetail(uuid ?? '');
   const { coursePointList } = useCoursePoint(uuid ?? '');
 
+  const elevationChartData = useMemo(
+    () => buildElevationChartData(coursePointList),
+    [coursePointList]
+  );
+
   const [isCopying, setIsCopying] = useState<Record<string, boolean>>({});
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
   if (!course) {
     toast.error('코스 불러오기 실패');
     navigate('/');
     return null;
   }
+
+  const activeColor: RUNDDY_COLOR = course
+    ? SHAPE_TYPE_COLOR[course.shapeType]
+    : runddyColor['blue'];
+
+  const startPoint = coursePointList[0];
+  const startMarker: MarkerInput = {
+    id: course.uuid,
+    lat: startPoint?.lat,
+    lng: startPoint?.lng,
+    kind: 'start'
+  };
+  const endPoint = coursePointList[coursePointList.length - 1];
+  const endMarker: MarkerInput = {
+    id: `${course.uuid}__end`,
+    lat: endPoint?.lat,
+    lng: endPoint?.lng,
+    kind: 'end'
+  };
+
+  const { series, minEle, maxEle, elevationGain, elevationLoss } =
+    elevationChartData;
 
   const handleClickBookmark = () => {
     toast('북마크 기능은 준비중입니다.');
@@ -56,28 +91,6 @@ const CourseDetail = () => {
   const handleDownloadGPX = () => {
     if (!uuid) return;
     CoursesApi.getCourseGpx(uuid);
-  };
-
-  if (!course) {
-    return <LoadingSpinner />;
-  }
-
-  const activeColor: RUNDDY_COLOR = course
-    ? SHAPE_TYPE_COLOR[course.shapeType]
-    : runddyColor['blue'];
-  const startPoint = coursePointList[0];
-  const startMarker: MarkerInput = {
-    id: course.uuid,
-    lat: startPoint.lat,
-    lng: startPoint.lng,
-    kind: 'start'
-  };
-  const endPoint = coursePointList[coursePointList.length - 1];
-  const endMarker: MarkerInput = {
-    id: `${course.uuid}__end`,
-    lat: endPoint?.lat,
-    lng: endPoint?.lng,
-    kind: 'end'
   };
 
   return (
@@ -153,17 +166,20 @@ const CourseDetail = () => {
 
         <div className='flex flex-col space-y-3 border-b border-b-gray-200 pt-8 pb-7.5'>
           <div className='text-text-tertiary text-sm'>고도</div>
-          <div className='flex h-48 w-full items-center justify-center rounded-lg bg-gray-200'>
-            <span className='text-muted-foreground'>고도 차트</span>
-          </div>
+          <ElevationChart
+            series={series}
+            minEle={minEle}
+            maxEle={maxEle}
+            height={192}
+          />
           <div className='grid grid-cols-2'>
             <div className='flex items-center gap-2'>
               <span className='text-text-tertiary text-sm'>상승 고도</span>
-              <span className='text-lg font-bold'>{course.elevationGain}m</span>
+              <span className='text-lg font-bold'>{elevationGain}m</span>
             </div>
             <div className='flex items-center gap-2'>
               <span className='text-text-tertiary text-sm'>하강 고도</span>
-              <span className='text-lg font-bold'>{course.elevationLoss}m</span>
+              <span className='text-lg font-bold'>{elevationLoss}m</span>
             </div>
           </div>
         </div>
