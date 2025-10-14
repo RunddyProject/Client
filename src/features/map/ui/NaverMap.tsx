@@ -35,7 +35,7 @@ export function NaverMap({
   const { mapRef, map, markerMapRef, markerListenersRef, polylineRef } =
     useNaverMap(center, zoom);
 
-  useGpxPolyline(map, polylineRef, points, color);
+  useGpxPolyline(map, polylineRef, points, color, { fit: 'never' });
   useMarkers(map, markerMapRef, markerListenersRef, markers, onMarkerClick, {
     focusKey,
     focusColor: color
