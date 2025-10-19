@@ -3,6 +3,8 @@ import { createBrowserRouter } from 'react-router';
 import App from '@/app/App';
 import ProtectedRoute from '@/app/routing/ProtectedRoute';
 import CourseDetail from '@/pages/course/detail';
+import CourseDetailLayout from '@/pages/course/detail-layout';
+import CourseDetailMap from '@/pages/course/detail-map';
 import Course from '@/pages/course/index';
 import Login from '@/pages/login/index';
 import LoginSuccess from '@/pages/login/success';
@@ -26,26 +28,28 @@ export const router = createBrowserRouter([
     handle: { header: { showMenu: true } satisfies HeaderMeta },
     errorElement: <NotFound />,
     children: [
-      {
-        index: true,
-        element: <Course />
-      },
+      { index: true, element: <Course /> },
       {
         path: 'course',
         children: [
-          {
-            index: true,
-            element: <Course />
-          },
+          { index: true, element: <Course /> },
           {
             path: ':uuid',
-            element: <CourseDetail />,
-            handle: {
-              header: {
-                title: '코스 정보',
-                rightButton: <ShareButton />
+            element: <CourseDetailLayout />,
+            children: [
+              {
+                index: true,
+                element: <CourseDetail />,
+                handle: {
+                  header: { title: '코스 정보', rightButton: <ShareButton /> }
+                }
+              },
+              {
+                path: 'map',
+                element: <CourseDetailMap />,
+                handle: { header: { title: '상세보기', rightButton: null } }
               }
-            }
+            ]
           }
         ]
       },

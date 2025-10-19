@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { generatePath, Link, useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 
 import { useHeader } from '@/app/providers/HeaderContext';
@@ -127,6 +127,9 @@ const CourseDetail = () => {
             focusKey={course.uuid}
             color={activeColor}
             interactionsEnabled={false}
+            onOverlayClick={() =>
+              navigate(generatePath('/course/:uuid/map', { uuid: course.uuid }))
+            }
             className='h-full w-full rounded-xl'
           />
         </div>

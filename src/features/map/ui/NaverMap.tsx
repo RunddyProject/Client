@@ -22,6 +22,7 @@ type Props = {
   focusKey?: Course['uuid'];
   interactionsEnabled?: boolean;
   onMarkerClick?: (id: string) => void;
+  onOverlayClick?: VoidFunction;
 };
 
 const DEFAULT_CENTER = { lat: 37.575959, lng: 126.97679 };
@@ -37,7 +38,8 @@ export function NaverMap({
   markers = [],
   focusKey,
   interactionsEnabled = true,
-  onMarkerClick
+  onMarkerClick,
+  onOverlayClick
 }: Props) {
   const { mapRef, map, markerMapRef, markerListenersRef, polylineRef } =
     useNaverMap(center, zoom);
@@ -90,12 +92,11 @@ export function NaverMap({
             touchAction: 'none',
             cursor: 'default'
           }}
+          onPointerUp={() => onOverlayClick?.()}
           onWheel={(e) => e.preventDefault()}
           onMouseDown={(e) => e.preventDefault()}
           onMouseMove={(e) => e.preventDefault()}
-          onClick={(e) => e.preventDefault()}
           onDoubleClick={(e) => e.preventDefault()}
-          onTouchStart={(e) => e.preventDefault()}
           onTouchMove={(e) => e.preventDefault()}
           onContextMenu={(e) => e.preventDefault()}
         />
