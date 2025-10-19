@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 
+import { useHeader } from '@/app/providers/HeaderContext';
 import { CoursesApi } from '@/features/course/api/course.api';
 import { useCourseDetail } from '@/features/course/hooks/useCourseDetail';
 import { buildElevationChartData } from '@/features/course/lib/elevation';
@@ -10,6 +11,7 @@ import { ElevationChart } from '@/features/course/ui/ElevationChart';
 import { NaverMap } from '@/features/map/ui/NaverMap';
 import { Icon } from '@/shared/icons/icon';
 import { runddyColor } from '@/shared/model/constants';
+import { ShareButton } from '@/shared/ui/actions/ShareButton';
 import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
 import Tooltip from '@/shared/ui/composites/tooltip';
 import { Button } from '@/shared/ui/primitives/button';
@@ -20,6 +22,7 @@ import type { RUNDDY_COLOR } from '@/shared/model/types';
 
 const CourseDetail = () => {
   const navigate = useNavigate();
+  const { setConfig, resetConfig } = useHeader();
 
   const { uuid } = useParams<{ uuid: Course['uuid'] }>();
 
@@ -34,8 +37,17 @@ const CourseDetail = () => {
 
   useEffect(() => {
     if (!course) return;
-    document.title = `${course.name} (${(course.totalDistance / 1000).toFixed(1)}km)`;
-  }, [course]);
+
+    setConfig({
+      rightButton: (
+        <ShareButton
+          title={`${course.name} (${(course.totalDistance / 1000).toFixed(1)}km)`}
+        />
+      )
+    });
+
+    return () => resetConfig();
+  }, [course, resetConfig, setConfig]);
 
   if (isLoading) {
     return <LoadingSpinner />;
