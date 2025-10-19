@@ -109,6 +109,7 @@ const CourseDetail = () => {
             markers={[startMarker, endMarker]}
             focusKey={course.uuid}
             color={activeColor}
+            interactionsEnabled={false}
             className='h-full w-full rounded-xl'
           />
         </div>

@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { useFitLatLngBoundsScale } from '@/features/map/hooks/hooks/useFitLatLngBoundsScale';
 import { useGpxPolyline } from '@/features/map/hooks/useGpxPolyline';
 import { useMarkers } from '@/features/map/hooks/useMarkers';
@@ -18,6 +20,7 @@ type Props = {
   color?: RUNDDY_COLOR;
   markers?: MarkerInput[];
   focusKey?: Course['uuid'];
+  interactionsEnabled?: boolean;
   onMarkerClick?: (id: string) => void;
 };
 
@@ -33,10 +36,25 @@ export function NaverMap({
   color,
   markers = [],
   focusKey,
+  interactionsEnabled = true,
   onMarkerClick
 }: Props) {
   const { mapRef, map, markerMapRef, markerListenersRef, polylineRef } =
     useNaverMap(center, zoom);
+
+  useEffect(() => {
+    if (!map.current) return;
+
+    map.current.setOptions({
+      draggable: interactionsEnabled,
+      scrollWheel: interactionsEnabled,
+      pinchZoom: interactionsEnabled,
+      keyboardShortcuts: interactionsEnabled,
+      disableDoubleTapZoom: !interactionsEnabled,
+      disableDoubleClickZoom: !interactionsEnabled,
+      disableTwoFingerTapZoom: !interactionsEnabled
+    });
+  }, [map, interactionsEnabled]);
 
   useGpxPolyline(map, polylineRef, points, color, { fit: 'never' });
   useMarkers(map, markerMapRef, markerListenersRef, markers, onMarkerClick, {
@@ -62,6 +80,27 @@ export function NaverMap({
         className={className}
         style={{ width: '100%', height: '100%' }}
       />
+
+      {!interactionsEnabled && (
+        <div
+          aria-hidden
+          className='absolute inset-0 z-20'
+          style={{
+            pointerEvents: 'auto',
+            touchAction: 'none',
+            cursor: 'default'
+          }}
+          onWheel={(e) => e.preventDefault()}
+          onMouseDown={(e) => e.preventDefault()}
+          onMouseMove={(e) => e.preventDefault()}
+          onClick={(e) => e.preventDefault()}
+          onDoubleClick={(e) => e.preventDefault()}
+          onTouchStart={(e) => e.preventDefault()}
+          onTouchMove={(e) => e.preventDefault()}
+          onContextMenu={(e) => e.preventDefault()}
+        />
+      )}
+
       {glassTopOverlay && (
         <div className="absolute top-0 z-10 h-13 w-full bg-transparent pt-[env(safe-area-inset-top)] before:pointer-events-none before:absolute before:inset-0 before:[mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_85%)] before:backdrop-blur-[20px] before:content-[''] before:[-webkit-mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_85%)] after:pointer-events-none after:absolute after:inset-0 after:bg-gradient-to-b after:from-white/60 after:via-white/15 after:to-transparent after:content-['']" />
       )}
