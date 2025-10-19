@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 
@@ -31,6 +31,11 @@ const CourseDetail = () => {
   );
 
   const [isCopying, setIsCopying] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (!course) return;
+    document.title = `${course.name} (${(course.totalDistance / 1000).toFixed(1)}km)`;
+  }, [course]);
 
   if (isLoading) {
     return <LoadingSpinner />;

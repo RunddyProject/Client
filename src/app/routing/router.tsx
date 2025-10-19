@@ -9,6 +9,7 @@ import LoginSuccess from '@/pages/login/success';
 import MeEdit from '@/pages/me/edit';
 import Me from '@/pages/me/index';
 import NotFound from '@/pages/not-found';
+import { ShareButton } from '@/shared/ui/actions/ShareButton';
 
 type HeaderMeta = {
   title?: string;
@@ -39,7 +40,12 @@ export const router = createBrowserRouter([
           {
             path: ':uuid',
             element: <CourseDetail />,
-            handle: { header: { title: '코스 정보' } }
+            handle: {
+              header: {
+                title: '코스 정보',
+                rightButton: <ShareButton />
+              }
+            }
           }
         ]
       },
