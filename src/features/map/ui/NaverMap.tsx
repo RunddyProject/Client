@@ -1,10 +1,11 @@
+import { useFitLatLngBoundsScale } from '@/features/map/hooks/hooks/useFitLatLngBoundsScale';
 import { useGpxPolyline } from '@/features/map/hooks/useGpxPolyline';
 import { useMarkers } from '@/features/map/hooks/useMarkers';
 import { useNaverMap } from '@/features/map/hooks/useNaverMap';
 import { usePanToActiveMarker } from '@/features/map/hooks/usePanToActiveMarker';
 
 import type { Course, CoursePoint } from '@/features/course/model/types';
-import type { MarkerInput } from '@/features/map/model/types';
+import type { MarkerInput, LatLngBounds } from '@/features/map/model/types';
 import type { RUNDDY_COLOR } from '@/shared/model/types';
 
 type Props = {
@@ -13,6 +14,7 @@ type Props = {
   center?: { lat: number; lng: number };
   zoom?: number;
   points?: CoursePoint[];
+  bounds?: LatLngBounds;
   color?: RUNDDY_COLOR;
   markers?: MarkerInput[];
   focusKey?: Course['uuid'];
@@ -27,6 +29,7 @@ export function NaverMap({
   center = DEFAULT_CENTER,
   zoom = 12,
   points,
+  bounds,
   color,
   markers = [],
   focusKey,
@@ -41,6 +44,16 @@ export function NaverMap({
     focusColor: color
   });
   usePanToActiveMarker(map, markerMapRef, focusKey);
+  useFitLatLngBoundsScale(map, bounds, {
+    scale: 1.5,
+    paddingPx: 0,
+    maxZoom: 16,
+    oncePerKey: focusKey ?? 'gpx',
+    settleDelay: 120,
+    durationMs: 400,
+    disableTileFadeDuringMove: true,
+    observeResize: true
+  });
 
   return (
     <>

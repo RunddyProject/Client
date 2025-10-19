@@ -5,3 +5,9 @@ export type MarkerInput = {
   lng: number;
   kind: MarkerKind;
 };
+export type LatLngBounds = {
+  minLat: number;
+  minLng: number;
+  maxLat: number;
+  maxLng: number;
+};

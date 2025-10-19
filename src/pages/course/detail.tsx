@@ -4,7 +4,6 @@ import { toast } from 'sonner';
 
 import { CoursesApi } from '@/features/course/api/course.api';
 import { useCourseDetail } from '@/features/course/hooks/useCourseDetail';
-import { useCoursePoint } from '@/features/course/hooks/useCoursePoint';
 import { buildElevationChartData } from '@/features/course/lib/elevation';
 import { SHAPE_TYPE_COLOR } from '@/features/course/model/contants';
 import { ElevationChart } from '@/features/course/ui/ElevationChart';
@@ -25,11 +24,10 @@ const CourseDetail = () => {
   const { uuid } = useParams<{ uuid: Course['uuid'] }>();
 
   const { courseDetail: course, isLoading } = useCourseDetail(uuid ?? '');
-  const { coursePointList } = useCoursePoint(uuid ?? '');
 
   const elevationChartData = useMemo(
-    () => buildElevationChartData(coursePointList),
-    [coursePointList]
+    () => course && buildElevationChartData(course.coursePointList),
+    [course]
   );
 
   const [isCopying, setIsCopying] = useState<Record<string, boolean>>({});
@@ -38,7 +36,7 @@ const CourseDetail = () => {
     return <LoadingSpinner />;
   }
 
-  if (!course) {
+  if (!course || !elevationChartData) {
     toast.error('코스 불러오기 실패');
     navigate('/');
     return null;
@@ -48,14 +46,14 @@ const CourseDetail = () => {
     ? SHAPE_TYPE_COLOR[course.shapeType]
     : runddyColor['blue'];
 
-  const startPoint = coursePointList[0];
+  const startPoint = course.coursePointList[0];
   const startMarker: MarkerInput = {
     id: course.uuid,
     lat: startPoint?.lat,
     lng: startPoint?.lng,
     kind: 'start'
   };
-  const endPoint = coursePointList[coursePointList.length - 1];
+  const endPoint = course.coursePointList[course.coursePointList.length - 1];
   const endMarker: MarkerInput = {
     id: `${course.uuid}__end`,
     lat: endPoint?.lat,
@@ -101,7 +99,13 @@ const CourseDetail = () => {
         <div className='h-78 px-5 pt-3'>
           <NaverMap
             center={{ lat: course.lat, lng: course.lng }}
-            points={coursePointList}
+            points={course.coursePointList}
+            bounds={{
+              minLat: course.minLat,
+              maxLat: course.maxLat,
+              minLng: course.minLng,
+              maxLng: course.maxLng
+            }}
             markers={[startMarker, endMarker]}
             focusKey={course.uuid}
             color={activeColor}

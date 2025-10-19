@@ -1,3 +1,5 @@
+import type { LatLngBounds } from '@/features/map/model/types';
+
 export type UserLocation = { lat: number; lng: number };
 
 export type CourseType = 'OFFICIAL' | 'UNOFFICIAL';
@@ -46,7 +48,10 @@ export interface CoursePoint {
   ele: number;
 }
 
-export interface CourseDetail extends Course, CoursePointResponse {
+export interface CourseDetail
+  extends Course,
+    CoursePointResponse,
+    LatLngBounds {
   startAddress: string;
   endAddress: string;
   elevationGain: number;
