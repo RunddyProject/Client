@@ -78,8 +78,7 @@ const CourseDetail = () => {
     kind: 'end'
   };
 
-  const { series, minEle, maxEle, elevationGain, elevationLoss } =
-    elevationChartData;
+  const { series, minEle, maxEle } = elevationChartData;
 
   const handleClickBookmark = () => {
     toast('북마크 기능은 준비중입니다.');
@@ -200,11 +199,15 @@ const CourseDetail = () => {
           <div className='grid grid-cols-2'>
             <div className='flex items-center gap-2'>
               <span className='text-text-tertiary text-sm'>상승 고도</span>
-              <span className='text-lg font-bold'>{elevationGain}m</span>
+              <span className='text-lg font-bold'>
+                {course.elevationGain.toFixed()}m
+              </span>
             </div>
             <div className='flex items-center gap-2'>
               <span className='text-text-tertiary text-sm'>하강 고도</span>
-              <span className='text-lg font-bold'>{elevationLoss}m</span>
+              <span className='text-lg font-bold'>
+                {course.elevationLoss.toFixed()}m
+              </span>
             </div>
           </div>
         </div>
