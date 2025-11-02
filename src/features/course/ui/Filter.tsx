@@ -1,15 +1,16 @@
-import { useState } from 'react';
-import { toast } from 'sonner';
+import { useState, useMemo } from 'react';
+import { useNavigate, useSearchParams } from 'react-router';
 
 import {
   grades,
   envTypeNames,
-  shapeTypeNames
+  shapeTypeNames,
+  ENV_NAME_TO_TYPE,
+  SHAPE_NAME_TO_TYPE
 } from '@/features/course/model/contants';
-import { useFilterStore } from '@/features/course/model/filter.store';
 import { Icon } from '@/shared/icons/icon';
+import { buildQuery } from '@/shared/lib/query';
 import { deepEqual } from '@/shared/lib/utils';
-import Tooltip from '@/shared/ui/composites/tooltip';
 import { Button } from '@/shared/ui/primitives/button';
 import {
   Dialog,
@@ -34,8 +35,8 @@ interface FilterState {
   grade: string[];
   envType: string[];
   shapeType: string[];
-  distanceRange: Tuple2; // [minKm, maxKm]
-  elevationRange: Tuple2; // [min, max]
+  distanceRange: Tuple2;
+  elevationRange: Tuple2;
 }
 
 const DEFAULTS: FilterState = {
@@ -46,16 +47,13 @@ const DEFAULTS: FilterState = {
   elevationRange: [0, 1000]
 };
 
-const FilterChipsBar = () => {
-  const {
-    applied,
-    removeGrade,
-    removeEnvType,
-    removeShapeType,
-    resetDistanceRange,
-    resetElevationRange
-  } = useFilterStore();
-
+const FilterChipsBar = ({
+  applied,
+  onRemove
+}: {
+  applied: FilterState;
+  onRemove: (field: keyof FilterState, value?: string) => void;
+}) => {
   const isSameRange = (a: [number, number], b: [number, number]) =>
     a[0] === b[0] && a[1] === b[1];
 
@@ -84,31 +82,34 @@ const FilterChipsBar = () => {
   return (
     <div className='flex items-center gap-2'>
       {applied.grade.map((g) => (
-        <Chip key={`grade-${g}`} onClick={() => removeGrade(g)}>
+        <Chip key={`grade-${g}`} onClick={() => onRemove('grade', g)}>
           Lv. {g}
         </Chip>
       ))}
 
       {applied.envType.map((env) => (
-        <Chip key={`env-${env}`} onClick={() => removeEnvType(env)}>
+        <Chip key={`env-${env}`} onClick={() => onRemove('envType', env)}>
           {env}
         </Chip>
       ))}
 
       {applied.shapeType.map((shape) => (
-        <Chip key={`shape-${shape}`} onClick={() => removeShapeType(shape)}>
+        <Chip
+          key={`shape-${shape}`}
+          onClick={() => onRemove('shapeType', shape)}
+        >
           {shape}
         </Chip>
       ))}
 
       {!isSameRange(applied.distanceRange, DEFAULTS.distanceRange) && (
-        <Chip onClick={resetDistanceRange}>
+        <Chip onClick={() => onRemove('distanceRange')}>
           {applied.distanceRange[0]}–{applied.distanceRange[1]}km
         </Chip>
       )}
 
       {!isSameRange(applied.elevationRange, DEFAULTS.elevationRange) && (
-        <Chip onClick={resetElevationRange}>
+        <Chip onClick={() => onRemove('elevationRange')}>
           {applied.elevationRange[0]}–{applied.elevationRange[1]}m
         </Chip>
       )}
@@ -118,29 +119,132 @@ const FilterChipsBar = () => {
 
 const CourseFilter = () => {
   const [open, setOpen] = useState(false);
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
 
-  const {
-    applied,
-    draft,
-    count,
-    toggleGrade,
-    toggleEnvType,
-    toggleShapeType,
-    setDistanceRange,
-    setElevationRange,
-    resetDraft,
-    loadDraftFromApplied,
-    apply
-  } = useFilterStore();
+  const applied: FilterState = useMemo(
+    () => ({
+      grade: params.getAll('grade'),
+      envType: params
+        .getAll('envType')
+        .map(
+          (code) =>
+            Object.keys(ENV_NAME_TO_TYPE).find(
+              (k) =>
+                ENV_NAME_TO_TYPE[k as keyof typeof ENV_NAME_TO_TYPE] === code
+            ) || code
+        ),
+      shapeType: params
+        .getAll('shapeType')
+        .map(
+          (code) =>
+            Object.keys(SHAPE_NAME_TO_TYPE).find(
+              (k) =>
+                SHAPE_NAME_TO_TYPE[k as keyof typeof SHAPE_NAME_TO_TYPE] ===
+                code
+            ) || code
+        ),
+      distanceRange: [
+        Number(params.get('minDist') ?? 0),
+        Number(params.get('maxDist') ?? 40)
+      ],
+      elevationRange: [
+        Number(params.get('minEle') ?? 0),
+        Number(params.get('maxEle') ?? 1000)
+      ]
+    }),
+    [params]
+  );
+
+  const [draft, setDraft] = useState<FilterState>(applied);
+
+  const setDistanceRange = (range: [number, number]) => {
+    setDraft((prev) => ({ ...prev, distanceRange: range }));
+  };
+
+  const setElevationRange = (range: [number, number]) => {
+    setDraft((prev) => ({ ...prev, elevationRange: range }));
+  };
 
   const handleOpenChange = (next: boolean) => {
     setOpen(next);
-    if (next) loadDraftFromApplied();
+    if (next) setDraft(applied);
   };
 
-  const handleSubmit = () => {
-    apply();
-    toast('필터 기능은 준비중입니다');
+  const handleToggle = (field: keyof FilterState, value: string) => {
+    setDraft((prev) => {
+      const arr = prev[field] as string[];
+      const nextArr = arr.includes(value)
+        ? arr.filter((v) => v !== value)
+        : [...arr, value];
+      return { ...prev, [field]: nextArr };
+    });
+  };
+
+  const handleApply = () => {
+    const queryParams: Record<string, any> = {
+      ...Object.fromEntries(params.entries())
+    };
+
+    if (draft.grade.length > 0) queryParams.grade = draft.grade;
+    else delete queryParams.grade;
+
+    if (draft.envType.length > 0)
+      queryParams.envType = draft.envType.map(
+        (k) => ENV_NAME_TO_TYPE[k as keyof typeof ENV_NAME_TO_TYPE] ?? k
+      );
+    else delete queryParams.envType;
+
+    if (draft.shapeType.length > 0)
+      queryParams.shapeType = draft.shapeType.map(
+        (k) => SHAPE_NAME_TO_TYPE[k as keyof typeof SHAPE_NAME_TO_TYPE] ?? k
+      );
+    else delete queryParams.shapeType;
+
+    if (!deepEqual(draft.distanceRange, DEFAULTS.distanceRange)) {
+      queryParams.minDist = draft.distanceRange[0];
+      queryParams.maxDist = draft.distanceRange[1];
+    } else {
+      delete queryParams.minDist;
+      delete queryParams.maxDist;
+    }
+
+    if (!deepEqual(draft.elevationRange, DEFAULTS.elevationRange)) {
+      queryParams.minEle = draft.elevationRange[0];
+      queryParams.maxEle = draft.elevationRange[1];
+    } else {
+      delete queryParams.minEle;
+      delete queryParams.maxEle;
+    }
+
+    const query = buildQuery(queryParams);
+    navigate({ search: query });
+    setOpen(false);
+  };
+
+  const handleRemove = (field: keyof FilterState, value?: string) => {
+    const next = new URLSearchParams(params);
+
+    switch (field) {
+      case 'grade':
+      case 'envType':
+      case 'shapeType':
+        next.delete(field);
+        applied[field].forEach((v) => {
+          if (v !== value) next.append(field, v);
+        });
+        break;
+      case 'distanceRange':
+        next.delete('minDist');
+        next.delete('maxDist');
+        break;
+      case 'elevationRange':
+        next.delete('minEle');
+        next.delete('maxEle');
+        break;
+    }
+
+    navigate({ search: next.toString() });
   };
 
   return (
@@ -167,7 +271,9 @@ const CourseFilter = () => {
           )}
         </DialogTrigger>
 
-        {!open && !deepEqual(applied, DEFAULTS) && <FilterChipsBar />}
+        {!open && !deepEqual(applied, DEFAULTS) && (
+          <FilterChipsBar applied={applied} onRemove={handleRemove} />
+        )}
       </div>
 
       <DialogPortal>
@@ -185,106 +291,76 @@ const CourseFilter = () => {
             </DialogClose>
           </DialogHeader>
 
-          <div className='flex-1 overflow-y-auto'>
+          <div className='flex-1 overflow-x-clip overflow-y-auto'>
             <div className='p-5'>
               <h3 className='mb-5 text-base font-semibold'>난이도</h3>
-              <div className='flex gap-2'>
-                <ToggleGroup
-                  type='multiple'
-                  value={draft.grade}
-                  className='overflow-x-auto'
-                >
-                  {grades
-                    .map((grd) => String(grd))
-                    .map((grd) => (
-                      <ToggleGroupItem
-                        key={grd}
-                        value={grd}
-                        aria-label={`Toggle Level ${grd}`}
-                        onClick={() => toggleGrade(grd)}
-                      >
-                        Lv. {grd}
-                      </ToggleGroupItem>
-                    ))}
-                </ToggleGroup>
-              </div>
+              <ToggleGroup
+                type='multiple'
+                value={draft.grade}
+                className='w-full overflow-x-auto'
+              >
+                {grades.map((grd) => (
+                  <ToggleGroupItem
+                    key={grd}
+                    value={String(grd)}
+                    onClick={() => handleToggle('grade', String(grd))}
+                  >
+                    Lv. {grd}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
             </div>
 
             <div className='p-5'>
               <h3 className='mb-5 text-base font-semibold'>러닝 장소</h3>
-              <div className='flex flex-wrap gap-2'>
-                <ToggleGroup
-                  type='multiple'
-                  value={draft.envType}
-                  className='overflow-x-auto'
-                >
-                  {envTypeNames.map((env) => (
-                    <ToggleGroupItem
-                      key={env}
-                      value={env}
-                      className='rounded-full'
-                      onClick={() => toggleEnvType(env)}
-                    >
-                      {env}
-                    </ToggleGroupItem>
-                  ))}
-                </ToggleGroup>
-              </div>
+              <ToggleGroup
+                type='multiple'
+                value={draft.envType}
+                className='w-full overflow-x-auto'
+              >
+                {envTypeNames.map((env) => (
+                  <ToggleGroupItem
+                    key={env}
+                    value={env}
+                    onClick={() => handleToggle('envType', env)}
+                    className='rounded-full'
+                  >
+                    {env}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
             </div>
 
             <div className='p-5'>
-              <div className='mb-5 flex items-center gap-1'>
-                <h3 className='text-base font-semibold'>코스 모양</h3>
-                <Tooltip
-                  title={'코스 모양에 대해 설명해 드릴게요'}
-                  body={
-                    <ul className='list-disc space-y-1 pl-4 marker:text-white/70'>
-                      <li>순환코스: 출발한 곳으로 돌아오는 원형 코스</li>
-                      <li>
-                        직선코스: 한방향으로 쭉 달리는 형태(출발, 도착 다름)
-                      </li>
-                      <li>왕복코스: 같은 길을 따라 갔다가 되돌아오는 코스</li>
-                      <li>아트코스: 러닝 루트가 그림처럼 그려지는 코스</li>
-                    </ul>
-                  }
-                />
-              </div>
-              <div className='flex flex-wrap gap-2'>
-                <ToggleGroup
-                  type='multiple'
-                  value={draft.shapeType}
-                  className='overflow-x-auto'
-                >
-                  {shapeTypeNames.map((shape) => (
-                    <ToggleGroupItem
-                      key={shape}
-                      value={shape}
-                      className='rounded-full'
-                      onClick={() => toggleShapeType(shape)}
-                    >
-                      {shape}코스
-                    </ToggleGroupItem>
-                  ))}
-                </ToggleGroup>
-              </div>
+              <h3 className='mb-5 text-base font-semibold'>코스 모양</h3>
+              <ToggleGroup
+                type='multiple'
+                value={draft.shapeType}
+                className='w-full overflow-x-auto'
+              >
+                {shapeTypeNames.map((shape) => (
+                  <ToggleGroupItem
+                    key={shape}
+                    value={shape}
+                    onClick={() => handleToggle('shapeType', shape)}
+                    className='rounded-full'
+                  >
+                    {shape}코스
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
             </div>
 
             <div className='p-5'>
-              <div className='mb-5 flex items-center gap-1'>
-                <h3 className='text-base font-semibold'>코스 길이</h3>
-                <span className='text-text-secondary text-sm'>
-                  {draft.distanceRange[0]}km - {draft.distanceRange[1]}km
-                </span>
-              </div>
+              <h3 className='mb-5 text-base font-semibold'>코스 길이</h3>
               <Slider
                 value={draft.distanceRange}
                 onValueChange={setDistanceRange}
                 min={0}
                 max={40}
                 step={1}
-                className='mb-2'
               />
-              <div className='text-text-tertiary flex justify-between text-sm'>
+              <div className='flex justify-between text-sm text-gray-400'>
                 <span>0km</span>
                 <span>20km</span>
                 <span>40km 이상</span>
@@ -292,24 +368,18 @@ const CourseFilter = () => {
             </div>
 
             <div className='p-5'>
-              <div className='mb-5 flex items-center gap-1'>
-                <h3 className='text-base font-semibold'>코스 경사</h3>
-                <span className='text-text-secondary text-sm'>
-                  {draft.elevationRange[0]}km - {draft.elevationRange[1]}km
-                </span>
-              </div>
+              <h3 className='mb-5 text-base font-semibold'>코스 경사</h3>
               <Slider
                 value={draft.elevationRange}
                 onValueChange={setElevationRange}
                 min={0}
                 max={1000}
                 step={10}
-                className='mb-2'
               />
-              <div className='text-text-ter티ary flex justify-between text-sm'>
-                <span>0km</span>
-                <span>500km</span>
-                <span>1000km 이상</span>
+              <div className='flex justify-between text-sm text-gray-400'>
+                <span>0m</span>
+                <span>500m</span>
+                <span>1000m 이상</span>
               </div>
             </div>
           </div>
@@ -319,14 +389,13 @@ const CourseFilter = () => {
               variant='secondary'
               size='lg'
               className='flex-1'
-              onClick={resetDraft}
+              onClick={() => setDraft(DEFAULTS)}
             >
               초기화
             </Button>
-
             <DialogClose asChild className='flex-2'>
-              <Button type='button' size='lg' onClick={handleSubmit}>
-                {count}개의 코스 보기
+              <Button type='button' size='lg' onClick={handleApply}>
+                코스 보기
               </Button>
             </DialogClose>
           </DialogFooter>

@@ -4,19 +4,51 @@ import {
   useQueryClient
 } from '@tanstack/react-query';
 import { useEffect } from 'react';
+import { useSearchParams } from 'react-router';
 import { toast } from 'sonner';
 
 import { CoursesApi } from '@/features/course/api/course.api';
 import { DEFAULT_CENTER } from '@/features/course/model/contants';
 import {
   type Course,
+  type CourseSearchParams,
   type CoursesResponse,
   type UserLocation
 } from '@/features/course/model/types';
 
-export function useCourses(userLocation: UserLocation | null = DEFAULT_CENTER) {
+export function useCourses({
+  userLocation = DEFAULT_CENTER
+}: { userLocation?: UserLocation | null } = {}) {
+  const [params] = useSearchParams();
+
+  const grades = params.getAll('grade').map((g) => Number(g));
+  const envTypes = params.getAll('envType');
+
+  const search: CourseSearchParams = {
+    dist: params.get('dist') ? Number(params.get('dist')) : undefined,
+    grade: grades.length ? grades : undefined,
+    envType: envTypes.length ? envTypes : undefined,
+    minDist: params.get('minDist') ? Number(params.get('minDist')) : undefined,
+    maxDist: params.get('maxDist') ? Number(params.get('maxDist')) : undefined,
+    minEle: params.get('minEle') ? Number(params.get('minEle')) : undefined,
+    maxEle: params.get('maxEle') ? Number(params.get('maxEle')) : undefined,
+    keyword: params.get('keyword') ?? undefined
+  };
+
   const query = useQuery<Course[], Error>({
-    queryKey: ['courses', userLocation?.lat, userLocation?.lng],
+    queryKey: [
+      'courses',
+      userLocation?.lat,
+      userLocation?.lng,
+      search.dist,
+      search.grade,
+      search.envType,
+      search.minDist,
+      search.maxDist,
+      search.minEle,
+      search.maxEle,
+      search.keyword
+    ],
     staleTime: 60_000,
     gcTime: 5 * 60_000,
     retry: 1,
@@ -25,7 +57,8 @@ export function useCourses(userLocation: UserLocation | null = DEFAULT_CENTER) {
       if (!userLocation) return [];
       const res: CoursesResponse = await CoursesApi.getCourses(
         userLocation.lat,
-        userLocation.lng
+        userLocation.lng,
+        search
       );
       return res.courseList;
     }
@@ -49,11 +82,23 @@ export function useCourses(userLocation: UserLocation | null = DEFAULT_CENTER) {
 
 export function usePrefetchCourses() {
   const qc = useQueryClient();
-  return (loc: UserLocation) =>
+  return (userLocation: UserLocation, search?: CourseSearchParams) =>
     qc.prefetchQuery({
-      queryKey: ['courses', loc.lat, loc.lng],
+      queryKey: [
+        'courses',
+        userLocation?.lat,
+        userLocation?.lng,
+        search?.dist,
+        search?.grade,
+        search?.envType,
+        search?.minDist,
+        search?.maxDist,
+        search?.minEle,
+        search?.maxEle,
+        search?.keyword
+      ],
       queryFn: () =>
-        CoursesApi.getCourses(loc.lat, loc.lng).then(
+        CoursesApi.getCourses(userLocation.lat, userLocation.lng, search).then(
           (r: CoursesResponse) => r.courseList
         ),
       staleTime: 60_000

@@ -11,6 +11,7 @@ import { useCourses } from '@/features/course/hooks/useCourses';
 import { SHAPE_TYPE_COLOR } from '@/features/course/model/contants';
 import CourseFilter from '@/features/course/ui/Filter';
 import CourseInfoCard from '@/features/course/ui/InfoCard';
+import Search from '@/features/course/ui/Search';
 import { useGeolocation } from '@/features/map/hooks/useGeolocation';
 import { useLocationStore } from '@/features/map/model/location.store';
 import { NaverMap } from '@/features/map/ui/NaverMap';
@@ -19,21 +20,20 @@ import { useScrollItemToCenter } from '@/shared/hooks/useScrollItemToCenter';
 import { Icon } from '@/shared/icons/icon';
 import { runddyColor } from '@/shared/model/constants';
 import { Button } from '@/shared/ui/primitives/button';
-import { Input } from '@/shared/ui/primitives/input';
 
 import type { Course } from '@/features/course/model/types';
 import type { MarkerInput } from '@/features/map/model/types';
 import type { RUNDDY_COLOR } from '@/shared/model/types';
 
 interface CourseMapProps {
-  onViewModeChange: () => void;
+  onViewModeChange: (mode: 'map' | 'list') => void;
 }
 
 const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
   const { userLocation, isLocationLoading } = useLocationStore();
   const { getCurrentLocation } = useGeolocation();
 
-  const { courses } = useCourses(userLocation);
+  const { courses } = useCourses({ userLocation });
   const [activeCourseId, setActiveCourseId] = useState<string>(
     courses[0]?.uuid ?? ''
   );
@@ -106,19 +106,7 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
       <div className='pointer-events-none absolute top-[calc(env(safe-area-inset-top)+52px)] right-0 bottom-0 left-0 z-10 grid grid-rows-[auto_1fr_auto]'>
         {/* Search bar */}
         <div className='pointer-events-auto px-5 pt-[calc(env(safe-area-inset-top)+12px)]'>
-          <div className='relative'>
-            <Icon
-              name='search'
-              size={24}
-              className='absolute top-1/2 left-4 -translate-y-1/2'
-            />
-            <Input
-              placeholder='원하는 지역 검색'
-              className='bg-white pl-13'
-              onClick={onViewModeChange}
-              readOnly
-            />
-          </div>
+          <Search />
         </div>
 
         {/* Filter */}
@@ -153,7 +141,7 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
             <Button
               variant='secondary'
               className='pointer-events-auto rounded-full bg-white px-3 shadow-lg'
-              onClick={onViewModeChange}
+              onClick={() => onViewModeChange('list')}
             >
               <Icon
                 name='list'

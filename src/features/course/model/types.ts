@@ -41,6 +41,21 @@ export interface Course {
   isBookmarked?: boolean;
 }
 
+export interface CoursesResponse {
+  courseList: Course[];
+}
+
+export type CourseSearchParams = {
+  dist?: number; // (km)
+  grade?: number | number[];
+  envType?: 'MOUNTAIN' | 'RIVER' | 'CITY' | string | string[];
+  minDist?: number; // (m)
+  maxDist?: number; // (m)
+  minEle?: number; // (m)
+  maxEle?: number; // (m)
+  keyword?: string; // text query
+};
+
 export interface CoursePoint {
   pointSeq: number;
   lat: number;
@@ -57,10 +72,6 @@ export interface CourseDetail
   elevationGain: number;
   elevationLoss: number;
   recommendCount: number;
-}
-
-export interface CoursesResponse {
-  courseList: Course[];
 }
 
 export interface CoursePointResponse {

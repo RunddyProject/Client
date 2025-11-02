@@ -1,9 +1,11 @@
 import { api } from '@/shared/lib/http';
+import { buildQuery } from '@/shared/lib/query';
 
 import type {
   Course,
   CourseDetail,
   CoursePointResponse,
+  CourseSearchParams,
   CoursesResponse
 } from '@/features/course/model/types';
 
@@ -11,15 +13,22 @@ export const CoursesApi = {
   getCourses: async (
     lat: number,
     lng: number,
-    radius?: number
+    params: CourseSearchParams = {}
   ): Promise<CoursesResponse> => {
-    const dist = Number.isFinite(radius) ? Math.max(0, Number(radius)) : 10;
-    const params = new URLSearchParams({
-      lat: String(lat),
-      lng: String(lng),
-      dist: String(dist)
+    const query = buildQuery({
+      lat,
+      lng,
+      dist: params.dist ?? 10,
+      grade: params.grade,
+      envType: params.envType,
+      minDist: params.minDist,
+      maxDist: params.maxDist,
+      minEle: params.minEle,
+      maxEle: params.maxEle,
+      keyword: params.keyword
     });
-    return api.get<CoursesResponse>(`/course?${params.toString()}`, {
+
+    return api.get<CoursesResponse>(`/course?${query}`, {
       requiresAuth: false
     });
   },
