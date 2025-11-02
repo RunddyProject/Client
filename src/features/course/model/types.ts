@@ -95,3 +95,47 @@ export interface KeyPoint extends ElevationChartPoint {
   label: string;
   type: 'start' | 'end' | 'highest' | 'lowest';
 }
+
+export interface CourseReviewKeyword {
+  keywordId: number;
+  keyword: string;
+  keywordCount: number;
+}
+
+export interface CourseReviewSummary {
+  categoryCode: string;
+  category: string;
+  courseReviewKeywordList: CourseReviewKeyword[];
+}
+
+export interface CourseReviewDetail {
+  userName: string;
+  courseReviewKeywordList: CourseReviewKeyword[];
+  createdAt: number;
+}
+
+export interface CourseReviewResponse {
+  courseReviewSummary: CourseReviewSummary[];
+  courseReviewDetail: CourseReviewDetail[];
+}
+
+export interface CourseReviewKeywordForm {
+  keywordId: number;
+  keyword: string;
+  isSelected: boolean;
+}
+
+export interface CourseReviewFormCategory {
+  categoryCode: number;
+  category: string;
+  courseReviewKeywordFormList: CourseReviewKeywordForm[];
+}
+
+export interface CourseReviewFormResponse {
+  hasMyReview: boolean;
+  courseReviewFormDetail: CourseReviewFormCategory[];
+}
+
+export interface CourseReviewPatchRequest {
+  courseReviewKeywordList: CourseReviewKeywordForm[];
+}

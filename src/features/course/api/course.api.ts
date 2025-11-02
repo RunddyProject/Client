@@ -5,6 +5,9 @@ import type {
   Course,
   CourseDetail,
   CoursePointResponse,
+  CourseReviewFormResponse,
+  CourseReviewPatchRequest,
+  CourseReviewResponse,
   CourseSearchParams,
   CoursesResponse
 } from '@/features/course/model/types';
@@ -50,5 +53,24 @@ export const CoursesApi = {
       fallbackName: 'route.gpx', // TODO: courseName
       requiresAuth: false
     });
+  },
+  getCourseReview: async (
+    uuid: Course['uuid']
+  ): Promise<CourseReviewResponse> => {
+    return api.get<CourseReviewResponse>(`/course/${uuid}/review`);
+  },
+  getCourseReviewForm: async (
+    uuid: Course['uuid']
+  ): Promise<CourseReviewFormResponse> => {
+    return api.get<CourseReviewFormResponse>(`/course/${uuid}/review/detail`);
+  },
+  patchCourseReview: async (
+    uuid: Course['uuid'],
+    body: CourseReviewPatchRequest
+  ): Promise<void> => {
+    return api.patch(`/course/${uuid}/review/detail`, body);
+  },
+  deleteCourseReview: async (uuid: Course['uuid']): Promise<void> => {
+    return api.delete(`/course/${uuid}/review/detail`);
   }
 };

@@ -11,7 +11,7 @@ import type { Course } from '@/features/course/model/types';
 import type { MarkerInput } from '@/features/map/model/types';
 import type { RUNDDY_COLOR } from '@/shared/model/types';
 
-function CourseDetailMap() {
+function CourseInfoMap() {
   const navigate = useNavigate();
 
   const { uuid } = useParams<{ uuid: Course['uuid'] }>();
@@ -67,4 +67,4 @@ function CourseDetailMap() {
   );
 }
 
-export default CourseDetailMap;
+export default CourseInfoMap;
