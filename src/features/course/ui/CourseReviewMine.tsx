@@ -99,6 +99,7 @@ const CourseReviewMine = () => {
                   <div className='flex h-[48px] w-full flex-col justify-center border-b border-gray-200'>
                     <CourseReviewWrite triggerMode='editReview' />
                   </div>
+                  {/* TODO: 삭제 팝업 추가 */}
                   <Button
                     variant='ghost'
                     onClick={() => deleteReview()}

@@ -32,7 +32,7 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
   const navigator = useNavigate();
 
   const { isAuthenticated } = useAuth();
-  const { form, isLoading, patchReview } = useCourseReviewForm(uuid!);
+  const { form, patchReview } = useCourseReviewForm(uuid!);
 
   const [open, setOpen] = useState(false);
   const [keywords, setKeywords] = useState<CourseReviewKeywordForm[]>([]);
@@ -79,40 +79,31 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
     setOpen(false);
   };
 
-  const TriggerButton = (triggerMode: TriggerMode) => {
+  const Trigger = (triggerMode: TriggerMode) => {
     switch (triggerMode) {
       case 'firstReview':
         return (
-          <Button
-            variant='secondary'
-            className='gap-1 py-2.5'
+          <div
+            className='flex items-center gap-1 rounded-xl bg-gray-100 px-4 py-2.5'
             onClick={handleClick}
-            disabled={isLoading}
           >
             <span className='pl-1'>첫 코스톡 남기기</span>
             <Icon name='chevron_right' size={16} className='pr-1' />
-          </Button>
+          </div>
         );
       case 'writeReview':
         return (
-          <Button
-            variant='ghost'
-            className='gap-1 p-0'
-            onClick={handleClick}
-            disabled={isLoading}
-          >
+          <div className='gap-1' onClick={handleClick}>
             <span>리뷰 남기기</span>
             <Icon name='chevron_right' size={14} />
-          </Button>
+          </div>
         );
 
       case 'editReview':
         return (
-          <Button
-            variant='ghost'
-            className='flex w-full items-center justify-between p-0'
+          <div
+            className='flex w-full items-center justify-between px-3'
             onClick={handleClick}
-            disabled={isLoading}
           >
             <span>수정하기</span>
             <Icon
@@ -121,14 +112,14 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
               color='currentColor'
               className='text-[#727787]'
             />
-          </Button>
+          </div>
         );
     }
   };
 
   return (
     <div className='relative'>
-      {TriggerButton(triggerMode)}
+      {Trigger(triggerMode)}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogPortal>
