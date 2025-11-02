@@ -31,8 +31,9 @@ export class AuthService {
     return AuthService.instance;
   }
 
-  // Storage helpers
+  // localStorage helpers
   private readToken(): string | null {
+    if (typeof window === 'undefined') return null;
     try {
       return localStorage.getItem(this.TOKEN_KEY);
     } catch (e) {
@@ -42,24 +43,24 @@ export class AuthService {
   }
 
   private writeToken(token: string): void {
+    if (typeof window === 'undefined') return;
     try {
       localStorage.setItem(this.TOKEN_KEY, token);
-      console.log('[Auth] Saved token to localStorage');
     } catch (e) {
       console.error('[Auth] Failed to save token:', e);
     }
   }
 
   private clearToken(): void {
+    if (typeof window === 'undefined') return;
     try {
       localStorage.removeItem(this.TOKEN_KEY);
-      console.log('[Auth] Removed token from localStorage');
     } catch (e) {
       console.error('[Auth] Failed to remove token:', e);
     }
   }
 
-  // OAuth redirect
+  // Social login redirect
   startSocialLogin(provider: 'kakao' | 'naver') {
     const authUrl = `${SERVER_DOMAIN}/oauth2/authorization/${provider}?redirect_uri=${CLIENT_URL}/login/success`;
     window.location.href = authUrl;
@@ -68,24 +69,26 @@ export class AuthService {
   // Get access token from server
   async getAccessToken(): Promise<string | null> {
     try {
-      const res = await api.post<{ accessToken: string }>(
-        '/auth/access-token',
-        undefined,
-        { requiresAuth: false }
-      );
+      const res = await api.post('/auth/access-token', undefined, {
+        requiresAuth: false
+      });
+      const token = res?.accessToken || res?.token || res?.data?.accessToken;
+      if (!token) throw new Error('No accessToken found in response');
 
-      if (!res?.accessToken) return null;
-
-      this.writeToken(res.accessToken);
-      return res.accessToken;
-    } catch (error) {
-      console.error('[Auth] Failed to get access token:', error);
+      this.writeToken(token);
+      return token;
+    } catch (error: any) {
+      if (error?.response?.status === 401) {
+        console.warn('[Auth] getAccessToken 401 - session expired');
+      } else {
+        console.error('[Auth] Failed to get access token:', error);
+      }
       this.clearToken();
       return null;
     }
   }
 
-  // Decode JWT token
+  // Decode JWT
   private decodeToken(token: string): User | null {
     try {
       const payload = JSON.parse(atob(token.split('.')[1])) as UserToken;
@@ -98,13 +101,6 @@ export class AuthService {
   }
 
   // Public getters
-  isAuthenticated(): boolean {
-    const token = this.readToken();
-    if (!token) return false;
-    const user = this.decodeToken(token);
-    return !!user;
-  }
-
   getCurrentUser(): User | null {
     const token = this.readToken();
     if (!token) return null;
@@ -115,7 +111,11 @@ export class AuthService {
     return this.readToken();
   }
 
-  // Logout / Delete
+  isAuthenticated(): boolean {
+    const token = this.readToken();
+    return !!(token && this.decodeToken(token));
+  }
+
   async logout(): Promise<void> {
     try {
       await api.post('/auth/logout');
@@ -138,17 +138,13 @@ export class AuthService {
     }
   }
 
-  // Initialize auth state (check if already logged in)
   async initialize(): Promise<boolean> {
-    if (import.meta.env.DEV) return true;
-
-    // 1) check storage
-    const existing = this.readToken();
-    if (existing && this.decodeToken(existing)) {
-      return true;
+    if (import.meta.env.DEV) {
+      const t = this.getToken();
+      return !!(t && this.decodeToken(t));
     }
-
-    // 2) update token
+    const existing = this.getToken();
+    if (existing && this.decodeToken(existing)) return true;
     const token = await this.getAccessToken();
     return !!token;
   }
@@ -156,9 +152,8 @@ export class AuthService {
   // DEV only
   setAccessTokenManually(token: string): void {
     if (import.meta.env.DEV) {
-      console.log('[Auth] Manually setting access token');
       this.writeToken(token);
-      console.log('[Auth] Manually set user:', this.decodeToken(token));
+      console.log('[Auth] Manually set token');
     }
   }
 }

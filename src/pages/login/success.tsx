@@ -2,27 +2,32 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
-import { useAuth } from '@/app/providers/AuthContext';
+import { authService } from '@/features/auth/api/auth';
 
 const LoginSuccess = () => {
   const navigate = useNavigate();
-  const { refreshAuth } = useAuth();
 
   useEffect(() => {
     const handleLoginSuccess = async () => {
       try {
-        await refreshAuth();
+        const token = await authService.getAccessToken();
 
-        toast.success('로그인 성공');
-        navigate('/', { replace: true });
+        if (token) {
+          toast.success('로그인 성공');
+          navigate('/', { replace: true });
+        } else {
+          toast.error('토큰 발급 실패');
+          navigate('/login', { replace: true });
+        }
       } catch (error) {
+        console.error('[LoginSuccess] 로그인 처리 실패:', error);
         toast.error('로그인 실패');
         navigate('/login', { replace: true });
       }
     };
 
     handleLoginSuccess();
-  }, [navigate, refreshAuth]);
+  }, [navigate]);
 
   return (
     <div className='flex min-h-screen items-center justify-center'>
