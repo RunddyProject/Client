@@ -93,7 +93,7 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
         );
       case 'writeReview':
         return (
-          <div className='gap-1' onClick={handleClick}>
+          <div className='flex items-center gap-1' onClick={handleClick}>
             <span>리뷰 남기기</span>
             <Icon name='chevron_right' size={14} />
           </div>

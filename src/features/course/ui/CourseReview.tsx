@@ -40,7 +40,9 @@ const CourseReview = () => {
               {form?.hasMyReview ? (
                 <CourseReviewMine />
               ) : (
-                <CourseReviewWrite triggerMode='writeReview' />
+                <CourseReviewWrite
+                  triggerMode={form?.hasMyReview ? 'editReview' : 'writeReview'}
+                />
               )}
             </div>
 
