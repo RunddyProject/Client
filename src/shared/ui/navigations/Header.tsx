@@ -6,11 +6,9 @@ import { toast } from 'sonner';
 import { useAuth } from '@/app/providers/AuthContext';
 import { useHeader } from '@/app/providers/HeaderContext';
 import { authService } from '@/features/auth/api/auth';
-import profileImgUrl from '@/shared/assets/basic_profile.png';
 import { Icon } from '@/shared/icons/icon';
 import { cn } from '@/shared/lib/utils';
 import Menu from '@/shared/ui/navigations/Menu';
-import { Avatar, AvatarFallback } from '@/shared/ui/primitives/avatar';
 import { Button } from '@/shared/ui/primitives/button';
 import {
   Dialog,
@@ -124,23 +122,6 @@ const Header = () => {
 
             <div className='flex items-center'>
               {isDevelopment && <DevTokenDialog />}
-
-              {isCoursePage && (
-                <Avatar
-                  className='h-12 w-12 cursor-pointer'
-                  onClick={() => navigate('/me')}
-                >
-                  <AvatarFallback>
-                    <img
-                      src={profileImgUrl}
-                      alt='Profile'
-                      width='28'
-                      height='28'
-                    />
-                  </AvatarFallback>
-                </Avatar>
-              )}
-
               <Menu titles={menuTitles} />
             </div>
           </>
