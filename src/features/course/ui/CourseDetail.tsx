@@ -1,28 +1,21 @@
-import { useEffect, useMemo, useState } from 'react';
-import { generatePath, Link, useNavigate, useParams } from 'react-router';
+import { useMemo, useState } from 'react';
+import { Link, useParams } from 'react-router';
 import { toast } from 'sonner';
 
-import { useHeader } from '@/app/providers/HeaderContext';
 import { CoursesApi } from '@/features/course/api/course.api';
 import { useCourseDetail } from '@/features/course/hooks/useCourseDetail';
 import { buildElevationChartData } from '@/features/course/lib/elevation';
 import {
   GRADE_TO_NAME,
-  SHAPE_TYPE_COLOR,
   SHAPE_TYPE_TO_NAME
 } from '@/features/course/model/contants';
 import { ElevationChart } from '@/features/course/ui/ElevationChart';
-import { NaverMap } from '@/features/map/ui/NaverMap';
 import { Icon } from '@/shared/icons/icon';
-import { runddyColor } from '@/shared/model/constants';
-import { ShareButton } from '@/shared/ui/actions/ShareButton';
 import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
 import Tooltip from '@/shared/ui/composites/tooltip';
 import { Button } from '@/shared/ui/primitives/button';
 
 import type { Course } from '@/features/course/model/types';
-import type { MarkerInput } from '@/features/map/model/types';
-import type { RUNDDY_COLOR } from '@/shared/model/types';
 
 const Chip = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -33,9 +26,6 @@ const Chip = ({ children }: { children: React.ReactNode }) => {
 };
 
 const CourseDetail = () => {
-  const navigate = useNavigate();
-  const { setConfig, resetConfig } = useHeader();
-
   const { uuid } = useParams<{ uuid: Course['uuid'] }>();
 
   const { courseDetail: course, isLoading } = useCourseDetail(uuid ?? '');
@@ -47,61 +37,19 @@ const CourseDetail = () => {
 
   const [isCopying, setIsCopying] = useState<Record<string, boolean>>({});
 
-  useEffect(() => {
-    if (!course) return;
-
-    setConfig({
-      rightButton: (
-        <ShareButton
-          title={`${course.name} (${(course.totalDistance / 1000).toFixed(1)}km)`}
-        />
-      )
-    });
-
-    return () => resetConfig();
-  }, [course, resetConfig, setConfig]);
-
   if (isLoading) {
     return <LoadingSpinner />;
   }
 
-  if (!course || !elevationChartData) {
-    toast.error('코스 불러오기 실패');
-    navigate('/');
+  if (!course) {
     return null;
   }
-
-  const activeColor: RUNDDY_COLOR = course
-    ? SHAPE_TYPE_COLOR[course.shapeType]
-    : runddyColor['blue'];
-
-  const startPoint = course.coursePointList[0];
-  const startMarker: MarkerInput = {
-    id: course.uuid,
-    lat: startPoint?.lat,
-    lng: startPoint?.lng,
-    kind: 'start'
-  };
-  const endPoint = course.coursePointList[course.coursePointList.length - 1];
-  const endMarker: MarkerInput = {
-    id: `${course.uuid}__end`,
-    lat: endPoint?.lat,
-    lng: endPoint?.lng,
-    kind: 'end'
-  };
-
-  const { series, minEle, maxEle } = elevationChartData;
-
-  const handleClickBookmark = () => {
-    toast('북마크 기능은 준비중입니다.');
-    // TODO: API
-  };
 
   const handleClickCopy = (text: 'startAddress' | 'endAddress') => {
     setIsCopying({ ...isCopying, [text]: true });
 
     navigator.clipboard.writeText(course[text]);
-    toast('주소가 복사되었습니다.');
+    toast('주소가 복사되었어요');
 
     setTimeout(() => {
       setIsCopying({ ...isCopying, [text]: false });
@@ -113,57 +61,15 @@ const CourseDetail = () => {
     CoursesApi.getCourseGpx(uuid);
   };
 
+  const { series, minEle, maxEle } = elevationChartData ?? {
+    series: [],
+    minEle: 0,
+    maxEle: 0
+  };
+
   return (
-    <div className='bg-background flex min-h-screen flex-col'>
-      {/* Header */}
-      <div className='relative'>
-        {/* Map */}
-        <div className='h-78 px-5 pt-3'>
-          <NaverMap
-            center={{ lat: course.lat, lng: course.lng }}
-            points={course.coursePointList}
-            bounds={{
-              minLat: course.minLat,
-              maxLat: course.maxLat,
-              minLng: course.minLng,
-              maxLng: course.maxLng
-            }}
-            markers={[startMarker, endMarker]}
-            focusKey={course.uuid}
-            color={activeColor}
-            interactionsEnabled={false}
-            onOverlayClick={() =>
-              navigate(generatePath('/course/:uuid/map', { uuid: course.uuid }))
-            }
-            className='h-full w-full rounded-xl'
-          />
-        </div>
-      </div>
-
-      {/* Content */}
+    <>
       <div className='px-5'>
-        {/* Course Info */}
-        <div className='space-y-1 pt-6 pb-7.5'>
-          <div className='flex items-center justify-between gap-1'>
-            <h3 className='text-md truncate font-semibold'>
-              {course?.name || '코스이름'}
-            </h3>
-            <Button
-              variant='ghost'
-              className='h-6 w-6 p-0'
-              onClick={handleClickBookmark}
-            >
-              <Icon
-                name={course.isBookmarked ? 'save_on_solid' : 'save_off_solid'}
-                size={24}
-              />
-            </Button>
-          </div>
-          <div className='text-blue text-3xl font-bold'>
-            {(course.totalDistance / 1000).toFixed(1)}km
-          </div>
-        </div>
-
         <div className='space-y-8'>
           <div className='flex items-center justify-between gap-1'>
             <div className='font-bold'>난이도</div>
@@ -303,7 +209,7 @@ const CourseDetail = () => {
           />
         </Link>
       </div>
-    </div>
+    </>
   );
 };
 

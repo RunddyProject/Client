@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router';
 
+import { GRADE_TO_NAME } from '@/features/course/model/contants';
 import CourseArtImageUrl from '@/shared/assets/course_art.png';
 import CourseLinearImageUrl from '@/shared/assets/course_linear.png';
 import CourseLoopImageUrl from '@/shared/assets/course_loop.png';
@@ -9,7 +10,7 @@ import { cn } from '@/shared/lib/utils';
 import { Badge } from '@/shared/ui/primitives/badge';
 import { Button } from '@/shared/ui/primitives/button';
 
-import type { Course } from '@/features/course/model/types';
+import type { Course, GradeType } from '@/features/course/model/types';
 
 interface CourseInfoCardProps {
   course: Course;
@@ -69,7 +70,7 @@ const CourseInfoCard = ({ course, className }: CourseInfoCardProps) => {
           </Button>
         </div>
         <div className='flex items-center gap-1 overflow-x-auto text-sm'>
-          <Badge>Lv. {course?.grade || 1}</Badge>
+          <Badge>{GRADE_TO_NAME[(course?.grade || 1) as GradeType]}</Badge>
           <Badge>{course?.envTypeName || '공원'}</Badge>
           <Badge>{((course?.totalDistance || 5000) / 1000).toFixed(0)}km</Badge>
         </div>

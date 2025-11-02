@@ -1,6 +1,7 @@
 import type {
   EnvType,
   EnvTypeName,
+  GradeType,
   ShapeType,
   ShapeTypeName
 } from '@/features/course/model/types';
@@ -57,6 +58,12 @@ export const SHAPE_TYPE_COLOR: Record<ShapeType, RUNDDY_COLOR> = {
 };
 
 export const grades = [1, 2, 3];
+export const GRADE_TO_NAME = {
+  1: '초급',
+  2: '중급',
+  3: '고급'
+} as const satisfies Record<GradeType, string>;
+
 export const envTypeNames = Object.keys(ENV_NAME_TO_TYPE) as EnvTypeName[];
 export const shapeTypeNames = Object.keys(
   SHAPE_NAME_TO_TYPE

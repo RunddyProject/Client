@@ -6,7 +6,8 @@ import {
   envTypeNames,
   shapeTypeNames,
   ENV_NAME_TO_TYPE,
-  SHAPE_NAME_TO_TYPE
+  SHAPE_NAME_TO_TYPE,
+  GRADE_TO_NAME
 } from '@/features/course/model/contants';
 import { Icon } from '@/shared/icons/icon';
 import { buildQuery } from '@/shared/lib/query';
@@ -28,6 +29,8 @@ import {
   ToggleGroup,
   ToggleGroupItem
 } from '@/shared/ui/primitives/toggle-group';
+
+import type { GradeType } from '@/features/course/model/types';
 
 type Tuple2 = [number, number];
 
@@ -83,7 +86,7 @@ const FilterChipsBar = ({
     <div className='flex items-center gap-2'>
       {applied.grade.map((g) => (
         <Chip key={`grade-${g}`} onClick={() => onRemove('grade', g)}>
-          Lv. {g}
+          {GRADE_TO_NAME[Number(g) as GradeType]}
         </Chip>
       ))}
 
@@ -305,7 +308,7 @@ const CourseFilter = () => {
                     value={String(grd)}
                     onClick={() => handleToggle('grade', String(grd))}
                   >
-                    Lv. {grd}
+                    {GRADE_TO_NAME[grd as GradeType]}
                   </ToggleGroupItem>
                 ))}
               </ToggleGroup>
@@ -360,7 +363,7 @@ const CourseFilter = () => {
                 max={40}
                 step={1}
               />
-              <div className='flex justify-between text-sm text-gray-400'>
+              <div className='flex justify-between pt-2 text-sm text-gray-400'>
                 <span>0km</span>
                 <span>20km</span>
                 <span>40km 이상</span>
@@ -376,7 +379,7 @@ const CourseFilter = () => {
                 max={1000}
                 step={10}
               />
-              <div className='flex justify-between text-sm text-gray-400'>
+              <div className='flex justify-between pt-2 text-sm text-gray-400'>
                 <span>0m</span>
                 <span>500m</span>
                 <span>1000m 이상</span>
