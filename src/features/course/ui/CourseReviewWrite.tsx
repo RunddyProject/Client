@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 
+import { useAuth } from '@/app/providers/AuthContext';
 import { useCourseReviewForm } from '@/features/course/hooks/useCourseReviewForm';
 import { Icon } from '@/shared/icons/icon';
 import { Button } from '@/shared/ui/primitives/button';
@@ -28,7 +29,9 @@ interface CourseReviewWriteProps {
 
 const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
   const { uuid } = useParams<{ uuid: string }>();
+  const navigator = useNavigate();
 
+  const { isAuthenticated } = useAuth();
   const { form, isLoading, patchReview } = useCourseReviewForm(uuid!);
 
   const [open, setOpen] = useState(false);
@@ -56,6 +59,16 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
     );
   };
 
+  const handleClick = () => {
+    if (isAuthenticated === false) {
+      toast.error('리뷰 작성은 로그인이 필요해요');
+      navigator('/login');
+      return;
+    } else {
+      setOpen(true);
+    }
+  };
+
   const handleSave = () => {
     if (!uuid) return;
     patchReview({ courseReviewKeywordList: keywords });
@@ -73,7 +86,7 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
           <Button
             variant='secondary'
             className='gap-1 py-2.5'
-            onClick={() => setOpen(true)}
+            onClick={handleClick}
             disabled={isLoading}
           >
             <span className='pl-1'>첫 코스톡 남기기</span>
@@ -85,7 +98,7 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
           <Button
             variant='ghost'
             className='gap-1 p-0'
-            onClick={() => setOpen(true)}
+            onClick={handleClick}
             disabled={isLoading}
           >
             <span>리뷰 남기기</span>
@@ -98,7 +111,7 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
           <Button
             variant='ghost'
             className='flex w-full items-center justify-between p-0'
-            onClick={() => setOpen(true)}
+            onClick={handleClick}
             disabled={isLoading}
           >
             <span>수정하기</span>

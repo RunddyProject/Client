@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
+import { useAuth } from '@/app/providers/AuthContext';
 import { CoursesApi } from '@/features/course/api/course.api';
 
 import type {
@@ -11,9 +12,10 @@ import type {
 
 export function useCourseReviewForm(uuid: Course['uuid']) {
   const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth();
 
   const formQuery = useQuery<CourseReviewFormResponse, Error>({
-    enabled: !!uuid,
+    enabled: !!uuid && !!isAuthenticated,
     queryKey: ['course-review-form', uuid],
     queryFn: () => CoursesApi.getCourseReviewForm(uuid)
   });
