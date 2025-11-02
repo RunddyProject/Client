@@ -40,12 +40,18 @@ const CourseInfoCard = ({ course, className }: CourseInfoCardProps) => {
       onClick={handleClick}
     >
       {courseImageUrl[course.shapeType] ? (
-        <img
-          src={courseImageUrl[course.shapeType]}
-          width='60'
-          height='60'
-          className='rounded-xl'
-        />
+        <div className='relative h-[60px] w-[60px]'>
+          <img
+            src={courseImageUrl[course.shapeType]}
+            width='60'
+            height='60'
+            className='rounded-xl'
+          />
+          <div
+            className='pointer-events-none absolute inset-0'
+            dangerouslySetInnerHTML={{ __html: course.svg }}
+          />
+        </div>
       ) : (
         <div className='h-15 w-15 rounded-xl bg-gray-900' />
       )}
