@@ -101,19 +101,65 @@ export class AuthService {
   }
 
   // Public getters
-  getCurrentUser(): User | null {
-    const token = this.readToken();
-    if (!token) return null;
-    return this.decodeToken(token);
-  }
-
   getToken(): string | null {
     return this.readToken();
   }
 
-  isAuthenticated(): boolean {
-    const token = this.readToken();
-    return !!(token && this.decodeToken(token));
+  getUserFromToken(): User | null {
+    const token = this.getToken();
+    if (!token) return null;
+    return this.decodeToken(token);
+  }
+
+  private async checkAuthOnServer(): Promise<boolean> {
+    const token = this.getToken();
+    if (!token || !this.decodeToken(token)) return false;
+
+    try {
+      await api.get('/users', {
+        headers: { Authorization: `Bearer ${token}` }
+        // cache: 'no-store',
+      });
+      return true;
+    } catch (error: any) {
+      if (error?.response?.status === 401) {
+        console.warn('[Auth] checkAuthOnServer 401');
+        this.clearToken();
+      } else {
+        console.error('[Auth] checkAuthOnServer failed:', error);
+      }
+      return false;
+    }
+  }
+
+  async getUser(): Promise<User | null> {
+    const token = this.getToken();
+    const local = this.getUserFromToken();
+    if (!token || !local) return null;
+
+    try {
+      const res = await api.get('/users', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return {
+        id: local.id,
+        provider: local.provider,
+        roles: local.roles,
+        userName: res?.userName,
+        profileUrl: res?.profileUrl
+      };
+    } catch (error: any) {
+      if (error?.response?.status === 401) this.clearToken();
+      return null;
+    }
+  }
+
+  async isAuthenticated(opts?: { validate?: boolean }): Promise<boolean> {
+    const { validate = false } = opts ?? {};
+    const token = this.getToken();
+    if (!token || !this.decodeToken(token)) return false;
+    if (!validate) return true; // 로컬만 확인 (빠름)
+    return this.checkAuthOnServer(); // 필요할 때만 서버 확인
   }
 
   async logout(): Promise<void> {
@@ -144,9 +190,12 @@ export class AuthService {
       return !!(t && this.decodeToken(t));
     }
     const existing = this.getToken();
-    if (existing && this.decodeToken(existing)) return true;
-    const token = await this.getAccessToken();
-    return !!token;
+    if (!(existing && this.decodeToken(existing))) {
+      const newToken = await this.getAccessToken();
+      if (!newToken) return false;
+    }
+    // PROD에서는 최초 1회만 서버 검증
+    return this.isAuthenticated({ validate: true });
   }
 
   // DEV only

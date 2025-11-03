@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const isAuth = await authService.initialize();
       if (isAuth) {
-        const currentUser = authService.getCurrentUser();
+        const currentUser = await authService.getUser();
         setUser(currentUser);
       } else {
         setUser(null);
