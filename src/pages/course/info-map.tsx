@@ -61,6 +61,7 @@ function CourseInfoMap() {
         markers={[startMarker, endMarker]}
         focusKey={course.uuid}
         color={activeColor}
+        fitEnabled
         className='h-full w-full'
       />
     </div>

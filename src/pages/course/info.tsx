@@ -98,6 +98,7 @@ const CourseInfo = () => {
             markers={[startMarker, endMarker]}
             focusKey={course.uuid}
             color={activeColor}
+            fitEnabled
             interactionsEnabled={false}
             onOverlayClick={() =>
               navigate(generatePath('/course/:uuid/map', { uuid: course.uuid }))
