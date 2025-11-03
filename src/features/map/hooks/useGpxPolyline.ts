@@ -42,25 +42,29 @@ export function useGpxPolyline(
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !points?.length) return;
+    if (!map) return;
 
-    const path = points.map((p) => new naver.maps.LatLng(p.lat, p.lng));
     const strokeColor = runddyColor[color ?? 'blue'];
 
-    // Create or update polyline
     if (!polylineRef.current) {
       polylineRef.current = new naver.maps.Polyline({
-        path,
+        path: [],
         strokeColor,
-        strokeWeight: 7,
-        map
+        strokeWeight: 7
       });
-    } else {
-      polylineRef.current.setPath(path);
-      (polylineRef.current as any).setOptions?.({ strokeColor });
     }
 
-    if (fit === 'never') return;
+    if (polylineRef.current.getMap() !== map) {
+      polylineRef.current.setMap(map);
+    }
+
+    const path = points?.length
+      ? points.map((p) => new naver.maps.LatLng(p.lat, p.lng))
+      : [];
+    polylineRef.current.setPath(path);
+    (polylineRef.current as any).setOptions?.({ strokeColor });
+
+    if (!points?.length || fit === 'never') return;
 
     // Temporarily block fit while interacting
     const setInteractingTrue = () => (interactingRef.current = true);

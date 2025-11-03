@@ -8,7 +8,10 @@ import { useSearchParams } from 'react-router';
 import { toast } from 'sonner';
 
 import { CoursesApi } from '@/features/course/api/course.api';
-import { DEFAULT_CENTER } from '@/features/course/model/contants';
+import {
+  DEFAULT_CENTER,
+  DEFAULT_RADIUS
+} from '@/features/course/model/constants';
 import {
   type Course,
   type CourseSearchParams,
@@ -17,15 +20,19 @@ import {
 } from '@/features/course/model/types';
 
 export function useCourses({
-  userLocation = DEFAULT_CENTER
-}: { userLocation?: UserLocation | null } = {}) {
+  userLocation = DEFAULT_CENTER,
+  radius = DEFAULT_RADIUS
+}: {
+  userLocation?: UserLocation | null;
+  radius?: number;
+} = {}) {
   const [params] = useSearchParams();
 
-  const grades = params.getAll('grade').map((g) => Number(g));
+  const grades = params.getAll('grade').map(Number);
   const envTypes = params.getAll('envType');
 
   const search: CourseSearchParams = {
-    dist: params.get('dist') ? Number(params.get('dist')) : undefined,
+    dist: radius ?? Number(params.get('dist')),
     grade: grades.length ? grades : undefined,
     envType: envTypes.length ? envTypes : undefined,
     minDist: params.get('minDist') ? Number(params.get('minDist')) : undefined,
@@ -49,10 +56,6 @@ export function useCourses({
       search.maxEle,
       search.keyword
     ],
-    staleTime: 60_000,
-    gcTime: 5 * 60_000,
-    retry: 1,
-    placeholderData: keepPreviousData,
     queryFn: async () => {
       if (!userLocation) return [];
       const res: CoursesResponse = await CoursesApi.getCourses(
@@ -61,7 +64,12 @@ export function useCourses({
         search
       );
       return res.courseList;
-    }
+    },
+    staleTime: 60_000,
+    gcTime: 5 * 60_000,
+    retry: 1,
+    enabled: !!userLocation,
+    placeholderData: keepPreviousData
   });
 
   useEffect(() => {

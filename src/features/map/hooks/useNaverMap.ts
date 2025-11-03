@@ -1,8 +1,13 @@
 import { useEffect, useRef } from 'react';
 
+import {
+  DEFAULT_CENTER,
+  DEFAULT_ZOOM
+} from '@/features/course/model/constants';
+
 export type LatLng = { lat: number; lng: number };
 
-export function useNaverMap(center: LatLng, zoom = 12) {
+export function useNaverMap() {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<naver.maps.Map | null>(null);
   const polylineRef = useRef<naver.maps.Polyline | null>(null);
@@ -17,16 +22,25 @@ export function useNaverMap(center: LatLng, zoom = 12) {
     const _mapEl = mapRef.current;
     const _markerMap = markerMapRef.current;
     const _listeners = markerListenersRef.current;
+    const _polyline = polylineRef.current;
 
-    const mapOptions: naver.maps.MapOptions = {
-      center: new window.naver.maps.LatLng(center.lat, center.lng),
-      zoom,
-      zoomControl: false,
-      mapTypeControl: false
-    };
-
-    const map = new window.naver.maps.Map(_mapEl, mapOptions);
-    mapInstanceRef.current = map;
+    if (!mapInstanceRef.current) {
+      const map = new window.naver.maps.Map(_mapEl, {
+        center: new window.naver.maps.LatLng(DEFAULT_CENTER),
+        zoom: DEFAULT_ZOOM,
+        zoomControl: false,
+        mapTypeControl: false
+      });
+      mapInstanceRef.current = map;
+    } else {
+      const map = mapInstanceRef.current!;
+      const currentZoom = map.getZoom();
+      map.setCenter(new naver.maps.LatLng(DEFAULT_CENTER));
+      const onceIdle = naver.maps.Event.once(map, 'idle', () => {
+        if (map.getZoom() !== currentZoom) map.setZoom(currentZoom, true);
+      });
+      return () => naver.maps.Event.removeListener(onceIdle);
+    }
 
     return () => {
       _listeners.forEach((l) => naver.maps.Event.removeListener(l));
@@ -35,14 +49,11 @@ export function useNaverMap(center: LatLng, zoom = 12) {
       _markerMap.forEach((m) => m.setMap(null));
       _markerMap.clear();
 
-      if (polylineRef.current) {
-        polylineRef.current.setMap(null);
-        polylineRef.current = null;
-      }
+      if (_polyline) _polyline.setMap(null);
 
       mapInstanceRef.current = null;
     };
-  }, [center.lat, center.lng, zoom]);
+  }, []);
 
   return {
     mapRef,

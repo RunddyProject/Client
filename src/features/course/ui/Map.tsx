@@ -8,11 +8,15 @@ import {
 
 import { useCoursePoint } from '@/features/course/hooks/useCoursePoint';
 import { useCourses } from '@/features/course/hooks/useCourses';
-import { SHAPE_TYPE_COLOR } from '@/features/course/model/contants';
+import {
+  SHAPE_TYPE_COLOR,
+  DEFAULT_ZOOM
+} from '@/features/course/model/constants';
 import CourseFilter from '@/features/course/ui/Filter';
 import CourseInfoCard from '@/features/course/ui/InfoCard';
 import Search from '@/features/course/ui/Search';
 import { useGeolocation } from '@/features/map/hooks/useGeolocation';
+import { useMapViewport } from '@/features/map/hooks/useMapViewport';
 import { useLocationStore } from '@/features/map/model/location.store';
 import { NaverMap } from '@/features/map/ui/NaverMap';
 import { useCenteredActiveByScroll } from '@/shared/hooks/useCenteredActiveByScroll';
@@ -25,15 +29,30 @@ import type { Course } from '@/features/course/model/types';
 import type { MarkerInput } from '@/features/map/model/types';
 import type { RUNDDY_COLOR } from '@/shared/model/types';
 
-interface CourseMapProps {
+const CourseMap = ({
+  onViewModeChange
+}: {
   onViewModeChange: (mode: 'map' | 'list') => void;
-}
+}) => {
+  const mapRef = useRef<naver.maps.Map | null>(null);
 
-const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
-  const { userLocation, isLocationLoading } = useLocationStore();
-  const { getCurrentLocation } = useGeolocation();
+  const {
+    lastSearchedCenter,
+    lastSearchedRadius,
+    lastSearchedZoom,
+    setLastSearchedArea
+  } = useLocationStore();
+  const { getCurrentLocation, isLoading: isLocationLoading } = useGeolocation();
 
-  const { courses } = useCourses({ userLocation });
+  const { viewport, movedByUser, resetMovedByUser } = useMapViewport(
+    mapRef.current
+  );
+
+  const { courses, isFetching } = useCourses({
+    userLocation: lastSearchedCenter,
+    radius: lastSearchedRadius
+  });
+
   const [activeCourseId, setActiveCourseId] = useState<string>(
     courses[0]?.uuid ?? ''
   );
@@ -43,11 +62,24 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
   const activeColor: RUNDDY_COLOR = activeCourse
     ? SHAPE_TYPE_COLOR[activeCourse.shapeType]
     : runddyColor['blue'];
+
   const scrollerRef = useRef<HTMLDivElement>(null);
   const scrollToCenter = useScrollItemToCenter(
     scrollerRef as RefObject<HTMLElement>,
     'uuid'
   );
+
+  const hasCenterChanged =
+    Math.abs(viewport.center.lat - lastSearchedCenter.lat) > 0.0001 ||
+    Math.abs(viewport.center.lng - lastSearchedCenter.lng) > 0.0001;
+
+  const showSearchButton = movedByUser && hasCenterChanged;
+
+  const handleSearchHere = async () => {
+    const zoom = mapRef.current?.getZoom?.() || DEFAULT_ZOOM;
+    setLastSearchedArea(viewport.center, viewport.radius, zoom);
+    resetMovedByUser();
+  };
 
   const handleActiveCourseId = useCallback((uuid: Course['uuid']) => {
     setActiveCourseId(uuid);
@@ -65,17 +97,27 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
   });
 
   useEffect(() => {
-    if (courses.length > 0) {
+    if (courses.length > 0 && !activeCourseId) {
       setActiveCourseId(courses[0].uuid);
     }
-  }, [courses]);
+  }, [courses, activeCourseId]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    map.setCenter(
+      new naver.maps.LatLng(lastSearchedCenter.lat, lastSearchedCenter.lng)
+    );
+    map.setZoom(lastSearchedZoom ?? DEFAULT_ZOOM);
+  }, [lastSearchedCenter, lastSearchedZoom]);
 
   return (
     <div className='relative h-[100dvh]'>
       <NaverMap
+        key='runddy-naver-map'
         className='absolute inset-0'
         glassTopOverlay
-        center={userLocation}
         points={coursePointList}
         color={activeColor}
         markers={courses.flatMap((c) => {
@@ -98,13 +140,31 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
           return [start];
         })}
         focusKey={activeCourseId ?? undefined}
+        fitEnabled={false}
+        onInit={(map) => (mapRef.current = map)}
         onMarkerClick={handleMarkerClick}
       />
 
-      {/* TODO: add button 현재 위치에서 검색 */}
+      {showSearchButton && (
+        <div className='fixed top-[178px] left-1/2 z-50 -translate-x-1/2 transform'>
+          <Button
+            className='rounded-full px-6 shadow-lg'
+            onClick={handleSearchHere}
+            disabled={isFetching}
+          >
+            <Icon
+              name='refresh'
+              size={20}
+              color='#E7E9F0'
+              secondary='#272930'
+            />
+            현재 위치에서 검색
+          </Button>
+        </div>
+      )}
 
       <div className='pointer-events-none absolute top-[calc(env(safe-area-inset-top)+52px)] right-0 bottom-0 left-0 z-10 grid grid-rows-[auto_1fr_auto]'>
-        {/* Search bar */}
+        {/* Search */}
         <div className='pointer-events-auto px-5 pt-[calc(env(safe-area-inset-top)+12px)]'>
           <Search />
         </div>
@@ -114,9 +174,8 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
           <CourseFilter />
         </div>
 
-        {/* Bottom */}
+        {/* Bottom Controls */}
         <div className='space-y-2 px-5 pb-[calc(env(safe-area-inset-bottom)+20px)]'>
-          {/* Controls */}
           <div className='flex items-end justify-between'>
             <div className='flex flex-col gap-2'>
               {/* <Button
@@ -154,7 +213,7 @@ const CourseMap = ({ onViewModeChange }: CourseMapProps) => {
           </div>
         </div>
 
-        {/* Course info card */}
+        {/* Course Cards */}
         {courses.length === 0 && (
           <div className='px-4 pb-5'>
             <div className='flex [touch-action:none] gap-4 rounded-2xl bg-white p-5 shadow-xl'>

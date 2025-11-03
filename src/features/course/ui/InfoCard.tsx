@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router';
 
-import { GRADE_TO_NAME } from '@/features/course/model/contants';
+import { GRADE_TO_NAME } from '@/features/course/model/constants';
 import CourseArtImageUrl from '@/shared/assets/course_art.png';
 import CourseLinearImageUrl from '@/shared/assets/course_linear.png';
 import CourseLoopImageUrl from '@/shared/assets/course_loop.png';

@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { useHeader } from '@/app/providers/HeaderContext';
 import { useCourseDetail } from '@/features/course/hooks/useCourseDetail';
 import { useCourseReview } from '@/features/course/hooks/useCourseReview';
-import { SHAPE_TYPE_COLOR } from '@/features/course/model/contants';
+import { SHAPE_TYPE_COLOR } from '@/features/course/model/constants';
 import CourseDetail from '@/features/course/ui/CourseDetail';
 import CourseReview from '@/features/course/ui/CourseReview';
 import { NaverMap } from '@/features/map/ui/NaverMap';

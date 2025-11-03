@@ -8,7 +8,7 @@ import {
   ENV_NAME_TO_TYPE,
   SHAPE_NAME_TO_TYPE,
   GRADE_TO_NAME
-} from '@/features/course/model/contants';
+} from '@/features/course/model/constants';
 import { Icon } from '@/shared/icons/icon';
 import { buildQuery } from '@/shared/lib/query';
 import { deepEqual } from '@/shared/lib/utils';

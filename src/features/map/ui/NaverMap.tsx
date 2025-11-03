@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { useFitLatLngBoundsScale } from '@/features/map/hooks/hooks/useFitLatLngBoundsScale';
+import { useFitLatLngBoundsScale } from '@/features/map/hooks/useFitLatLngBoundsScale';
 import { useGpxPolyline } from '@/features/map/hooks/useGpxPolyline';
 import { useMarkers } from '@/features/map/hooks/useMarkers';
 import { useNaverMap } from '@/features/map/hooks/useNaverMap';
@@ -20,32 +20,34 @@ type Props = {
   color?: RUNDDY_COLOR;
   markers?: MarkerInput[];
   focusKey?: Course['uuid'];
+  fitEnabled?: boolean;
   interactionsEnabled?: boolean;
+  onInit?: (map: naver.maps.Map) => void;
   onMarkerClick?: (id: string) => void;
   onOverlayClick?: VoidFunction;
 };
 
-const DEFAULT_CENTER = { lat: 37.575959, lng: 126.97679 };
-
 export function NaverMap({
   className,
   glassTopOverlay = false,
-  center = DEFAULT_CENTER,
-  zoom = 12,
   points,
   bounds,
   color,
   markers = [],
   focusKey,
+  fitEnabled = false,
   interactionsEnabled = true,
+  onInit,
   onMarkerClick,
   onOverlayClick
 }: Props) {
   const { mapRef, map, markerMapRef, markerListenersRef, polylineRef } =
-    useNaverMap(center, zoom);
+    useNaverMap();
 
   useEffect(() => {
     if (!map.current) return;
+
+    onInit?.(map.current);
 
     map.current.setOptions({
       draggable: interactionsEnabled,
@@ -56,7 +58,7 @@ export function NaverMap({
       disableDoubleClickZoom: !interactionsEnabled,
       disableTwoFingerTapZoom: !interactionsEnabled
     });
-  }, [map, interactionsEnabled]);
+  }, [map, interactionsEnabled, onInit]);
 
   useGpxPolyline(map, polylineRef, points, color, { fit: 'never' });
   useMarkers(map, markerMapRef, markerListenersRef, markers, onMarkerClick, {
@@ -64,16 +66,22 @@ export function NaverMap({
     focusColor: color
   });
   usePanToActiveMarker(map, markerMapRef, focusKey);
-  useFitLatLngBoundsScale(map, bounds, {
-    scale: 1.5,
-    paddingPx: 0,
-    maxZoom: 16,
-    oncePerKey: focusKey ?? 'gpx',
-    settleDelay: 120,
-    durationMs: 400,
-    disableTileFadeDuringMove: true,
-    observeResize: true
-  });
+  useFitLatLngBoundsScale(
+    map,
+    fitEnabled ? bounds : undefined,
+    fitEnabled
+      ? {
+          scale: 1.5,
+          paddingPx: 0,
+          maxZoom: 16,
+          oncePerKey: focusKey ?? 'gpx',
+          settleDelay: 120,
+          durationMs: 400,
+          disableTileFadeDuringMove: true,
+          observeResize: true
+        }
+      : {}
+  );
 
   return (
     <>
@@ -103,7 +111,7 @@ export function NaverMap({
       )}
 
       {glassTopOverlay && (
-        <div className="absolute top-0 z-10 h-13 w-full bg-transparent pt-[env(safe-area-inset-top)] before:pointer-events-none before:absolute before:inset-0 before:[mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_85%)] before:backdrop-blur-[20px] before:content-[''] before:[-webkit-mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_85%)] after:pointer-events-none after:absolute after:inset-0 after:bg-gradient-to-b after:from-white/60 after:via-white/15 after:to-transparent after:content-['']" />
+        <div className="absolute top-0 z-10 h-13 w-full bg-transparent pt-[env(safe-area-inset-top)] before:pointer-events-none before:absolute before:inset-0 before:[mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_100%)] before:backdrop-blur-[20px] before:content-[''] before:[-webkit-mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_85%)] after:pointer-events-none after:absolute after:inset-0 after:bg-gradient-to-b after:from-white/60 after:via-white/15 after:to-transparent after:content-['']" />
       )}
     </>
   );

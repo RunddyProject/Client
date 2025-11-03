@@ -8,7 +8,7 @@ import { buildElevationChartData } from '@/features/course/lib/elevation';
 import {
   GRADE_TO_NAME,
   SHAPE_TYPE_TO_NAME
-} from '@/features/course/model/contants';
+} from '@/features/course/model/constants';
 import { ElevationChart } from '@/features/course/ui/ElevationChart';
 import { Icon } from '@/shared/icons/icon';
 import LoadingSpinner from '@/shared/ui/composites/loading-spinner';

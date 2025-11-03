@@ -12,6 +12,10 @@ export const DEFAULT_CENTER = {
   lng: 126.97679
 };
 
+export const DEFAULT_RADIUS = 10;
+
+export const DEFAULT_ZOOM = 12;
+
 export const ENV_TYPE_TO_NAME: Record<EnvType, EnvTypeName> = {
   PARK: '공원',
   TRAIL: '산책로',

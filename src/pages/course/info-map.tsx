@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 
 import { useCourseDetail } from '@/features/course/hooks/useCourseDetail';
-import { SHAPE_TYPE_COLOR } from '@/features/course/model/contants';
+import { SHAPE_TYPE_COLOR } from '@/features/course/model/constants';
 import { NaverMap } from '@/features/map/ui/NaverMap';
 import { runddyColor } from '@/shared/model/constants';
 import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
