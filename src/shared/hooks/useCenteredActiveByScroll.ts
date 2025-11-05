@@ -146,5 +146,5 @@ export function useCenteredActiveByScroll({
       root.dispatchEvent(new Event('scroll'));
     });
     return () => cancelAnimationFrame(id);
-  }, [container.current]); // eslint-disable-line
+  }, [container.current, itemAttr]); // eslint-disable-line
 }

@@ -49,7 +49,7 @@ export const useMapViewport = (mapInstance: naver.maps.Map | null) => {
 
     setViewport({
       center: { lat: center.lat(), lng: center.lng() },
-      radius: Math.max(0.1, Math.min(radiusKm, 200)),
+      radius: radiusKm,
       zoom
     });
   }, [mapInstance]);

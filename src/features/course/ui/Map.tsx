@@ -57,6 +57,7 @@ const CourseMap = ({
     courses[0]?.uuid ?? ''
   );
   const { coursePointList } = useCoursePoint(activeCourseId);
+
   const activeCourse =
     courses.find((c) => c.uuid === activeCourseId) ?? courses[0];
   const activeColor: RUNDDY_COLOR = activeCourse
@@ -97,10 +98,15 @@ const CourseMap = ({
   });
 
   useEffect(() => {
-    if (courses.length > 0 && !activeCourseId) {
-      setActiveCourseId(courses[0].uuid);
+    if (courses.length === 0) {
+      setActiveCourseId('');
+    } else if (
+      !activeCourseId ||
+      !courses.find((c) => c.uuid === activeCourseId)
+    ) {
+      handleActiveCourseId(courses[0].uuid);
     }
-  }, [courses, activeCourseId]);
+  }, [courses, activeCourseId, handleActiveCourseId]);
 
   useEffect(() => {
     const map = mapRef.current;
