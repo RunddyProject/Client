@@ -3,7 +3,7 @@ import {
   useQuery,
   useQueryClient
 } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router';
 import { toast } from 'sonner';
 
@@ -42,6 +42,11 @@ export function useCourses({
     keyword: params.get('keyword') ?? undefined
   };
 
+  const lastGeocodedKeywordRef = useRef<string | null>(null);
+  const geocodeCacheRef = useRef<Map<string, { lat: number; lng: number }>>(
+    new Map()
+  );
+
   const query = useQuery<Course[], Error>({
     queryKey: [
       'courses',
@@ -58,12 +63,43 @@ export function useCourses({
     ],
     queryFn: async () => {
       if (!userLocation) return [];
-      const res: CoursesResponse = await CoursesApi.getCourses(
+
+      // 1) Primary search: by user location + keyword (if any)
+      const primaryResponse: CoursesResponse = await CoursesApi.getCourses(
         userLocation.lat,
         userLocation.lng,
         search
       );
-      return res.courseList;
+      const primaryCourses = primaryResponse.courseList;
+
+      if (primaryCourses.length > 0 || !search.keyword) return primaryCourses;
+
+      // 2) If no results and keyword exists, try geocoding
+      const normalizedKeyword = search.keyword.trim();
+      if (!normalizedKeyword) return [];
+
+      let resolvedCenter =
+        geocodeCacheRef.current.get(normalizedKeyword) ?? null;
+
+      if (
+        !resolvedCenter &&
+        lastGeocodedKeywordRef.current !== normalizedKeyword
+      ) {
+        lastGeocodedKeywordRef.current = normalizedKeyword;
+        resolvedCenter = await geocode(normalizedKeyword);
+        if (resolvedCenter)
+          geocodeCacheRef.current.set(normalizedKeyword, resolvedCenter);
+      }
+
+      if (!resolvedCenter) return [];
+
+      // 3) Secondary search: by geocoded location
+      const secondaryResponse: CoursesResponse = await CoursesApi.getCourses(
+        resolvedCenter.lat,
+        resolvedCenter.lng,
+        { ...search, keyword: undefined }
+      );
+      return secondaryResponse.courseList;
     },
     staleTime: 60_000,
     gcTime: 5 * 60_000,
@@ -86,6 +122,32 @@ export function useCourses({
     isError: query.isError,
     refetch: query.refetch
   };
+}
+
+async function geocode(
+  keyword: string
+): Promise<{ lat: number; lng: number } | null> {
+  return new Promise((resolve) => {
+    if (!window.naver?.maps?.Service) {
+      resolve(null);
+      return;
+    }
+    window.naver.maps.Service.geocode(
+      { query: keyword },
+      (status, response) => {
+        if (status !== window.naver.maps.Service.Status.OK) {
+          resolve(null);
+          return;
+        }
+        const addr = response?.v2?.addresses?.[0];
+        if (!addr) {
+          resolve(null);
+          return;
+        }
+        resolve({ lat: parseFloat(addr.y), lng: parseFloat(addr.x) });
+      }
+    );
+  });
 }
 
 export function usePrefetchCourses() {
