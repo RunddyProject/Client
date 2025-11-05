@@ -40,6 +40,7 @@ const CourseMap = ({
     lastSearchedCenter,
     lastSearchedRadius,
     lastSearchedZoom,
+    keywordCenter,
     setLastSearchedArea
   } = useLocationStore();
   const { getCurrentLocation, isLoading: isLocationLoading } = useGeolocation();
@@ -78,8 +79,14 @@ const CourseMap = ({
 
   const handleSearchHere = async () => {
     const zoom = mapRef.current?.getZoom?.() || DEFAULT_ZOOM;
-    setLastSearchedArea(viewport.center, viewport.radius, zoom);
+    const center = keywordCenter ?? viewport.center;
+
+    setLastSearchedArea(center, viewport.radius, zoom);
     resetMovedByUser();
+
+    if (mapRef.current) {
+      mapRef.current.setCenter(new naver.maps.LatLng(center.lat, center.lng));
+    }
   };
 
   const handleActiveCourseId = useCallback(

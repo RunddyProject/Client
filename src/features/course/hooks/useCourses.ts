@@ -18,6 +18,7 @@ import {
   type CoursesResponse,
   type UserLocation
 } from '@/features/course/model/types';
+import { useLocationStore } from '@/features/map/model/location.store';
 
 export function useCourses({
   userLocation = DEFAULT_CENTER,
@@ -27,6 +28,15 @@ export function useCourses({
   radius?: number;
 } = {}) {
   const [params] = useSearchParams();
+
+  const keyword = params.get('keyword') ?? undefined;
+  const { setKeywordCenter } = useLocationStore();
+
+  useEffect(() => {
+    if (!keyword || keyword.trim() === '') {
+      setKeywordCenter(null);
+    }
+  }, [keyword, setKeywordCenter]);
 
   const grades = params.getAll('grade').map(Number);
   const envTypes = params.getAll('envType');
@@ -91,7 +101,12 @@ export function useCourses({
           geocodeCacheRef.current.set(normalizedKeyword, resolvedCenter);
       }
 
-      if (!resolvedCenter) return [];
+      if (!resolvedCenter) {
+        setKeywordCenter(null);
+        return [];
+      }
+
+      setKeywordCenter(resolvedCenter);
 
       // 3) Secondary search: by geocoded location
       const secondaryResponse: CoursesResponse = await CoursesApi.getCourses(

@@ -7,6 +7,8 @@ import {
   DEFAULT_ZOOM
 } from '@/features/course/model/constants';
 
+import type { LatLng } from '@/features/map/hooks/useNaverMap';
+
 interface Location {
   lat: number;
   lng: number;
@@ -17,9 +19,11 @@ interface LocationStore {
   lastSearchedRadius: number;
   lastSearchedZoom: number;
   isLocationLoading: boolean;
+  keywordCenter?: LatLng | null;
   setUserLocation: (location: Location | null) => void;
   setLastSearchedArea: (center: Location, radius: number, zoom: number) => void;
   setIsLocationLoading: (loading: boolean) => void;
+  setKeywordCenter: (center: LatLng | null) => void;
 }
 
 export const useLocationStore = create<LocationStore>()(
@@ -38,7 +42,8 @@ export const useLocationStore = create<LocationStore>()(
           lastSearchedRadius: radius || DEFAULT_RADIUS,
           lastSearchedZoom: zoom || 12
         }),
-      setIsLocationLoading: (loading) => set({ isLocationLoading: loading })
+      setIsLocationLoading: (loading) => set({ isLocationLoading: loading }),
+      setKeywordCenter: (center) => set({ keywordCenter: center })
     }),
     {
       name: 'user-location',
