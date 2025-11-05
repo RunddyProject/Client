@@ -82,13 +82,16 @@ const CourseMap = ({
     resetMovedByUser();
   };
 
-  const handleActiveCourseId = useCallback((uuid: Course['uuid']) => {
-    setActiveCourseId(uuid);
-  }, []);
+  const handleActiveCourseId = useCallback(
+    (uuid: Course['uuid']) => {
+      setActiveCourseId(uuid);
+      requestAnimationFrame(() => scrollToCenter(uuid));
+    },
+    [scrollToCenter]
+  );
 
   const handleMarkerClick = (uuid: Course['uuid']) => {
     handleActiveCourseId(uuid);
-    requestAnimationFrame(() => scrollToCenter(uuid));
   };
 
   useCenteredActiveByScroll({
