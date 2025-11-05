@@ -2,6 +2,7 @@ import { useCourses } from '@/features/course/hooks/useCourses';
 import CourseFilter from '@/features/course/ui/Filter';
 import CourseInfoCard from '@/features/course/ui/InfoCard';
 import Search from '@/features/course/ui/Search';
+import { useLocationStore } from '@/features/map/model/location.store';
 import { Icon } from '@/shared/icons/icon';
 import { Button } from '@/shared/ui/primitives/button';
 
@@ -10,7 +11,11 @@ interface CourseListProps {
 }
 
 const CourseList = ({ onViewModeChange }: CourseListProps) => {
-  const { courses } = useCourses();
+  const { lastSearchedCenter, lastSearchedRadius } = useLocationStore();
+  const { courses } = useCourses({
+    userLocation: lastSearchedCenter,
+    radius: lastSearchedRadius
+  });
 
   return (
     <div className='bg-background flex min-h-screen flex-col px-5 pt-[calc(env(safe-area-inset-top)+52px)]'>
