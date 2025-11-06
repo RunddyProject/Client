@@ -14,6 +14,7 @@ export interface HeaderConfig {
   rightButton?: ReactNode;
   showBackButton?: boolean;
   showMenu?: boolean;
+  showHeader?: boolean;
 }
 interface HeaderContextType {
   config: HeaderConfig;
@@ -23,7 +24,8 @@ interface HeaderContextType {
 
 const defaultConfig: HeaderConfig = {
   showBackButton: true,
-  showMenu: true
+  showMenu: true,
+  showHeader: true
 };
 
 const HeaderContext = createContext<HeaderContextType | undefined>(undefined);

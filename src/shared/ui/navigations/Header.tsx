@@ -105,7 +105,7 @@ const Header = () => {
     );
   };
 
-  return (
+  return config.showHeader ? (
     <header
       className={cn(
         'top-0 z-50 w-full',
@@ -163,7 +163,7 @@ const Header = () => {
         )}
       </div>
     </header>
-  );
+  ) : null;
 };
 
 export default Header;

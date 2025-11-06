@@ -63,7 +63,7 @@ export const router = createBrowserRouter([
                 <Login />
               </ProtectedRoute>
             ),
-            handle: { header: { showBackButton: false, showMenu: false } }
+            handle: { header: { showHeader: false } }
           },
           { path: 'success', element: <LoginSuccess /> }
         ]
