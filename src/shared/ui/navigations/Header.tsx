@@ -27,6 +27,7 @@ import logoImgUrl from '/logo.svg';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 const menuTitles: Record<string, string> = {
+  '/': '런디코스',
   '/me': '마이페이지'
 };
 
