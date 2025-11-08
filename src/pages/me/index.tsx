@@ -70,7 +70,7 @@ function Me() {
               <div className='text-placeholder'>저장된 런디코스가 없어요</div>
             </div>
           ) : (
-            bookmarkList.map((course) => {
+            bookmarkList.map((course: Course) => {
               return (
                 <CourseInfoCard
                   key={course.uuid}
@@ -89,7 +89,7 @@ function Me() {
               <div className='text-placeholder'>작성한 리뷰가 없어요</div>
             </div>
           ) : (
-            reviews.map((course) => {
+            reviews.map((course: Course) => {
               return (
                 <CourseInfoCard
                   key={course.uuid}

@@ -6,6 +6,7 @@ import { CoursesApi } from '@/features/course/api/course.api';
 import type {
   BookmarkPatchRequest,
   BookmarksResponse,
+  Course,
   CourseDetail
 } from '@/features/course/model/types';
 
@@ -32,7 +33,7 @@ export function useToggleBookmark() {
 
       if (prevBookmarks) {
         const existsIdx = prevBookmarks.bookmarkList.findIndex(
-          (b) => b.uuid === payload.courseUuid
+          (b: Course) => b.uuid === payload.courseUuid
         );
 
         if (payload.isBookmarked) {
@@ -61,7 +62,7 @@ export function useToggleBookmark() {
         } else {
           next = {
             bookmarkList: prevBookmarks.bookmarkList.filter(
-              (b) => b.uuid !== payload.courseUuid
+              (b: Course) => b.uuid !== payload.courseUuid
             )
           };
         }
