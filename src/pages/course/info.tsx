@@ -1,5 +1,10 @@
 import { useEffect } from 'react';
-import { generatePath, useNavigate, useParams } from 'react-router';
+import {
+  generatePath,
+  useNavigate,
+  useParams,
+  useSearchParams
+} from 'react-router';
 import { toast } from 'sonner';
 
 import { useHeader } from '@/app/providers/HeaderContext';
@@ -33,6 +38,8 @@ const CourseInfo = () => {
   const { uuid } = useParams<{
     uuid: Course['uuid'];
   }>();
+  const [params] = useSearchParams();
+  const tab = params.get('tab') ?? 'detail';
 
   const { courseDetail: course, isLoading } = useCourseDetail(uuid ?? '');
   const { courseReviewCount } = useCourseReview(uuid ?? '');
@@ -135,7 +142,7 @@ const CourseInfo = () => {
         </div>
       </div>
 
-      <Tabs defaultValue='detail'>
+      <Tabs defaultValue={tab}>
         <TabsList className='grid w-full grid-cols-2 border-b-[1.2px] border-gray-200 px-5'>
           <TabsTrigger value='detail'>상세정보</TabsTrigger>
           <TabsTrigger value='review'>

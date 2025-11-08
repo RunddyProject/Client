@@ -15,6 +15,7 @@ import type { Course, GradeType } from '@/features/course/model/types';
 
 interface CourseInfoCardProps {
   course: Course;
+  onClick?: VoidFunction;
   className?: string;
 }
 
@@ -26,7 +27,11 @@ const courseImageUrl = {
   ETC: ''
 };
 
-const CourseInfoCard = ({ course, className }: CourseInfoCardProps) => {
+const CourseInfoCard = ({
+  course,
+  onClick,
+  className
+}: CourseInfoCardProps) => {
   const navigate = useNavigate();
   const { toggle, isSaving } = useToggleBookmark();
 
@@ -45,7 +50,7 @@ const CourseInfoCard = ({ course, className }: CourseInfoCardProps) => {
         'flex cursor-pointer justify-between gap-4 bg-white',
         className
       )}
-      onClick={handleClick}
+      onClick={onClick ?? handleClick}
     >
       {courseImageUrl[course.shapeType] ? (
         <div className='relative h-[60px] w-[60px]'>
@@ -85,7 +90,7 @@ const CourseInfoCard = ({ course, className }: CourseInfoCardProps) => {
         <div className='flex items-center gap-1 overflow-x-auto text-sm'>
           <Badge>{GRADE_TO_NAME[(course?.grade || 1) as GradeType]}</Badge>
           <Badge>{course?.envTypeName || '공원'}</Badge>
-          <Badge>{((course?.totalDistance || 5000) / 1000).toFixed(0)}km</Badge>
+          <Badge>{((course?.totalDistance || 5000) / 1000).toFixed(1)}km</Badge>
         </div>
       </div>
     </div>

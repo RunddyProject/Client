@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 import { useAuth } from '@/app/providers/AuthContext';
-import { useCourses } from '@/features/course/hooks/useCourses';
+import { useBookmarks } from '@/features/course/hooks/useBookmarks';
 import CourseInfoCard from '@/features/course/ui/InfoCard';
 import profileImgUrl from '@/shared/assets/basic_profile.png';
 import { Icon } from '@/shared/icons/icon';
@@ -18,10 +17,18 @@ import {
   TabsTrigger
 } from '@/shared/ui/primitives/tabs';
 
+import type { Course } from '@/features/course/model/types';
+
 function Me() {
   const { user } = useAuth();
-  const { courses: savedCourses } = useCourses();
-  const [savedPosts] = useState([]);
+  const navigate = useNavigate();
+
+  const { bookmarkList } = useBookmarks();
+  const reviews = bookmarkList;
+
+  const handleClickReview = (uuid: Course['uuid']) => {
+    navigate(`/course/${uuid}?tab=review`);
+  };
 
   return (
     <div className='bg-background min-h-screen pb-20'>
@@ -50,41 +57,47 @@ function Me() {
       </div>
 
       {/* Tabs Section */}
-      <Tabs defaultValue='bookmarked' className='px-5'>
-        <TabsList className='grid w-full grid-cols-2 border-b-[1.2px] border-gray-200'>
+      <Tabs defaultValue='bookmarked'>
+        <TabsList className='grid w-full grid-cols-2 border-b-[1.2px] border-gray-200 px-5'>
           <TabsTrigger value='bookmarked'>저장</TabsTrigger>
-          <TabsTrigger value='mine'>내 게시글</TabsTrigger>
+          <TabsTrigger value='review'>리뷰 남긴 코스</TabsTrigger>
         </TabsList>
 
-        <TabsContent value='bookmarked' className='mt-2'>
-          {savedCourses.length === 0 ? (
-            <div className='p-8 text-center'>
-              <p className='text-muted-foreground'>저장된 코스가 없어요</p>
+        <TabsContent value='bookmarked' className='px-5'>
+          {bookmarkList.length === 0 ? (
+            <div className='flex flex-col items-center space-y-4 pt-30'>
+              <Icon name='empty_graphic' size={120} />
+              <div className='text-placeholder'>저장된 런디코스가 없어요</div>
             </div>
           ) : (
-            <ul>
-              {savedCourses.map((course) => {
-                return (
-                  <CourseInfoCard
-                    key={course.uuid}
-                    course={course}
-                    className='cursor-pointer border-b border-b-gray-200 py-5.5 last:border-0'
-                  />
-                );
-              })}
-            </ul>
+            bookmarkList.map((course) => {
+              return (
+                <CourseInfoCard
+                  key={course.uuid}
+                  course={course}
+                  className='cursor-pointer border-b border-b-gray-200 py-5.5 last:border-0'
+                />
+              );
+            })
           )}
         </TabsContent>
 
-        <TabsContent value='mine'>
-          {savedPosts.length === 0 ? (
-            <div className='p-8 text-center'>
-              <p className='text-muted-foreground'>내가 올린 게시글이 없어요</p>
+        <TabsContent value='review' className='px-5'>
+          {reviews.length === 0 ? (
+            <div className='flex flex-col items-center space-y-4 pt-30'>
+              <Icon name='empty_graphic' size={120} />
+              <div className='text-placeholder'>작성한 리뷰가 없어요</div>
             </div>
           ) : (
-            // TODO: 내가 올린 게시글 리스트 구현!
-            savedPosts.map((post) => {
-              return <>{post}</>;
+            reviews.map((course) => {
+              return (
+                <CourseInfoCard
+                  key={course.uuid}
+                  course={course}
+                  onClick={() => handleClickReview(course.uuid)}
+                  className='cursor-pointer border-b border-b-gray-200 py-5.5 last:border-0'
+                />
+              );
             })
           )}
         </TabsContent>
