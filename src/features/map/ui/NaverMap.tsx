@@ -98,15 +98,10 @@ export function NaverMap({
           style={{
             pointerEvents: 'auto',
             touchAction: 'none',
-            cursor: 'default'
+            cursor: 'default',
+            overscrollBehavior: 'none'
           }}
           onPointerUp={() => onOverlayClick?.()}
-          onWheel={(e) => e.preventDefault()}
-          onMouseDown={(e) => e.preventDefault()}
-          onMouseMove={(e) => e.preventDefault()}
-          onDoubleClick={(e) => e.preventDefault()}
-          onTouchMove={(e) => e.preventDefault()}
-          onContextMenu={(e) => e.preventDefault()}
         />
       )}
 
