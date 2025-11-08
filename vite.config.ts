@@ -10,10 +10,29 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+
     svgr({
+      include: ['**/*.svg?react'],
       svgrOptions: {
         exportType: 'default',
-        icon: true,
+        svgo: true,
+        svgoConfig: {
+          plugins: [
+            { name: 'removeViewBox', active: false },
+            { name: 'removeDimensions', active: true },
+            { name: 'cleanupNumericValues', params: { floatPrecision: 2 } },
+            {
+              name: 'convertColors',
+              params: { currentColor: false, names2hex: false, shorthex: false }
+            }
+          ]
+        },
+        svgProps: {
+          role: 'img',
+          focusable: 'false',
+          vectorEffect: 'non-scaling-stroke',
+          shapeRendering: 'geometricPrecision'
+        },
         replaceAttrValues: {
           '#979BAB': 'var(--icon-primary, #979BAB)',
           '#979bab': 'var(--icon-primary, #979bab)',
@@ -27,25 +46,11 @@ export default defineConfig({
           '#000': 'var(--icon-secondary, #000)',
 
           currentColor: 'var(--icon-primary, currentColor)'
-        },
-        svgo: true,
-        svgoConfig: {
-          plugins: [
-            { name: 'removeDimensions', active: true },
-            { name: 'removeXMLNS', active: true },
-            {
-              name: 'convertColors',
-              params: {
-                currentColor: false,
-                names2hex: false,
-                shorthex: false
-              }
-            }
-          ]
         }
       }
     })
   ],
+
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
