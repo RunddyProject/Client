@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router';
 
+import { useToggleBookmark } from '@/features/course/hooks/useToggleBookmark';
 import { GRADE_TO_NAME } from '@/features/course/model/constants';
 import CourseArtImageUrl from '@/shared/assets/course_art.png';
 import CourseLinearImageUrl from '@/shared/assets/course_linear.png';
@@ -27,9 +28,15 @@ const courseImageUrl = {
 
 const CourseInfoCard = ({ course, className }: CourseInfoCardProps) => {
   const navigate = useNavigate();
+  const { toggle, isSaving } = useToggleBookmark();
 
   const handleClick = () => {
     navigate(`/course/${course.uuid}`);
+  };
+
+  const handleClickBookmark = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggle({ courseUuid: course.uuid, isBookmarked: !course.isBookmarked });
   };
 
   return (
@@ -62,7 +69,13 @@ const CourseInfoCard = ({ course, className }: CourseInfoCardProps) => {
           <h3 className='text-md truncate font-semibold'>
             {course?.name || '코스이름'}
           </h3>
-          <Button variant='ghost' className='h-6 w-6 p-0'>
+          <Button
+            variant='ghost'
+            className='h-6 w-6 p-0'
+            onClick={handleClickBookmark}
+            disabled={isSaving}
+            aria-label='Bookmark toggle'
+          >
             <Icon
               name={course.isBookmarked ? 'save_on_solid' : 'save_off_solid'}
               size={24}

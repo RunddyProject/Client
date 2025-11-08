@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { useHeader } from '@/app/providers/HeaderContext';
 import { useCourseDetail } from '@/features/course/hooks/useCourseDetail';
 import { useCourseReview } from '@/features/course/hooks/useCourseReview';
+import { useToggleBookmark } from '@/features/course/hooks/useToggleBookmark';
 import { SHAPE_TYPE_COLOR } from '@/features/course/model/constants';
 import CourseDetail from '@/features/course/ui/CourseDetail';
 import CourseReview from '@/features/course/ui/CourseReview';
@@ -29,10 +30,13 @@ const CourseInfo = () => {
   const navigate = useNavigate();
   const { setConfig, resetConfig } = useHeader();
 
-  const { uuid } = useParams<{ uuid: Course['uuid'] }>();
+  const { uuid } = useParams<{
+    uuid: Course['uuid'];
+  }>();
 
   const { courseDetail: course, isLoading } = useCourseDetail(uuid ?? '');
   const { courseReviewCount } = useCourseReview(uuid ?? '');
+  const { toggle, isSaving } = useToggleBookmark();
 
   useEffect(() => {
     if (!course) return;
@@ -78,8 +82,8 @@ const CourseInfo = () => {
   };
 
   const handleClickBookmark = () => {
-    toast('북마크 기능은 준비중입니다.');
-    // TODO: API
+    if (!uuid) return;
+    toggle({ courseUuid: uuid, isBookmarked: !course.isBookmarked });
   };
 
   return (
@@ -117,6 +121,8 @@ const CourseInfo = () => {
             variant='ghost'
             className='h-6 w-6 p-0'
             onClick={handleClickBookmark}
+            disabled={isSaving}
+            aria-label='Bookmark toggle'
           >
             <Icon
               name={course.isBookmarked ? 'save_on_solid' : 'save_off_solid'}

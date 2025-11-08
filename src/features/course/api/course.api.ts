@@ -2,6 +2,8 @@ import { api } from '@/shared/lib/http';
 import { buildQuery } from '@/shared/lib/query';
 
 import type {
+  BookmarkPatchRequest,
+  BookmarksResponse,
   Course,
   CourseDetail,
   CoursePointResponse,
@@ -72,5 +74,11 @@ export const CoursesApi = {
   },
   deleteCourseReview: async (uuid: Course['uuid']): Promise<void> => {
     return api.delete(`/course/${uuid}/review/detail`);
+  },
+  getBookmarks: async (): Promise<BookmarksResponse> => {
+    return api.get<BookmarksResponse>('/users/bookmark');
+  },
+  patchBookmark: async (body: BookmarkPatchRequest): Promise<void> => {
+    return api.patch('/bookmark', body);
   }
 };
