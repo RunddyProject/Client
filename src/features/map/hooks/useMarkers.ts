@@ -1,5 +1,8 @@
 import { useEffect, type RefObject } from 'react';
 
+import { rawIcons } from '@/shared/icons/registryRaw';
+import { runddyColor } from '@/shared/model/constants';
+
 import type { Course } from '@/features/course/model/types';
 import type { MarkerInput } from '@/features/map/model/types';
 
@@ -16,6 +19,7 @@ export function useMarkers(
   options?: {
     focusKey?: Course['uuid'];
     focusColor?: string;
+    size?: number;
   }
 ) {
   useEffect(() => {
@@ -24,10 +28,14 @@ export function useMarkers(
 
     const _markers = markerMapRef.current!;
     const _listeners = markerListenersRef.current!;
-    const { focusKey, focusColor = 'blue' } = options ?? {};
+    const { focusKey, size = 42 } = options ?? {};
+
+    const focusHex =
+      options?.focusColor && options.focusColor.startsWith('#')
+        ? options.focusColor
+        : runddyColor[options?.focusColor ?? 'blue'];
 
     const incomingIds = new Set(markers.map((m) => m.id));
-
     for (const [id, mk] of _markers) {
       if (!incomingIds.has(id)) {
         mk.setMap(null);
@@ -42,27 +50,57 @@ export function useMarkers(
 
     markers.forEach((m) => {
       const pos = new naver.maps.LatLng(m.lat, m.lng);
+
       const isActiveStart = m.kind === 'start' && m.id === focusKey;
       const isActiveEnd = m.kind === 'end' && m.id.startsWith(`${focusKey}__`);
 
-      let mk = _markers.get(m.id);
-      const icon =
+      const iconName =
         m.kind === 'end'
-          ? makeImageIcon(`/active_end_${focusColor}.svg`)
+          ? 'active_end'
           : isActiveStart
-            ? makeImageIcon(`/active_start_${focusColor}.svg`)
-            : makeImageIcon('/pin_default.svg');
+            ? 'active_start'
+            : 'pin_default';
 
+      const iconVars = {
+        '--icon-primary': isActiveStart || isActiveEnd ? focusHex : undefined
+        // '--icon-secondary': '#fff'
+      } as any;
+
+      const iconKey = `${iconName}|${size}|${iconVars['--icon-primary'] ?? ''}`;
+
+      let mk = _markers.get(m.id);
       if (!mk) {
-        mk = new naver.maps.Marker({ position: pos, map, icon });
+        mk = new naver.maps.Marker({
+          position: pos,
+          map,
+          icon: makeDomIcon(iconName, {
+            displaySize: size,
+            vars: iconVars
+          }),
+          zIndex: BASE_Z
+        });
+        (mk as any).__iconKey = iconKey;
+
         _markers.set(m.id, mk);
+
         const l = naver.maps.Event.addListener(mk, 'click', () =>
           onMarkerClick?.(m.id.replace(/__end$/, ''))
         );
         _listeners.set(m.id, l);
       } else {
-        mk.setPosition(pos);
-        mk.setIcon(icon);
+        if (!mk.getPosition().equals(pos)) {
+          mk.setPosition(pos);
+        }
+
+        if ((mk as any).__iconKey !== iconKey) {
+          mk.setIcon(
+            makeDomIcon(iconName, {
+              displaySize: size,
+              vars: iconVars
+            })
+          );
+          (mk as any).__iconKey = iconKey;
+        }
       }
 
       if (isActiveStart) mk.setZIndex(ACTIVE_Z_START);
@@ -79,25 +117,48 @@ export function useMarkers(
   ]);
 }
 
-function makeImageIcon(
-  url: string,
+type DomIconVars = {
+  '--icon-primary'?: string;
+  '--icon-secondary'?: string;
+};
+
+export function makeDomIcon(
+  name: keyof typeof rawIcons | string,
   {
-    displaySize = 52,
-    sourceSize,
-    origin = { x: 0, y: 0 }
+    displaySize = 42,
+    anchorCenter = true,
+    vars,
+    className
   }: {
     displaySize?: number;
-    sourceSize?: number;
-    origin?: { x: number; y: number };
+    anchorCenter?: boolean;
+    vars?: DomIconVars;
+    className?: string;
   } = {}
 ) {
-  const src = sourceSize ?? displaySize;
+  const svg =
+    rawIcons[name as keyof typeof rawIcons] ?? rawIcons['pin_default'];
+  const styleVars = vars
+    ? Object.entries(vars)
+        .map(([k, v]) => (v ? `${k}:${v}` : ''))
+        .filter(Boolean)
+        .join(';')
+    : '';
+
+  const html = `
+    <div class="${className ?? ''}"
+         style="width:${displaySize}px;height:${displaySize}px;${styleVars}">
+      ${svg}
+    </div>
+  `;
+
+  const anchor = anchorCenter
+    ? new naver.maps.Point(displaySize / 2, displaySize / 2)
+    : new naver.maps.Point(0, displaySize);
 
   return {
-    url,
-    size: new naver.maps.Size(src, src),
-    scaledSize: new naver.maps.Size(displaySize, displaySize),
-    origin: new naver.maps.Point(origin.x, origin.y),
-    anchor: new naver.maps.Point(displaySize / 2, displaySize / 2)
+    content: html,
+    size: new naver.maps.Size(displaySize, displaySize),
+    anchor
   };
 }

@@ -107,6 +107,7 @@ const CourseInfo = () => {
               maxLng: course.maxLng
             }}
             markers={[startMarker, endMarker]}
+            markerSize={32}
             focusKey={course.uuid}
             color={activeColor}
             fitEnabled

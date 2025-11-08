@@ -19,6 +19,7 @@ type Props = {
   bounds?: LatLngBounds;
   color?: RUNDDY_COLOR;
   markers?: MarkerInput[];
+  markerSize?: number;
   focusKey?: Course['uuid'];
   fitEnabled?: boolean;
   interactionsEnabled?: boolean;
@@ -34,6 +35,7 @@ export function NaverMap({
   bounds,
   color,
   markers = [],
+  markerSize = 42,
   focusKey,
   fitEnabled = false,
   interactionsEnabled = true,
@@ -63,7 +65,8 @@ export function NaverMap({
   useGpxPolyline(map, polylineRef, points, color, { fit: 'never' });
   useMarkers(map, markerMapRef, markerListenersRef, markers, onMarkerClick, {
     focusKey,
-    focusColor: color
+    focusColor: color,
+    size: markerSize
   });
   usePanToActiveMarker(map, markerMapRef, focusKey);
   useFitLatLngBoundsScale(
