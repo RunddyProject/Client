@@ -23,7 +23,7 @@ export const CoursesApi = {
     const query = buildQuery({
       lat,
       lng,
-      dist: params.dist ?? 10,
+      radius: params.radius ?? 10,
       grade: params.grade,
       envType: params.envType,
       minDist: params.minDist ? params.minDist * 1000 : undefined,

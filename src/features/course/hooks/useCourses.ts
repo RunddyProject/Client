@@ -45,7 +45,7 @@ export function useCourses({
     (params.getAll('shapeType') as CourseSearchParams['shapeType']) || [];
 
   const search: CourseSearchParams = {
-    dist: radius ?? Number(params.get('dist')),
+    radius: radius ?? Number(params.get('radius')),
     grade: grades.length ? grades : undefined,
     envType: envTypes,
     shapeType: shapeTypes,
@@ -66,7 +66,7 @@ export function useCourses({
       'courses',
       userLocation?.lat,
       userLocation?.lng,
-      search.dist,
+      search.radius,
       search.grade,
       search.envType,
       search.minDist,
@@ -177,7 +177,7 @@ export function usePrefetchCourses() {
         'courses',
         userLocation?.lat,
         userLocation?.lng,
-        search?.dist,
+        search?.radius,
         search?.grade,
         search?.envType,
         search?.minDist,

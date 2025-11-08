@@ -46,7 +46,7 @@ export interface CoursesResponse {
 }
 
 export type CourseSearchParams = {
-  dist?: number; // (km)
+  radius?: number; // (km)
   grade?: number | number[];
   envType?: EnvType | EnvType[];
   shapeType?: ShapeType | ShapeType[];
