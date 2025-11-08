@@ -48,7 +48,8 @@ export interface CoursesResponse {
 export type CourseSearchParams = {
   dist?: number; // (km)
   grade?: number | number[];
-  envType?: 'MOUNTAIN' | 'RIVER' | 'CITY' | string | string[];
+  envType?: EnvType | EnvType[];
+  shapeType?: ShapeType | ShapeType[];
   minDist?: number; // (m)
   maxDist?: number; // (m)
   minEle?: number; // (m)

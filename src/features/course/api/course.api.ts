@@ -24,10 +24,10 @@ export const CoursesApi = {
       dist: params.dist ?? 10,
       grade: params.grade,
       envType: params.envType,
-      minDist: params.minDist,
-      maxDist: params.maxDist,
-      minEle: params.minEle,
-      maxEle: params.maxEle,
+      minDist: params.minDist ? params.minDist * 1000 : undefined,
+      maxDist: params.maxDist ? params.maxDist * 1000 : undefined,
+      minEle: params.minEle ? params.minEle * 1000 : undefined,
+      maxEle: params.maxEle ? params.maxEle * 1000 : undefined,
       keyword: params.keyword
     });
 

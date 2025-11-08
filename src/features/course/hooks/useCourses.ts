@@ -39,12 +39,16 @@ export function useCourses({
   }, [keyword, setKeywordCenter]);
 
   const grades = params.getAll('grade').map(Number);
-  const envTypes = params.getAll('envType');
+  const envTypes =
+    (params.getAll('envType') as CourseSearchParams['envType']) || [];
+  const shapeTypes =
+    (params.getAll('shapeType') as CourseSearchParams['shapeType']) || [];
 
   const search: CourseSearchParams = {
     dist: radius ?? Number(params.get('dist')),
     grade: grades.length ? grades : undefined,
-    envType: envTypes.length ? envTypes : undefined,
+    envType: envTypes,
+    shapeType: shapeTypes,
     minDist: params.get('minDist') ? Number(params.get('minDist')) : undefined,
     maxDist: params.get('maxDist') ? Number(params.get('maxDist')) : undefined,
     minEle: params.get('minEle') ? Number(params.get('minEle')) : undefined,
