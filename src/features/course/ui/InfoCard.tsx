@@ -76,7 +76,8 @@ const CourseInfoCard = ({
           </h3>
           <Button
             variant='ghost'
-            className='h-6 w-6 p-0'
+            size='icon'
+            className='h-6 w-6'
             onClick={handleClickBookmark}
             disabled={isSaving}
             aria-label='Bookmark toggle'

@@ -19,7 +19,7 @@ const Tooltip = ({ title, body }: TooltipProps) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant='icon' className='h-4 w-4'>
+        <Button variant='ghost' size='icon' className='h-4 w-4'>
           <Icon
             name='tooltip'
             size={16}
