@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
-import { authService } from '@/features/auth/api/auth';
+import { authService } from '@/features/user/api/auth';
 
 const LoginSuccess = () => {
   const navigate = useNavigate();

@@ -158,8 +158,8 @@ export class AuthService {
     const { validate = false } = opts ?? {};
     const token = this.getToken();
     if (!token || !this.decodeToken(token)) return false;
-    if (!validate) return true; // 로컬만 확인 (빠름)
-    return this.checkAuthOnServer(); // 필요할 때만 서버 확인
+    if (!validate) return true;
+    return this.checkAuthOnServer();
   }
 
   async logout(): Promise<void> {
@@ -169,7 +169,6 @@ export class AuthService {
       console.error('[Auth] Logout API failed (continuing):', e);
     } finally {
       this.clearToken();
-      window.location.href = CLIENT_URL;
     }
   }
 

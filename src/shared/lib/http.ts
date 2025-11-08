@@ -1,4 +1,4 @@
-import { authService } from '../../features/auth/api/auth';
+import { authService } from '../../features/user/api/auth';
 
 type ResponseType = 'json' | 'text' | 'blob' | 'arrayBuffer';
 

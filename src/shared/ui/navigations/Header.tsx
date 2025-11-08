@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 import { useAuth } from '@/app/providers/AuthContext';
 import { useHeader } from '@/app/providers/HeaderContext';
-import { authService } from '@/features/auth/api/auth';
+import { authService } from '@/features/user/api/auth';
 import { Icon } from '@/shared/icons/icon';
 import { cn } from '@/shared/lib/utils';
 import Menu from '@/shared/ui/navigations/Menu';

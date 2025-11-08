@@ -1,6 +1,7 @@
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { Link } from 'react-router';
 
+import UserFeedback from '@/features/user/ui/UserFeedback';
 import { Icon } from '@/shared/icons/icon';
 import {
   Sheet,
@@ -19,7 +20,7 @@ interface MenuProps {
 const Menu = ({ titles }: MenuProps) => {
   return (
     <Sheet>
-      <SheetTrigger>
+      <SheetTrigger className='p-3'>
         <Icon name='menu' size={24} />
       </SheetTrigger>
       <SheetContent className='fixed z-[10002] w-full bg-white'>
@@ -48,6 +49,9 @@ const Menu = ({ titles }: MenuProps) => {
             </li>
           ))}
         </ul>
+        <div className='fixed bottom-8 w-full px-5'>
+          <UserFeedback />
+        </div>
       </SheetContent>
     </Sheet>
   );
