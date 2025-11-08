@@ -1,13 +1,19 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { toast } from 'sonner';
 
 import { useAuth } from '@/app/providers/AuthContext';
 import { CoursesApi } from '@/features/course/api/course.api';
+import {
+  toDisplayForm,
+  toPatchBodyFromDisplayForm
+} from '@/features/course/lib/reviewTransformers';
 
 import type {
   Course,
   CourseReviewFormResponse,
-  CourseReviewPatchRequest
+  CourseReviewPatchRequest,
+  DisplayFormCategory
 } from '@/features/course/model/types';
 
 export function useCourseReviewForm(uuid: Course['uuid']) {
@@ -21,23 +27,37 @@ export function useCourseReviewForm(uuid: Course['uuid']) {
   });
 
   const mutation = useMutation({
-    mutationFn: (body: CourseReviewPatchRequest) =>
-      CoursesApi.patchCourseReview(uuid, body),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['course-review', uuid] });
-      queryClient.invalidateQueries({ queryKey: ['course-review-form', uuid] });
+    mutationFn: async (categories: DisplayFormCategory[]) => {
+      const payload: CourseReviewPatchRequest =
+        toPatchBodyFromDisplayForm(categories);
+      return CoursesApi.patchCourseReview(uuid, payload);
+    },
+    onSuccess: async () => {
+      toast.success('리뷰 저장이 완료되었어요');
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['course-review', uuid] }),
+        queryClient.invalidateQueries({
+          queryKey: ['course-review-form', uuid]
+        })
+      ]);
     },
     onError: (error) => {
-      console.error(error);
-      toast.error('리뷰 저장 실패');
+      console.error('Failed to save review:', error);
+      toast.error('리뷰 저장이 실패했어요');
     }
   });
 
+  const display = useMemo(
+    () => (formQuery.data ? toDisplayForm(formQuery.data) : undefined),
+    [formQuery.data]
+  );
+
   return {
-    form: formQuery.data,
+    hasMyReview: display?.hasMyReview ?? false,
+    formDetail: display?.categories ?? [],
+    patchReview: mutation.mutate,
+    patchReviewAsync: mutation.mutateAsync,
     isLoading: formQuery.isLoading,
-    isError: formQuery.isError,
-    refetch: formQuery.refetch,
-    patchReview: mutation.mutate
+    isError: formQuery.isError
   };
 }

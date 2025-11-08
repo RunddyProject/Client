@@ -19,7 +19,7 @@ import {
   ToggleGroupItem
 } from '@/shared/ui/primitives/toggle-group';
 
-import type { CourseReviewKeywordForm } from '@/features/course/model/types';
+import type { DisplayFormCategory } from '@/features/course/model/types';
 
 type TriggerMode = 'firstReview' | 'writeReview' | 'editReview';
 
@@ -32,55 +32,53 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
   const navigator = useNavigate();
 
   const { isAuthenticated } = useAuth();
-  const { form, patchReview } = useCourseReviewForm(uuid!);
+  const { formDetail, hasMyReview, patchReview } = useCourseReviewForm(uuid!);
 
   const [open, setOpen] = useState(false);
-  const [keywords, setKeywords] = useState<CourseReviewKeywordForm[]>([]);
+  const [categories, setCategories] = useState<DisplayFormCategory[]>([]);
 
   useEffect(() => {
-    if (form?.courseReviewFormDetail) {
-      const allKeywords = form.courseReviewFormDetail.flatMap(
-        (category) => category.courseReviewKeywordFormList
-      );
-      setKeywords(allKeywords);
+    if (formDetail) {
+      setCategories(JSON.parse(JSON.stringify(formDetail)));
     }
-  }, [form]);
+  }, [formDetail]);
 
-  const selectedIds = keywords
-    .filter((kw) => kw.isSelected)
-    .map((kw) => String(kw.keywordId));
-
-  const handleToggleChange = (newValues: string[]) => {
-    setKeywords((prev) =>
-      prev.map((kw) => ({
-        ...kw,
-        isSelected: newValues.includes(String(kw.keywordId))
-      }))
+  const handleToggleChange = (categoryCode: string, newValues: string[]) => {
+    setCategories((prev) =>
+      prev.map((cat) =>
+        cat.categoryCode === categoryCode
+          ? {
+              ...cat,
+              keywords: cat.keywords.map((kw) => ({
+                ...kw,
+                isSelected: newValues.includes(String(kw.keywordId))
+              }))
+            }
+          : cat
+      )
     );
   };
 
   const handleClick = () => {
-    if (isAuthenticated === false) {
+    if (!isAuthenticated) {
       toast.error('리뷰 작성은 로그인이 필요해요');
       navigator('/login');
       return;
-    } else {
-      setOpen(true);
     }
+    setOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!uuid) return;
-    patchReview({ courseReviewKeywordList: keywords });
-    const toastMessage = form?.hasMyReview
-      ? '리뷰가 수정이 완료되었어요'
-      : '리뷰가 작성이 완료되었어요';
-    toast.success(toastMessage);
+    await patchReview(categories);
+    // toast.success(
+    //   hasMyReview ? '리뷰 수정이 완료되었어요' : '리뷰 작성이 완료되었어요'
+    // );
     setOpen(false);
   };
 
-  const Trigger = (triggerMode: TriggerMode) => {
-    switch (triggerMode) {
+  const Trigger = (mode: TriggerMode) => {
+    switch (mode) {
       case 'firstReview':
         return (
           <div
@@ -98,7 +96,6 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
             <Icon name='chevron_right' size={14} />
           </div>
         );
-
       case 'editReview':
         return (
           <div
@@ -133,37 +130,40 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
                   variant='ghost'
                   size='icon'
                   className='h-8 w-8'
-                  onClick={() => {
-                    setOpen(false);
-                  }}
+                  onClick={() => setOpen(false)}
                 >
                   <Icon name='chevron_left' size={24} />
                 </Button>
               </DialogClose>
               <DialogTitle className='col-start-2'>
-                {form?.hasMyReview ? '리뷰 수정하기' : '리뷰 남기기'}
+                {hasMyReview ? '리뷰 수정하기' : '리뷰 남기기'}
               </DialogTitle>
             </DialogHeader>
 
             <div className='flex-1 overflow-y-auto px-5 pt-1 pb-6'>
-              {form?.courseReviewFormDetail.map((category) => (
+              {categories.map((category) => (
                 <div key={category.categoryCode} className='py-5 first:pt-0'>
                   <h3 className='mb-4 text-base font-semibold'>
-                    {category.category}
+                    {category.label}
                   </h3>
                   <ToggleGroup
                     type='multiple'
-                    value={selectedIds}
-                    onValueChange={handleToggleChange}
+                    value={category.keywords
+                      .filter((k) => k.isSelected)
+                      .map((k) => String(k.keywordId))}
+                    onValueChange={(newValues) =>
+                      handleToggleChange(category.categoryCode, newValues)
+                    }
                     className='flex flex-wrap gap-x-2.5 gap-y-3'
                   >
-                    {category.courseReviewKeywordFormList.map((keyword) => (
+                    {category.keywords.map((keyword) => (
                       <ToggleGroupItem
                         key={keyword.keywordId}
                         value={String(keyword.keywordId)}
                         className='flex items-center gap-2 rounded-full bg-gray-100 px-3 py-2 text-sm data-[state=on]:bg-gray-900 data-[state=on]:text-white'
                       >
-                        {keyword.keyword}
+                        <span>{keyword.emoji}</span>
+                        <span> {keyword.label}</span>
                       </ToggleGroupItem>
                     ))}
                   </ToggleGroup>
@@ -176,7 +176,9 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
                 size='lg'
                 className='w-full'
                 onClick={handleSave}
-                disabled={keywords.every((kw) => !kw.isSelected)}
+                disabled={categories.every((cat) =>
+                  cat.keywords.every((kw) => !kw.isSelected)
+                )}
               >
                 저장
               </Button>

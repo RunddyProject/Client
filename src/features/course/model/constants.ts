@@ -1,4 +1,5 @@
 import type {
+  CategoryCode,
   EnvType,
   EnvTypeName,
   GradeType,
@@ -73,9 +74,67 @@ export const shapeTypeNames = Object.keys(
   SHAPE_NAME_TO_TYPE
 ) as ShapeTypeName[];
 
-export function safeEnvTypeName(t: EnvType | string): EnvTypeName {
-  return (ENV_TYPE_TO_NAME as Record<string, EnvTypeName>)[t] ?? '기타';
-}
-export function safeShapeTypeName(t: ShapeType | string): ShapeTypeName {
-  return (SHAPE_TYPE_TO_NAME as Record<string, ShapeTypeName>)[t] ?? '기타';
-}
+export const safeEnvTypeName = (t: EnvType | string): EnvTypeName =>
+  (ENV_TYPE_TO_NAME as Record<string, EnvTypeName>)[t] ?? '기타';
+
+export const safeShapeTypeName = (t: ShapeType | string): ShapeTypeName =>
+  (SHAPE_TYPE_TO_NAME as Record<string, ShapeTypeName>)[t] ?? '기타';
+
+export const CATEGORY_LABEL_MAP: Record<CategoryCode, string> = {
+  COURSE_GOOD: '코스 자체가 좋아요',
+  ENVIRONMENT_GOOD: '환경/분위기가 좋아요',
+  FACILITY_GOOD: '편의성이 좋아요'
+};
+
+export const getCategoryLabel = (code: string) =>
+  (CATEGORY_LABEL_MAP as Record<string, string>)[code] ?? code;
+
+export const REVIEW_KEYWORD_META = {
+  // 코스 자체가 좋아요
+  UPHILL_TRAINING: {
+    emoji: '⬆️',
+    color: '#FF75341F',
+    label: '업힐 훈련하기 좋아요'
+  },
+  GOOD_SURFACE: { emoji: '🏞️', color: '#04AEF11F', label: '노면이 좋아요' },
+  BEGINNER_FRIENDLY: {
+    emoji: '👟',
+    color: '#2AC47E1F',
+    label: '초보자도 달리기 좋아요'
+  },
+  POPULAR: { emoji: '👯‍♀️', color: '#FD7FCD1F', label: '달리는 사람이 많아요' },
+
+  // 환경/분위기가 좋아요
+  SCENIC: { emoji: '🏞️', color: '#04AEF11F', label: '풍경이 좋아요' },
+  SUNSET_VIEW: {
+    emoji: '🌇',
+    color: '#FD7FCD1F',
+    label: '해질녘에 달리기 좋아요'
+  },
+  SHADED: { emoji: '🌳', color: '#2AC47E1F', label: '그늘이 있어요' },
+  WELL_LIT: { emoji: '🌠', color: '#04AEF11F', label: '밤에도 밝아요' },
+  QUIET_PEACEFUL: {
+    emoji: '🕊️',
+    color: '#FD7FCD1F',
+    label: '조용하고 평화로워요'
+  },
+
+  // 편의성이 좋아요
+  HAS_RESTROOM: { emoji: '🚻', color: '#FD7FCD1F', label: '화장실이 가까워요' },
+  HAS_WATER: { emoji: '💧', color: '#04AEF11F', label: '급수대가 있어요' },
+  EASY_PARKING: { emoji: '🅿️', color: '#04AEF11F', label: '주차가 편해요' },
+  ACCESSIBLE: { emoji: '🚌', color: '#FF75341F', label: '접근성이 좋아요' },
+  NEARBY_AMENITIES: {
+    emoji: '🏪',
+    color: '#2AC47E1F',
+    label: '편의시설이 많아요'
+  }
+} as const;
+
+export const getKeywordMeta = (code: string) =>
+  (
+    REVIEW_KEYWORD_META as Record<
+      string,
+      (typeof REVIEW_KEYWORD_META)[keyof typeof REVIEW_KEYWORD_META]
+    >
+  )[code] ?? { emoji: '', color: '#FFFFFF', label: code };

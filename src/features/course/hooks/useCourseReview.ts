@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 
 import { CoursesApi } from '@/features/course/api/course.api';
+import { toDisplaySummary } from '@/features/course/lib/reviewTransformers';
 
 import type {
   Course,
@@ -16,10 +17,7 @@ export function useCourseReview(uuid: Course['uuid']) {
     staleTime: 60_000,
     gcTime: 5 * 60_000,
     retry: 1,
-    queryFn: async () => {
-      if (!uuid) throw new Error('uuid required');
-      return CoursesApi.getCourseReview(uuid);
-    }
+    queryFn: () => CoursesApi.getCourseReview(uuid)
   });
 
   useEffect(() => {
@@ -29,10 +27,12 @@ export function useCourseReview(uuid: Course['uuid']) {
     }
   }, [query.isError, query.errorUpdatedAt, query.error]);
 
+  const display = query.data ? toDisplaySummary(query.data) : undefined;
+
   return {
     courseReviewCount: query.data?.courseReviewDetail?.length ?? 0,
-    courseReviewSummary: query.data?.courseReviewSummary ?? [],
-    courseReviewDetail: query.data?.courseReviewDetail ?? [],
+    courseReviewSummary: display?.summary ?? [],
+    courseReviewDetail: display?.detail ?? [],
     isLoading: query.isLoading,
     isFetching: query.isFetching,
     isError: query.isError,

@@ -1,10 +1,10 @@
-import { useParams, useNavigate } from 'react-router';
+import { useParams } from 'react-router';
 
 import { useCourseReview } from '@/features/course/hooks/useCourseReview';
 import { useCourseReviewForm } from '@/features/course/hooks/useCourseReviewForm';
 import CourseReviewMine from '@/features/course/ui/CourseReviewMine';
-import ReviewWrite from '@/features/course/ui/CourseReviewWrite';
 import CourseReviewWrite from '@/features/course/ui/CourseReviewWrite';
+import ReviewWrite from '@/features/course/ui/CourseReviewWrite';
 import profileImgUrl from '@/shared/assets/basic_profile.png';
 import { Icon } from '@/shared/icons/icon';
 import { formatReviewDate } from '@/shared/lib/date';
@@ -16,19 +16,16 @@ import type { Course } from '@/features/course/model/types';
 const CourseReview = () => {
   const { uuid } = useParams<{ uuid: Course['uuid'] }>();
 
-  const navigate = useNavigate();
-
   const {
     courseReviewCount,
     courseReviewSummary,
     courseReviewDetail,
     isLoading
   } = useCourseReview(uuid ?? '');
-  const { form } = useCourseReviewForm(uuid!);
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
+  const { hasMyReview } = useCourseReviewForm(uuid!);
+
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <>
@@ -37,33 +34,42 @@ const CourseReview = () => {
           <div className='px-5 pt-5'>
             <div className='mb-5 flex items-center justify-between'>
               <h2 className='font-bold'>가장 많이 남긴 리뷰</h2>
-              {form?.hasMyReview ? (
+              {hasMyReview ? (
                 <CourseReviewMine />
               ) : (
-                <CourseReviewWrite
-                  triggerMode={form?.hasMyReview ? 'editReview' : 'writeReview'}
-                />
+                <CourseReviewWrite triggerMode='writeReview' />
               )}
             </div>
 
-            {courseReviewSummary.map((cat) => (
-              <div key={cat.categoryCode} className='mb-5'>
-                <h3 className='mb-3 text-base font-semibold'>{cat.category}</h3>
-                <div className='flex flex-wrap gap-2'>
-                  {cat.courseReviewKeywordList.map((kw) => (
-                    <div
-                      key={kw.keywordId}
-                      className='flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-sm'
-                    >
-                      <span>{kw.keyword}</span>
-                      <span className='text-xs text-gray-400'>
-                        {kw.keywordCount}
-                      </span>
-                    </div>
-                  ))}
+            {courseReviewSummary.map((cat) => {
+              const filteredKeywords = cat.keywords.filter(
+                (kw) => kw.count > 0
+              );
+
+              if (filteredKeywords.length === 0) return null;
+              return (
+                <div key={cat.categoryCode} className='mb-5'>
+                  <h3 className='mb-3 text-base font-semibold'>{cat.label}</h3>
+                  <div className='flex flex-wrap gap-x-2.5 gap-y-3'>
+                    {cat.keywords
+                      .filter((kw) => kw.count > 0)
+                      .map((kw) => (
+                        <div
+                          key={kw.keywordId}
+                          style={{ backgroundColor: kw.color }}
+                          className='flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-sm'
+                        >
+                          <span>{kw.emoji}</span>
+                          <span>{kw.label}</span>
+                          <span className='text-xs text-gray-400'>
+                            {kw.count}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className='px-5'>
@@ -75,10 +81,7 @@ const CourseReview = () => {
                   className='flex flex-col items-start gap-3 border-b border-gray-100 py-[22px] last:border-0'
                 >
                   <div className='flex items-center gap-3'>
-                    <Avatar
-                      className='h-9 w-9 flex-shrink-0 cursor-pointer'
-                      onClick={() => navigate('/me')}
-                    >
+                    <Avatar className='h-9 w-9 flex-shrink-0 cursor-pointer'>
                       <AvatarFallback>
                         <img
                           src={profileImgUrl}
@@ -99,13 +102,14 @@ const CourseReview = () => {
                   </div>
 
                   <div className='flex-1'>
-                    <div className='flex flex-wrap gap-1 pl-[46px]'>
-                      {review.courseReviewKeywordList.map((kw) => (
+                    <div className='flex flex-wrap gap-x-1 gap-y-1.5 pl-[46px]'>
+                      {review.keywords.map((kw) => (
                         <div
                           key={kw.keywordId}
                           className='flex items-center gap-1 text-[15px] after:mx-1 after:content-["·"] last:after:content-[""]'
                         >
-                          <span>{kw.keyword}</span>
+                          <span>{kw.emoji}</span>
+                          <span>{kw.label}</span>
                         </div>
                       ))}
                     </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 
 import { useCourseReviewForm } from '@/features/course/hooks/useCourseReviewForm';
@@ -24,29 +24,21 @@ import {
   ToggleGroupItem
 } from '@/shared/ui/primitives/toggle-group';
 
-import type { CourseReviewKeywordForm } from '@/features/course/model/types';
-
 const CourseReviewMine = () => {
   const { uuid } = useParams<{ uuid: string }>();
-
-  const { form, isLoading } = useCourseReviewForm(uuid!);
+  const { formDetail, isLoading } = useCourseReviewForm(uuid!);
   const { deleteReview, isDeleting } = useDeleteCourseReview(uuid!);
 
   const [open, setOpen] = useState(false);
-  const [keywords, setKeywords] = useState<CourseReviewKeywordForm[]>([]);
 
-  useEffect(() => {
-    if (form?.courseReviewFormDetail) {
-      const allKeywords = form.courseReviewFormDetail.flatMap(
-        (category) => category.courseReviewKeywordFormList
-      );
-      setKeywords(allKeywords);
-    }
-  }, [form]);
-
-  const selectedIds = keywords
-    .filter((kw) => kw.isSelected)
-    .map((kw) => String(kw.keywordId));
+  const selectedIds = useMemo(
+    () =>
+      formDetail
+        .flatMap((c) => c.keywords)
+        .filter((k) => k.isSelected)
+        .map((k) => String(k.keywordId)),
+    [formDetail]
+  );
 
   return (
     <div className='relative'>
@@ -72,9 +64,7 @@ const CourseReviewMine = () => {
                   variant='ghost'
                   size='icon'
                   className='h-8 w-8'
-                  onClick={() => {
-                    setOpen(false);
-                  }}
+                  onClick={() => setOpen(false)}
                 >
                   <Icon name='chevron_left' size={24} />
                 </Button>
@@ -99,7 +89,6 @@ const CourseReviewMine = () => {
                   <div className='flex h-[48px] w-full flex-col justify-center border-b border-gray-200'>
                     <CourseReviewWrite triggerMode='editReview' />
                   </div>
-                  {/* TODO: 삭제 팝업 추가 */}
                   <Button
                     variant='ghost'
                     onClick={() => deleteReview()}
@@ -119,31 +108,31 @@ const CourseReviewMine = () => {
             </DialogHeader>
 
             <div className='flex-1 overflow-y-auto px-5 pt-1 pb-6'>
-              {form?.courseReviewFormDetail.map((category) => {
-                const selectedKeywords =
-                  category.courseReviewKeywordFormList.filter(
-                    (keyword) => keyword.isSelected
-                  );
-
+              {formDetail.map((category) => {
+                const selectedKeywords = category.keywords.filter(
+                  (k) => k.isSelected
+                );
                 if (selectedKeywords.length === 0) return null;
 
                 return (
                   <div key={category.categoryCode} className='py-5 first:pt-0'>
                     <h3 className='mb-4 text-base font-semibold'>
-                      {category.category}
+                      {category.label}
                     </h3>
                     <ToggleGroup
                       type='multiple'
                       value={selectedIds}
                       className='flex flex-wrap gap-x-2.5 gap-y-3'
+                      // 읽기 전용 표시이므로 onValueChange 없음
                     >
                       {selectedKeywords.map((keyword) => (
                         <ToggleGroupItem
                           key={keyword.keywordId}
                           value={String(keyword.keywordId)}
-                          className='flex items-center gap-2 rounded-full bg-gray-100 px-3 py-2 text-sm data-[state=on]:bg-gray-900 data-[state=on]:text-white'
+                          className='flex items-center gap-1 rounded-full bg-gray-100 px-3 py-2 text-sm data-[state=on]:bg-gray-900 data-[state=on]:text-white'
                         >
-                          {keyword.keyword}
+                          <span>{keyword.emoji}</span>
+                          <span>{keyword.label}</span>
                         </ToggleGroupItem>
                       ))}
                     </ToggleGroup>

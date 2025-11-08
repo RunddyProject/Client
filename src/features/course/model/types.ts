@@ -97,39 +97,55 @@ export interface KeyPoint extends ElevationChartPoint {
   type: 'start' | 'end' | 'highest' | 'lowest';
 }
 
+export type CategoryCode = 'COURSE_GOOD' | 'ENVIRONMENT_GOOD' | 'FACILITY_GOOD';
+
+export type KeywordCode =
+  | 'UPHILL_TRAINING'
+  | 'GOOD_SURFACE'
+  | 'BEGINNER_FRIENDLY'
+  | 'POPULAR'
+  | 'SCENIC'
+  | 'SUNSET_VIEW'
+  | 'QUIET_PEACEFUL'
+  | 'SHADED'
+  | 'WELL_LIT'
+  | 'HAS_RESTROOM'
+  | 'HAS_WATER'
+  | 'EASY_PARKING'
+  | 'ACCESSIBLE'
+  | 'NEARBY_AMENITIES';
+
 export interface CourseReviewKeyword {
   keywordId: number;
-  keyword: string;
+  keywordCode: string;
   keywordCount: number;
 }
 
-export interface CourseReviewSummary {
+export interface CourseReviewCategory {
   categoryCode: string;
-  category: string;
   courseReviewKeywordList: CourseReviewKeyword[];
 }
 
-export interface CourseReviewDetail {
+export interface CourseReviewDetailItem {
   userName: string;
   courseReviewKeywordList: CourseReviewKeyword[];
-  createdAt: number;
+  createdAt: number; // timestamp(ms)
 }
 
 export interface CourseReviewResponse {
-  courseReviewSummary: CourseReviewSummary[];
-  courseReviewDetail: CourseReviewDetail[];
+  courseReviewSummary: CourseReviewCategory[];
+  courseReviewDetail: CourseReviewDetailItem[];
 }
 
-export interface CourseReviewKeywordForm {
+export interface CourseReviewFormKeyword {
   keywordId: number;
-  keyword: string;
+  keywordCode: string;
   isSelected: boolean;
 }
 
 export interface CourseReviewFormCategory {
-  categoryCode: number;
-  category: string;
-  courseReviewKeywordFormList: CourseReviewKeywordForm[];
+  categoryCode: string;
+  courseReviewKeywordFormList: CourseReviewFormKeyword[];
 }
 
 export interface CourseReviewFormResponse {
@@ -137,6 +153,52 @@ export interface CourseReviewFormResponse {
   courseReviewFormDetail: CourseReviewFormCategory[];
 }
 
+export interface CourseReviewKeywordPatch {
+  keywordId: number;
+  keywordCode: string;
+  isSelected: boolean;
+}
+
 export interface CourseReviewPatchRequest {
-  courseReviewKeywordList: CourseReviewKeywordForm[];
+  courseReviewKeywordList: CourseReviewKeywordPatch[];
+}
+
+export interface DisplayKeywordSummary {
+  keywordId: number;
+  keywordCode: string;
+  label: string;
+  count: number;
+  color: string;
+  emoji: string;
+}
+
+export interface DisplayCategorySummary {
+  categoryCode: string;
+  label: string;
+  keywords: DisplayKeywordSummary[];
+}
+
+export interface DisplayReviewDetailItem {
+  userName: string;
+  createdAt: number;
+  keywords: {
+    keywordId: number;
+    keywordCode: string;
+    label: string;
+    emoji: string;
+  }[];
+}
+
+export interface DisplayFormKeyword {
+  keywordId: number;
+  keywordCode: string;
+  label: string;
+  emoji: string;
+  isSelected: boolean;
+}
+
+export interface DisplayFormCategory {
+  categoryCode: string;
+  label: string;
+  keywords: DisplayFormKeyword[];
 }

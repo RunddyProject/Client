@@ -13,13 +13,15 @@ export function useDeleteCourseReview(uuid: Course['uuid']) {
       if (!uuid) throw new Error('코스 ID가 필요해요');
       return CoursesApi.deleteCourseReview(uuid);
     },
-    onSuccess: () => {
-      toast.success('리뷰가 삭제가 완료되었어요');
+    onSuccess: async () => {
+      toast.success('리뷰 삭제가 완료되었어요');
 
-      queryClient.invalidateQueries({ queryKey: ['course-review', uuid] });
-      queryClient.invalidateQueries({
-        queryKey: ['course-review-summary', uuid]
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['course-review', uuid] }),
+        queryClient.invalidateQueries({
+          queryKey: ['course-review-form', uuid]
+        })
+      ]);
     },
     onError: (error) => {
       console.error('Failed to delete course review:', error);
