@@ -77,12 +77,23 @@ const CourseMap = ({
 
   const showSearchButton = movedByUser && hasCenterChanged;
 
-  const handleSearchHere = async () => {
+  const handleSearchHere = () => {
     const zoom = mapRef.current?.getZoom?.() || DEFAULT_ZOOM;
     const center = keywordCenter ?? viewport.center;
 
     setLastSearchedArea(center, viewport.radius, zoom);
     resetMovedByUser();
+
+    if (mapRef.current) {
+      mapRef.current.setCenter(new naver.maps.LatLng(center.lat, center.lng));
+    }
+  };
+
+  const handleSearchByCurrentLocation = async () => {
+    const zoom = mapRef.current?.getZoom?.() || DEFAULT_ZOOM;
+    const center = await getCurrentLocation();
+
+    setLastSearchedArea(center, viewport.radius, zoom);
 
     if (mapRef.current) {
       mapRef.current.setCenter(new naver.maps.LatLng(center.lat, center.lng));
@@ -207,7 +218,7 @@ const CourseMap = ({
                 variant='secondary'
                 disabled={isLocationLoading}
                 className='pointer-events-auto h-9.5 w-9.5 rounded-full bg-white shadow-lg'
-                onClick={getCurrentLocation}
+                onClick={handleSearchByCurrentLocation}
               >
                 <Icon name='my_location' size={24} />
               </Button>
