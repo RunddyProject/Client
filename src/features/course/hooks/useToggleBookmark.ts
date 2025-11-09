@@ -29,6 +29,12 @@ export function useToggleBookmark() {
         payload.courseUuid
       ]);
 
+      // courses snapshot for rollback
+      const prevCoursesSnapshots = queryClient.getQueriesData<Course[]>({
+        queryKey: ['courses']
+      });
+
+      // bookmarks update
       let next: BookmarksResponse | undefined = prevBookmarks;
 
       if (prevBookmarks) {
@@ -70,6 +76,7 @@ export function useToggleBookmark() {
         queryClient.setQueryData<BookmarksResponse>(['bookmarks'], next);
       }
 
+      // course detail update
       if (courseDetail) {
         queryClient.setQueryData<CourseDetail>(['course', payload.courseUuid], {
           ...courseDetail,
@@ -77,12 +84,33 @@ export function useToggleBookmark() {
         });
       }
 
-      return { prevBookmarks, prevCourse: courseDetail };
+      // courses update
+      const courseQueries = queryClient.getQueriesData<Course[]>({
+        queryKey: ['courses']
+      });
+
+      courseQueries.forEach(([key, list]) => {
+        if (!list) return;
+        queryClient.setQueryData<Course[]>(
+          key,
+          list.map((c) =>
+            c.uuid === payload.courseUuid
+              ? { ...c, isBookmarked: payload.isBookmarked }
+              : c
+          )
+        );
+      });
+
+      return { prevBookmarks, prevCourse: courseDetail, prevCoursesSnapshots };
     },
 
     onError: (error, payload, ctx) => {
       console.error('bookmark toggle failed:', error);
-      toast.error('북마크 업데이트에 실패했어요');
+      toast.error(
+        payload.isBookmarked
+          ? '북마크가 저장되지 않았어요'
+          : '북마크가 삭제되지 않았어요'
+      );
 
       if (ctx?.prevBookmarks) {
         queryClient.setQueryData(['bookmarks'], ctx.prevBookmarks);
@@ -93,11 +121,21 @@ export function useToggleBookmark() {
           ctx.prevCourse
         );
       }
+
+      // courses rollback
+      if (ctx?.prevCoursesSnapshots) {
+        ctx.prevCoursesSnapshots.forEach(([key, data]) => {
+          queryClient.setQueryData(key, data);
+        });
+      }
+
       queryClient.invalidateQueries({ queryKey: ['bookmarks'] });
     },
 
-    onSuccess: () => {
-      toast.success('북마크가 업데이트되었어요');
+    onSuccess: (_, payload) => {
+      toast.success(
+        payload.isBookmarked ? '북마크가 저장되었어요' : '북마크가 삭제되었어요'
+      );
     }
   });
 

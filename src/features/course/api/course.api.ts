@@ -35,9 +35,7 @@ export const CoursesApi = {
       keyword: params.keyword
     });
 
-    return api.get<CoursesResponse>(`/course?${query}`, {
-      requiresAuth: false
-    });
+    return api.get<CoursesResponse>(`/course?${query}`);
   },
   getFilteredCourseCount(
     filter: CourseFilterPayload
@@ -47,20 +45,15 @@ export const CoursesApi = {
   getCoursePoint: async (
     uuid: Course['uuid']
   ): Promise<CoursePointResponse> => {
-    return api.get<CoursePointResponse>(`/course/${uuid}/point`, {
-      requiresAuth: false
-    });
+    return api.get<CoursePointResponse>(`/course/${uuid}/point`);
   },
   getCourseDetail: async (uuid: Course['uuid']): Promise<CourseDetail> => {
-    return api.get<CourseDetail>(`/course/${uuid}`, {
-      requiresAuth: false
-    });
+    return api.get<CourseDetail>(`/course/${uuid}`);
   },
   getCourseGpx: async (uuid: Course['uuid']): Promise<void> => {
     return api.download(`/course/${uuid}/gpx`, {
       headers: { Accept: 'application/gpx+xml' },
-      fallbackName: 'route.gpx', // TODO: courseName
-      requiresAuth: false
+      fallbackName: 'route.gpx' // TODO: courseName
     });
   },
   getCourseReview: async (

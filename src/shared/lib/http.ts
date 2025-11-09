@@ -3,7 +3,6 @@ import { authService } from '../../features/user/api/auth';
 type ResponseType = 'json' | 'text' | 'blob' | 'arrayBuffer';
 
 interface ApiRequestOptions extends RequestInit {
-  requiresAuth?: boolean;
   responseType?: ResponseType;
 }
 
@@ -12,12 +11,7 @@ export async function apiRequest<T = any>(
   endpoint: string,
   options: ApiRequestOptions = {}
 ): Promise<T> {
-  const {
-    requiresAuth = true,
-    headers = {},
-    responseType = 'json',
-    ...restOptions
-  } = options;
+  const { headers = {}, responseType = 'json', ...restOptions } = options;
 
   const config: RequestInit = {
     ...restOptions,
@@ -28,13 +22,10 @@ export async function apiRequest<T = any>(
     credentials: 'include' // Include cookies for refresh token
   };
 
-  // Add Authorization header if auth is required
-  if (requiresAuth) {
-    const token = authService.getToken();
-    if (token) {
-      (config.headers as Record<string, string>)['Authorization'] =
-        `Bearer ${token}`;
-    }
+  const token = authService.getToken();
+  if (token) {
+    (config.headers as Record<string, string>)['Authorization'] =
+      `Bearer ${token}`;
   }
 
   const url = endpoint.startsWith('http')

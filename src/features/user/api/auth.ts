@@ -69,9 +69,7 @@ export class AuthService {
   // Get access token from server
   async getAccessToken(): Promise<string | null> {
     try {
-      const res = await api.post('/auth/access-token', undefined, {
-        requiresAuth: false
-      });
+      const res = await api.post('/auth/access-token', undefined);
       const token = res?.accessToken || res?.token || res?.data?.accessToken;
       if (!token) throw new Error('No accessToken found in response');
 
