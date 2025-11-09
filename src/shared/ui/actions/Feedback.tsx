@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { useParams } from 'react-router';
 
-import { usePostUserFeedback } from '@/features/user/hooks/usePostUserFeedback';
+import { usePostFeedback } from '@/features/user/hooks/usePostFeedback';
 import { Icon } from '@/shared/icons/icon';
 import { Button } from '@/shared/ui/primitives/button';
 import {
@@ -13,22 +14,32 @@ import {
 } from '@/shared/ui/primitives/dialog';
 import { Textarea } from '@/shared/ui/primitives/textarea';
 
-const UserFeedback = () => {
-  const [open, setOpen] = useState(false);
-  const [contents, setContents] = useState('');
+interface FeedbackProps {
+  feedbackType: 'FEEDBACK' | 'COURSE';
+}
 
-  const { submitFeedback } = usePostUserFeedback();
+const Feedback = ({ feedbackType }: FeedbackProps) => {
+  const { uuid: courseUuid } = useParams<{ uuid: string }>();
+
+  const { submitFeedback } = usePostFeedback();
+
+  const [open, setOpen] = useState(false);
+  const [content, setContent] = useState('');
 
   const handleClick = () => {
     setOpen(true);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContents(e.target.value);
+    setContent(e.target.value);
   };
 
   const handleSave = () => {
-    submitFeedback({ contents });
+    if (courseUuid) {
+      submitFeedback({ feedbackType, courseUuid, content });
+    } else {
+      submitFeedback({ feedbackType, content });
+    }
     setOpen(false);
   };
 
@@ -40,9 +51,15 @@ const UserFeedback = () => {
       >
         <Icon name='edit_blue' size={48} />
         <div className='flex-1 space-y-0.5'>
-          <div className='text-text-secondary font-bold'>런디, 어떠셨나요?</div>
+          <div className='text-text-secondary font-bold'>
+            {feedbackType === 'FEEDBACK'
+              ? '런디, 어떠셨나요?'
+              : '잘못된 정보가 있나요?'}
+          </div>
           <div className='text-text-secondary text-xs'>
-            더 나은 서비스를 위해 의견을 남겨주세요!
+            {feedbackType === 'FEEDBACK'
+              ? '더 나은 서비스를 위해 의견을 남겨주세요!'
+              : '수정이 필요하다면 알려주세요!'}
           </div>
         </div>
         <Icon
@@ -69,22 +86,32 @@ const UserFeedback = () => {
                   <Icon name='chevron_left' size={24} />
                 </Button>
               </DialogClose>
-              <DialogTitle className='col-start-2'>제안</DialogTitle>
+              <DialogTitle className='col-start-2'>
+                {feedbackType === 'COURSE' && '수정 '}제안
+              </DialogTitle>
             </DialogHeader>
 
             <div className='flex-1 overflow-y-auto px-5 pt-6'>
               <h3 className='pb-2 font-bold'>
-                런디에게 전달하고 싶은 의견이 있다면
+                {feedbackType === 'FEEDBACK'
+                  ? '런디에게 전달하고 싶은 의견이 있다면'
+                  : '수정이 필요한 사항에 대해'}
                 <br />
                 작성해 주세요
               </h3>
               <div className='text-text-secondary pb-6 text-[15px]'>
-                작성해 주신 의견은 모두 꼼꼼히 확인할게요
+                {feedbackType === 'FEEDBACK'
+                  ? '작성해 주신 의견은 모두 꼼꼼히 확인할게요'
+                  : '그 외 자유로운 의견도 환영해요'}
               </div>
               <Textarea
-                value={contents}
+                value={content}
                 onChange={handleChange}
-                placeholder='좋았던 점, 개선할 점 등 입력하기'
+                placeholder={
+                  feedbackType === 'FEEDBACK'
+                    ? '좋았던 점, 개선할 점 등 입력하기'
+                    : '수정이 필요한 정보, 개선 필요한 부분 등 입력하기'
+                }
               />
             </div>
 
@@ -93,7 +120,7 @@ const UserFeedback = () => {
                 size='lg'
                 className='w-full'
                 onClick={handleSave}
-                disabled={!contents}
+                disabled={!content}
               >
                 의견 보내기
               </Button>
@@ -105,4 +132,4 @@ const UserFeedback = () => {
   );
 };
 
-export default UserFeedback;
+export default Feedback;

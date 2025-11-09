@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { toast } from 'sonner';
 
 import { CoursesApi } from '@/features/course/api/course.api';
@@ -11,6 +11,7 @@ import {
 } from '@/features/course/model/constants';
 import { ElevationChart } from '@/features/course/ui/ElevationChart';
 import { Icon } from '@/shared/icons/icon';
+import Feedback from '@/shared/ui/actions/Feedback';
 import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
 import Tooltip from '@/shared/ui/composites/tooltip';
 import { Button } from '@/shared/ui/primitives/button';
@@ -186,28 +187,7 @@ const CourseDetail = () => {
       <div className='h-3 w-full bg-gray-100' />
 
       <div className='px-5 py-10'>
-        <Link
-          // TODO: course edit suggestion page
-          to='/'
-          className='flex items-center gap-3 rounded-xl bg-gray-200 p-4'
-        >
-          {/* <Icon name='' size={48} /> */}
-          <div className='h-12 w-12 rounded-xl bg-gray-100' />
-          <div className='flex-1 space-y-0.5'>
-            <div className='text-text-secondary font-bold'>
-              잘못된 정보가 있나요?
-            </div>
-            <div className='text-text-secondary text-xs'>
-              수정이 필요하다면 알려주세요!
-            </div>
-          </div>
-          <Icon
-            name='chevron_right'
-            size={16}
-            color='currentColor'
-            className='text-gray-400'
-          />
-        </Link>
+        <Feedback feedbackType='COURSE' />
       </div>
     </>
   );

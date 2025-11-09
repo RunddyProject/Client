@@ -3,12 +3,11 @@ import { toast } from 'sonner';
 
 import { UserApi } from '@/features/user/api/user.api';
 
-import type { UserFeedbackPostRequest } from '@/features/user/model/types';
+import type { FeedbackPostRequest } from '@/features/user/model/types';
 
-export function usePostUserFeedback() {
+export function usePostFeedback() {
   const mutation = useMutation({
-    mutationFn: (body: UserFeedbackPostRequest) =>
-      UserApi.postUserFeedback(body),
+    mutationFn: (body: FeedbackPostRequest) => UserApi.postFeedback(body),
     onSuccess: () => {
       toast.success('소중한 의견 감사해요');
     },

@@ -1,8 +1,8 @@
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { Link } from 'react-router';
 
-import UserFeedback from '@/features/user/ui/UserFeedback';
 import { Icon } from '@/shared/icons/icon';
+import Feedback from '@/shared/ui/actions/Feedback';
 import {
   Sheet,
   SheetClose,
@@ -50,7 +50,7 @@ const Menu = ({ titles }: MenuProps) => {
           ))}
         </ul>
         <div className='fixed bottom-8 w-full px-5'>
-          <UserFeedback />
+          <Feedback feedbackType='FEEDBACK' />
         </div>
       </SheetContent>
     </Sheet>

@@ -1,3 +1,5 @@
-export interface UserFeedbackPostRequest {
-  contents: string;
+export interface FeedbackPostRequest {
+  feedbackType: 'FEEDBACK' | 'COURSE';
+  courseUuid?: string;
+  content: string;
 }

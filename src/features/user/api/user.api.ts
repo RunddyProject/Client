@@ -1,9 +1,9 @@
 import { api } from '@/shared/lib/http';
 
-import type { UserFeedbackPostRequest } from '@/features/user/model/types';
+import type { FeedbackPostRequest } from '@/features/user/model/types';
 
 export const UserApi = {
-  postUserFeedback: async (body: UserFeedbackPostRequest): Promise<void> => {
+  postFeedback: async (body: FeedbackPostRequest): Promise<void> => {
     return api.post(`/feedback`, body);
   }
 };
