@@ -17,7 +17,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-  AlertDialogDescription
+  AlertDialogDescription,
+  AlertDialogOverlay
 } from '@/shared/ui/primitives/alert-dialog';
 import {
   Avatar,
@@ -142,11 +143,14 @@ function MeEdit() {
         </form>
       </FormProvider>
 
-      <div className='flex items-center justify-center gap-3 pt-6 pb-27 text-sm text-gray-500'>
+      <div className='flex items-center justify-center gap-3 bg-white pt-6 pb-27 text-sm text-gray-500'>
         <AlertDialog>
+          <AlertDialogOverlay />
+
           <AlertDialogTrigger asChild>
             <Button variant='ghost'>로그아웃</Button>
           </AlertDialogTrigger>
+
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>런디에서 로그아웃 하시겠어요?</AlertDialogTitle>
