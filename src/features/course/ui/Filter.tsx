@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
+import { useCourseCount } from '@/features/course/hooks/useCourseCount';
+import { useCourses } from '@/features/course/hooks/useCourses';
 import {
   grades,
   envTypeNames,
@@ -30,7 +32,10 @@ import {
   ToggleGroupItem
 } from '@/shared/ui/primitives/toggle-group';
 
-import type { GradeType } from '@/features/course/model/types';
+import type {
+  CourseFilterPayload,
+  GradeType
+} from '@/features/course/model/types';
 
 type Tuple2 = [number, number];
 
@@ -160,6 +165,44 @@ const CourseFilter = () => {
   );
 
   const [draft, setDraft] = useState<FilterState>(applied);
+
+  const payload: CourseFilterPayload = useMemo(
+    () => ({
+      envTypeList:
+        draft.envType.length > 0
+          ? draft.envType.map(
+              (k) => ENV_NAME_TO_TYPE[k as keyof typeof ENV_NAME_TO_TYPE] ?? k
+            )
+          : undefined,
+      shapeTypeList:
+        draft.shapeType.length > 0
+          ? draft.shapeType.map(
+              (k) =>
+                SHAPE_NAME_TO_TYPE[k as keyof typeof SHAPE_NAME_TO_TYPE] ?? k
+            )
+          : undefined,
+      gradeList: draft.grade.length > 0 ? draft.grade.map(Number) : undefined,
+      minDist: !deepEqual(draft.distanceRange, DEFAULTS.distanceRange)
+        ? draft.distanceRange[0]
+        : undefined,
+      maxDist: !deepEqual(draft.distanceRange, DEFAULTS.distanceRange)
+        ? draft.distanceRange[1]
+        : undefined,
+      minEle: !deepEqual(draft.elevationRange, DEFAULTS.elevationRange)
+        ? draft.elevationRange[0] * 1000
+        : undefined,
+      maxEle: !deepEqual(draft.elevationRange, DEFAULTS.elevationRange)
+        ? draft.elevationRange[1] * 1000
+        : undefined
+    }),
+    [draft]
+  );
+
+  const { courses } = useCourses();
+  const { count } = useCourseCount(payload);
+
+  const isFilterChanged = !deepEqual(draft, applied);
+  const displayCount = isFilterChanged ? count : courses.length;
 
   const setDistanceRange = (range: [number, number]) => {
     setDraft((prev) => ({ ...prev, distanceRange: range }));
@@ -398,7 +441,7 @@ const CourseFilter = () => {
             </Button>
             <DialogClose asChild className='flex-2'>
               <Button type='button' size='lg' onClick={handleApply}>
-                코스 보기
+                {displayCount}개의 코스 보기
               </Button>
             </DialogClose>
           </DialogFooter>

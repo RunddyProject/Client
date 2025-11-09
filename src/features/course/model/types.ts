@@ -57,6 +57,24 @@ export type CourseSearchParams = {
   keyword?: string; // text query
 };
 
+export type CourseFilterPayload = {
+  lat?: string;
+  lng?: string;
+  radius?: number; // (km)
+  gradeList?: number[];
+  envTypeList?: EnvType[];
+  shapeTypeList?: ShapeType[];
+  minDist?: number;
+  maxDist?: number;
+  minEle?: number;
+  maxEle?: number;
+  keyword?: string; // text query
+};
+
+export interface FilterCountResponse {
+  count: number;
+}
+
 export interface CoursePoint {
   pointSeq: number;
   lat: number;

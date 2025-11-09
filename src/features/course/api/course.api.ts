@@ -6,12 +6,14 @@ import type {
   BookmarksResponse,
   Course,
   CourseDetail,
+  CourseFilterPayload,
   CoursePointResponse,
   CourseReviewFormResponse,
   CourseReviewPatchRequest,
   CourseReviewResponse,
   CourseSearchParams,
-  CoursesResponse
+  CoursesResponse,
+  FilterCountResponse
 } from '@/features/course/model/types';
 
 export const CoursesApi = {
@@ -36,6 +38,11 @@ export const CoursesApi = {
     return api.get<CoursesResponse>(`/course?${query}`, {
       requiresAuth: false
     });
+  },
+  getFilteredCourseCount(
+    filter: CourseFilterPayload
+  ): Promise<FilterCountResponse> {
+    return api.post<FilterCountResponse>('/course/filter/count', filter);
   },
   getCoursePoint: async (
     uuid: Course['uuid']
