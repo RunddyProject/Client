@@ -1,8 +1,9 @@
 import { Link, useNavigate } from 'react-router';
 
 import { useAuth } from '@/app/providers/AuthContext';
-import { useBookmarks } from '@/features/course/hooks/useBookmarks';
 import CourseInfoCard from '@/features/course/ui/InfoCard';
+import { useUserBookmarks } from '@/features/user/hooks/useUserBookmarks';
+import { useUserReviews } from '@/features/user/hooks/useUserReviews';
 import profileImgUrl from '@/shared/assets/basic_profile.png';
 import { Icon } from '@/shared/icons/icon';
 import {
@@ -23,8 +24,8 @@ function Me() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const { bookmarkList } = useBookmarks();
-  const reviews = bookmarkList;
+  const { bookmarkList } = useUserBookmarks();
+  const { courseList } = useUserReviews();
 
   const handleClickReview = (uuid: Course['uuid']) => {
     navigate(`/course/${uuid}?tab=review`);
@@ -83,13 +84,13 @@ function Me() {
         </TabsContent>
 
         <TabsContent value='review' className='px-5'>
-          {reviews.length === 0 ? (
+          {courseList.length === 0 ? (
             <div className='flex flex-col items-center space-y-4 pt-30'>
               <Icon name='empty_graphic' size={120} />
               <div className='text-placeholder'>작성한 리뷰가 없어요</div>
             </div>
           ) : (
-            reviews.map((course: Course) => {
+            courseList.map((course: Course) => {
               return (
                 <CourseInfoCard
                   key={course.uuid}

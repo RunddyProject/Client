@@ -220,14 +220,3 @@ export interface DisplayFormCategory {
   label: string;
   keywords: DisplayFormKeyword[];
 }
-
-export type BookmarkType = 'OFFICIAL' | 'USER' | string;
-
-export interface BookmarksResponse {
-  bookmarkList: Course[];
-}
-
-export interface BookmarkPatchRequest {
-  courseUuid: string;
-  isBookmarked: boolean;
-}

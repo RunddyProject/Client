@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router';
 
-import { useToggleBookmark } from '@/features/course/hooks/useToggleBookmark';
 import { GRADE_TO_NAME } from '@/features/course/model/constants';
+import { useToggleBookmark } from '@/features/user/hooks/useToggleBookmark';
 import CourseArtImageUrl from '@/shared/assets/course_art.png';
 import CourseLinearImageUrl from '@/shared/assets/course_linear.png';
 import CourseLoopImageUrl from '@/shared/assets/course_loop.png';

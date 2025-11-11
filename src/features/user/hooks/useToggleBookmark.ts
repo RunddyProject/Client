@@ -1,26 +1,25 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
-import { CoursesApi } from '@/features/course/api/course.api';
+import { UserApi } from '@/features/user/api/user.api';
 
+import type { Course, CourseDetail } from '@/features/course/model/types';
 import type {
   BookmarkPatchRequest,
-  BookmarksResponse,
-  Course,
-  CourseDetail
-} from '@/features/course/model/types';
+  UserBookmarksResponse
+} from '@/features/user/model/types';
 
 export function useToggleBookmark() {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: (payload: BookmarkPatchRequest) =>
-      CoursesApi.patchBookmark(payload),
+      UserApi.patchBookmark(payload),
 
     onMutate: async (payload) => {
       await queryClient.cancelQueries({ queryKey: ['bookmarks'] });
 
-      const prevBookmarks = queryClient.getQueryData<BookmarksResponse>([
+      const prevBookmarks = queryClient.getQueryData<UserBookmarksResponse>([
         'bookmarks'
       ]);
 
@@ -35,7 +34,7 @@ export function useToggleBookmark() {
       });
 
       // bookmarks update
-      let next: BookmarksResponse | undefined = prevBookmarks;
+      let next: UserBookmarksResponse | undefined = prevBookmarks;
 
       if (prevBookmarks) {
         const existsIdx = prevBookmarks.bookmarkList.findIndex(
@@ -73,7 +72,7 @@ export function useToggleBookmark() {
           };
         }
 
-        queryClient.setQueryData<BookmarksResponse>(['bookmarks'], next);
+        queryClient.setQueryData<UserBookmarksResponse>(['bookmarks'], next);
       }
 
       // course detail update

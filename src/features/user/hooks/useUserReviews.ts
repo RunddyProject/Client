@@ -1,30 +1,28 @@
 import { useQuery } from '@tanstack/react-query';
-import { toast } from 'sonner';
 
 import { useAuth } from '@/app/providers/AuthContext';
-import { CoursesApi } from '@/features/course/api/course.api';
+import { UserApi } from '@/features/user/api/user.api';
 
-import type { BookmarksResponse } from '@/features/course/model/types';
+import type { UserReviewsResponse } from '@/features/user/model/types';
 
-export function useBookmarks() {
+export function useUserReviews() {
   const { isAuthenticated } = useAuth();
 
-  const query = useQuery<BookmarksResponse, Error>({
+  const query = useQuery<UserReviewsResponse, Error>({
     enabled: !!isAuthenticated,
-    queryKey: ['bookmarks'],
+    queryKey: ['reviews'],
     staleTime: 60_000,
     gcTime: 5 * 60_000,
     retry: 1,
-    queryFn: () => CoursesApi.getBookmarks()
+    queryFn: () => UserApi.getUserReviews()
   });
 
   if (query.isError) {
-    toast.error('북마크를 불러오지 못했어요');
     console.error(query.error);
   }
 
   return {
-    bookmarkList: query.data?.bookmarkList ?? [],
+    courseList: query.data?.courseList ?? [],
     isLoading: query.isLoading,
     isFetching: query.isFetching,
     isError: query.isError,
