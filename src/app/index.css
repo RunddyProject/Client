@@ -1,25 +1,39 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@config "../../tailwind.config.ts";
 
+@layer base {
+  body {
+    color: var(--text-pri);
+  }
+}
+
+/* Editor-only color preview */
 @theme {
-  --color-blue: #04aef1;
-  --color-green: #2ac47e;
-  --color-orange: #ff7534;
-  --color-pink: #fd7fcd;
-  --color-error: #f45b50;
+  --color-w-100: #ffffff;
 
-  --color-text-primary: #0f0f11;
-  --color-text-secondary: #383b45;
-  --color-text-tertiary: #5d6270;
-  --color-placeholder: #979bab;
+  --color-g-10: #f7f9fc;
+  --color-g-20: #e7e9f0;
+  --color-g-30: #c5c8d2;
+  --color-g-40: #979bab;
+  --color-g-50: #727787;
+  --color-g-60: #5d6270;
+  --color-g-70: #4a4f59;
+  --color-g-80: #383b45;
+  --color-g-90: #272930;
+  --color-g-100: #17171a;
+  --color-g-black: #0f0f11;
 
-  --color-line-tertiary: #727787;
+  --color-runddy-blue: #04aef1;
+  --color-runddy-pressed: #119bd1;
+  --color-runddy-orange: #ff7534;
+  --color-runddy-green: #2ac47e;
+  --color-runddy-pink: #fd7fcd;
 
-  --text-xs: 11px;
-  --text-sm: 14px;
-  --text-md: 16px;
-  --text-lg: 18px;
-  --text-xl: 20px;
+  --color-text-pri: #0f0f11;
+  --color-text-sec: #383b45;
+  --color-text-ter: #5d6270;
+  --color-text-placeholder: #979bab;
 
-  --shadow-runddy: 2px 2px 12px 0 rgba(0, 0, 0, 0.1);
+  --color-state-error: #f45b50;
 }
