@@ -28,13 +28,13 @@ export default {
           green: 'var(--runddy-green)',
           pink: 'var(--runddy-pink)'
         },
-        text: {
-          pri: 'var(--text-pri)',
-          sec: 'var(--text-sec)',
-          ter: 'var(--text-ter)',
-          placeholder: 'var(--text-placeholder)'
-        },
-        state: { error: 'var(--state-error)' }
+        pri: 'var(--text-pri)',
+        sec: 'var(--text-sec)',
+        ter: 'var(--text-ter)',
+        placeholder: 'var(--text-placeholder)',
+
+        lineTer: 'var(--line-ter)',
+        stateError: 'var(--state-error)'
       },
 
       fontSize: twTypography,

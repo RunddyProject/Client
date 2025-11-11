@@ -45,9 +45,9 @@
   --lineheights-12: 14;
   --lineheights-13: 16;
   --lineheights-14: 15;
-  --fontweights-pretendard-0: Medium;
-  --fontweights-pretendard-1: Regular;
-  --fontweights-pretendard-2: Bold;
+  --fontweights-pretendard-0: 500;
+  --fontweights-pretendard-1: 400;
+  --fontweights-pretendard-2: 700;
   --fontsize-0: 10px;
   --fontsize-1: 11px;
   --fontsize-2: 12px;
@@ -61,7 +61,7 @@
   --letterspacing-1: 0%;
   --paragraphspacing-0: 0;
   --m18-font-family: Pretendard;
-  --m18-font-weight: Medium;
+  --m18-font-weight: 500;
   --m18-font-size: 18px;
   --m18-line-height: 24px;
   --m18-letter-spacing: -1.2%;
@@ -69,7 +69,7 @@
   --m18-text-case: none;
   --m18-text-decoration: none;
   --r18-font-family: Pretendard;
-  --r18-font-weight: Regular;
+  --r18-font-weight: 400;
   --r18-font-size: 18px;
   --r18-line-height: 24px;
   --r18-letter-spacing: -1.2%;
@@ -77,7 +77,7 @@
   --r18-text-case: none;
   --r18-text-decoration: none;
   --contents-m15-font-family: Pretendard;
-  --contents-m15-font-weight: Medium;
+  --contents-m15-font-weight: 500;
   --contents-m15-font-size: 15px;
   --contents-m15-line-height: 20px;
   --contents-m15-letter-spacing: -1.2%;
@@ -85,7 +85,7 @@
   --contents-m15-text-case: none;
   --contents-m15-text-decoration: none;
   --contents-m16-font-family: Pretendard;
-  --contents-m16-font-weight: Medium;
+  --contents-m16-font-weight: 500;
   --contents-m16-font-size: 16px;
   --contents-m16-line-height: 22px;
   --contents-m16-letter-spacing: -1.2%;
@@ -93,7 +93,7 @@
   --contents-m16-text-case: none;
   --contents-m16-text-decoration: none;
   --contents-r14-font-family: Pretendard;
-  --contents-r14-font-weight: Regular;
+  --contents-r14-font-weight: 400;
   --contents-r14-font-size: 14px;
   --contents-r14-line-height: 20px;
   --contents-r14-letter-spacing: -1.2%;
@@ -101,7 +101,7 @@
   --contents-r14-text-case: none;
   --contents-r14-text-decoration: none;
   --contents-r16-font-family: Pretendard;
-  --contents-r16-font-weight: Regular;
+  --contents-r16-font-weight: 400;
   --contents-r16-font-size: 16px;
   --contents-r16-line-height: 22px;
   --contents-r16-letter-spacing: -1.2%;
@@ -109,7 +109,7 @@
   --contents-r16-text-case: none;
   --contents-r16-text-decoration: none;
   --contents-b16-font-family: Pretendard;
-  --contents-b16-font-weight: Bold;
+  --contents-b16-font-weight: 700;
   --contents-b16-font-size: 16px;
   --contents-b16-line-height: 22px;
   --contents-b16-letter-spacing: -1.2%;
@@ -117,7 +117,7 @@
   --contents-b16-text-case: none;
   --contents-b16-text-decoration: none;
   --contents-r15-font-family: Pretendard;
-  --contents-r15-font-weight: Regular;
+  --contents-r15-font-weight: 400;
   --contents-r15-font-size: 15px;
   --contents-r15-line-height: 20px;
   --contents-r15-letter-spacing: -1.2%;
@@ -125,7 +125,7 @@
   --contents-r15-text-case: none;
   --contents-r15-text-decoration: none;
   --contents-m14-font-family: Pretendard;
-  --contents-m14-font-weight: Medium;
+  --contents-m14-font-weight: 500;
   --contents-m14-font-size: 14px;
   --contents-m14-line-height: 18px;
   --contents-m14-letter-spacing: -1.2%;
@@ -133,7 +133,7 @@
   --contents-m14-text-case: none;
   --contents-m14-text-decoration: none;
   --title-b18-font-family: Pretendard;
-  --title-b18-font-weight: Bold;
+  --title-b18-font-weight: 700;
   --title-b18-font-size: 18px;
   --title-b18-line-height: 22px;
   --title-b18-letter-spacing: -1.2%;
@@ -141,7 +141,7 @@
   --title-b18-text-case: none;
   --title-b18-text-decoration: none;
   --title-b21-font-family: Pretendard;
-  --title-b21-font-weight: Bold;
+  --title-b21-font-weight: 700;
   --title-b21-font-size: 21px;
   --title-b21-line-height: 27px;
   --title-b21-letter-spacing: -1.2%;
@@ -149,7 +149,7 @@
   --title-b21-text-case: none;
   --title-b21-text-decoration: none;
   --title-b23-font-family: Pretendard;
-  --title-b23-font-weight: Bold;
+  --title-b23-font-weight: 700;
   --title-b23-font-size: 23px;
   --title-b23-line-height: 34px;
   --title-b23-letter-spacing: -1.2%;
@@ -157,7 +157,7 @@
   --title-b23-text-case: none;
   --title-b23-text-decoration: none;
   --caption-r11-font-family: Pretendard;
-  --caption-r11-font-weight: Regular;
+  --caption-r11-font-weight: 400;
   --caption-r11-font-size: 11px;
   --caption-r11-line-height: 14px;
   --caption-r11-letter-spacing: 0%;
@@ -165,7 +165,7 @@
   --caption-r11-text-case: none;
   --caption-r11-text-decoration: none;
   --caption-m12-font-family: Pretendard;
-  --caption-m12-font-weight: Medium;
+  --caption-m12-font-weight: 500;
   --caption-m12-font-size: 12px;
   --caption-m12-line-height: 16px;
   --caption-m12-letter-spacing: -1.2%;
@@ -173,7 +173,7 @@
   --caption-m12-text-case: none;
   --caption-m12-text-decoration: none;
   --caption-filter-font-family: Pretendard;
-  --caption-filter-font-weight: Medium;
+  --caption-filter-font-weight: 500;
   --caption-filter-font-size: 10px;
   --caption-filter-line-height: 15px;
   --caption-filter-letter-spacing: 0%;

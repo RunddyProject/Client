@@ -6,11 +6,38 @@ import StyleDictionary from 'style-dictionary';
 const OUT_DIR = path.resolve('src/shared/design/tokens');
 if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true });
 
+const WEIGHT_MAP: Record<string, string> = {
+  Thin: '100',
+  'Extra Light': '200',
+  ExtraLight: '200',
+  Light: '300',
+  Regular: '400',
+  Normal: '400',
+  Medium: '500',
+  'Semi Bold': '600',
+  SemiBold: '600',
+  DemiBold: '600',
+  Bold: '700',
+  'Extra Bold': '800',
+  ExtraBold: '800',
+  Black: '900'
+};
+
 const toKebab = (s: string) =>
   s
     .toLowerCase()
     .replace(/\s+/g, '-')
     .replace(/[^\w-]/g, '-');
+
+const toNumericWeight = (w: unknown): string | number => {
+  if (typeof w === 'number') return w;
+  if (typeof w === 'string') {
+    const cleaned = w.replace(/[{}]/g, '');
+    const last = cleaned.split('.').pop() || cleaned;
+    return WEIGHT_MAP[w] || WEIGHT_MAP[cleaned] || WEIGHT_MAP[last] || w;
+  }
+  return String(w ?? '');
+};
 
 StyleDictionary.registerFormat({
   name: 'css/variables-runddy',
@@ -22,24 +49,36 @@ StyleDictionary.registerFormat({
 
       if (t.type === 'typography' && typeof t.value === 'object') {
         const v: any = t.value;
-        if (v.fontFamily)
+
+        if (v.fontFamily) {
           lines.push(`  --${name}-font-family: ${v.fontFamily};`);
-        if (v.fontWeight)
-          lines.push(`  --${name}-font-weight: ${v.fontWeight};`);
-        if (v.fontSize)
-          lines.push(
-            `  --${name}-font-size: ${typeof v.fontSize === 'number' ? v.fontSize + 'px' : v.fontSize};`
-          );
-        if (v.lineHeight)
-          lines.push(
-            `  --${name}-line-height: ${typeof v.lineHeight === 'number' ? v.lineHeight + 'px' : v.lineHeight};`
-          );
-        if (v.letterSpacing !== undefined)
+        }
+        if (v.fontWeight !== undefined) {
+          const fw = toNumericWeight(v.fontWeight);
+          lines.push(`  --${name}-font-weight: ${fw};`);
+        }
+        if (v.fontSize !== undefined) {
+          const fs =
+            typeof v.fontSize === 'number' ? `${v.fontSize}px` : v.fontSize;
+          lines.push(`  --${name}-font-size: ${fs};`);
+        }
+        if (v.lineHeight !== undefined) {
+          const lh =
+            typeof v.lineHeight === 'number'
+              ? `${v.lineHeight}px`
+              : v.lineHeight;
+          lines.push(`  --${name}-line-height: ${lh};`);
+        }
+        if (v.letterSpacing !== undefined) {
           lines.push(`  --${name}-letter-spacing: ${v.letterSpacing};`);
-        if (v.paragraphSpacing !== undefined)
-          lines.push(
-            `  --${name}-paragraph-spacing: ${typeof v.paragraphSpacing === 'number' ? v.paragraphSpacing + 'px' : v.paragraphSpacing};`
-          );
+        }
+        if (v.paragraphSpacing !== undefined) {
+          const ps =
+            typeof v.paragraphSpacing === 'number'
+              ? `${v.paragraphSpacing}px`
+              : v.paragraphSpacing;
+          lines.push(`  --${name}-paragraph-spacing: ${ps};`);
+        }
         if (v.textCase) lines.push(`  --${name}-text-case: ${v.textCase};`);
         if (v.textDecoration)
           lines.push(`  --${name}-text-decoration: ${v.textDecoration};`);
@@ -61,11 +100,17 @@ StyleDictionary.registerFormat({
         return;
       }
 
-      const val =
+      if (t.type === 'fontWeights') {
+        const fw = toNumericWeight(t.value);
+        lines.push(`  --${name}: ${fw};`);
+        return;
+      }
+
+      const needsPx =
         typeof t.value === 'number' &&
-        /(font-sizes|size|line-heights|dimension)/i.test(t.type || '')
-          ? `${t.value}px`
-          : t.value;
+        /(font-sizes|size|line-heights|dimension)/i.test(t.type || '');
+
+      const val = needsPx ? `${t.value}px` : t.value;
 
       lines.push(`  --${name}: ${val};`);
     });
