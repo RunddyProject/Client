@@ -122,7 +122,7 @@ const CourseReview = () => {
           </div>
         </div>
       ) : (
-        <div className='flex flex-col items-center space-y-4 pt-28'>
+        <div className='flex flex-col items-center space-y-4 py-28'>
           <Icon name='empty_graphic' size={140} />
           <div className='flex flex-col items-center space-y-5 text-center'>
             <div className='text-placeholder text-contents-m16'>

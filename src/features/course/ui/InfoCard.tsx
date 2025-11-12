@@ -47,7 +47,7 @@ const CourseInfoCard = ({
   return (
     <div
       className={cn(
-        'bg-w-100 flex cursor-pointer justify-between gap-4',
+        'bg-w-100 pointer-events-auto flex cursor-pointer justify-between gap-4',
         className
       )}
       onClick={onClick ?? handleClick}
@@ -61,7 +61,7 @@ const CourseInfoCard = ({
             className='rounded-xl'
           />
           <div
-            className='pointer-events-none absolute inset-0'
+            className='absolute inset-0'
             dangerouslySetInnerHTML={{ __html: course.svg }}
           />
         </div>
