@@ -33,7 +33,11 @@ export function useCourseReviewForm(uuid: Course['uuid']) {
       return CoursesApi.patchCourseReview(uuid, payload);
     },
     onSuccess: async () => {
-      toast.success('리뷰 저장이 완료되었어요');
+      toast.success(
+        display?.hasMyReview
+          ? '리뷰 수정이 완료되었어요'
+          : '리뷰 작성이 완료되었어요'
+      );
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['course-review', uuid] }),
         queryClient.invalidateQueries({
@@ -43,7 +47,11 @@ export function useCourseReviewForm(uuid: Course['uuid']) {
     },
     onError: (error) => {
       console.error('Failed to save review:', error);
-      toast.error('리뷰 저장이 실패했어요');
+      toast.error(
+        display?.hasMyReview
+          ? '리뷰가 수정되지 않았어요'
+          : '리뷰가 작성되지 않았어요'
+      );
     }
   });
 

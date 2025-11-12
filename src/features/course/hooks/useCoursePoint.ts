@@ -1,6 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
-import { toast } from 'sonner';
 
 import { CoursesApi } from '@/features/course/api/course.api';
 import {
@@ -22,13 +20,6 @@ export function useCoursePoint(uuid: Course['uuid']) {
       return res.coursePointList;
     }
   });
-
-  useEffect(() => {
-    if (query.isError) {
-      toast.error('코스 포인트 불러오기 실패');
-      console.error('Failed to fetch course point:', query.error);
-    }
-  }, [query.isError, query.errorUpdatedAt, query.error]);
 
   return {
     coursePointList: query.data ?? [],

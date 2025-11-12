@@ -25,7 +25,7 @@ export function useDeleteCourseReview(uuid: Course['uuid']) {
     },
     onError: (error) => {
       console.error('Failed to delete course review:', error);
-      toast.error('리뷰 삭제에 실패했어요');
+      toast.error('리뷰가 삭제되지 않았어요');
     }
   });
 

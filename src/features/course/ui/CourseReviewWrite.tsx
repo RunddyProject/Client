@@ -61,7 +61,7 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
 
   const handleClick = () => {
     if (!isAuthenticated) {
-      toast.error('리뷰 작성은 로그인이 필요해요');
+      toast.error('로그인이 필요해요');
       navigator('/login');
       return;
     }
@@ -71,9 +71,6 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
   const handleSave = async () => {
     if (!uuid) return;
     await patchReview(categories);
-    // toast.success(
-    //   hasMyReview ? '리뷰 수정이 완료되었어요' : '리뷰 작성이 완료되었어요'
-    // );
     setOpen(false);
   };
 

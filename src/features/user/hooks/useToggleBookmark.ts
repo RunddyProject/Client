@@ -8,11 +8,23 @@ import type {
   BookmarkPatchRequest,
   UserBookmarksResponse
 } from '@/features/user/model/types';
+import type { ApiError } from '@/shared/lib/http';
+
+type ToggleBookmarkContext = {
+  prevBookmarks?: UserBookmarksResponse;
+  prevCourse?: CourseDetail;
+  prevCoursesSnapshots?: [readonly unknown[], Course[] | undefined][];
+};
 
 export function useToggleBookmark() {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
+  const mutation = useMutation<
+    void,
+    ApiError,
+    BookmarkPatchRequest,
+    ToggleBookmarkContext
+  >({
     mutationFn: (payload: BookmarkPatchRequest) =>
       UserApi.patchBookmark(payload),
 
@@ -105,11 +117,15 @@ export function useToggleBookmark() {
 
     onError: (error, payload, ctx) => {
       console.error('bookmark toggle failed:', error);
-      toast.error(
-        payload.isBookmarked
-          ? '북마크가 저장되지 않았어요'
-          : '북마크가 삭제되지 않았어요'
-      );
+      if (error.status === 401) {
+        toast.error('로그인이 필요해요');
+      } else {
+        toast.error(
+          payload.isBookmarked
+            ? '북마크가 저장되지 않았어요'
+            : '북마크가 삭제되지 않았어요'
+        );
+      }
 
       if (ctx?.prevBookmarks) {
         queryClient.setQueryData(['bookmarks'], ctx.prevBookmarks);

@@ -59,17 +59,17 @@ function MeEdit() {
   const onSubmit = async () => {
     try {
       await api.patch('/users/info', { userName });
-      toast.success('프로필이 저장되었습니다');
+      toast.success('프로필이 저장되었어요');
       console.log('profile updated');
       navigate('/me');
     } catch (error) {
-      toast.error('프로필이 저장에 실패했습니다');
+      toast.error('프로필이 저장되지 않았어요');
       console.error('Failed to update profile:', error);
     }
   };
 
   const handleImageChange = () =>
-    toast.info('이미지 업로드 기능은 준비중입니다');
+    toast.info('이미지 업로드 기능은 준비중이에요');
 
   return (
     <div className='flex min-h-[calc(100dvh-52px)] flex-col overflow-hidden'>

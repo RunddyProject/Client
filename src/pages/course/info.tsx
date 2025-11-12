@@ -5,7 +5,6 @@ import {
   useParams,
   useSearchParams
 } from 'react-router';
-import { toast } from 'sonner';
 
 import { useHeader } from '@/app/providers/HeaderContext';
 import { useCourseDetail } from '@/features/course/hooks/useCourseDetail';
@@ -64,7 +63,6 @@ const CourseInfo = () => {
   }
 
   if (!course) {
-    toast.error('코스 불러오기 실패');
     navigate('/');
     return null;
   }

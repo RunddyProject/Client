@@ -1,6 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
-import { toast } from 'sonner';
 
 import { CoursesApi } from '@/features/course/api/course.api';
 import { type Course, type CourseDetail } from '@/features/course/model/types';
@@ -18,13 +16,6 @@ export function useCourseDetail(uuid: Course['uuid']) {
       return res;
     }
   });
-
-  useEffect(() => {
-    if (query.isError) {
-      toast.error('코스 포인트 불러오기 실패');
-      console.error('Failed to fetch course detail:', query.error);
-    }
-  }, [query.isError, query.errorUpdatedAt, query.error]);
 
   return {
     courseDetail: query.data ?? null,

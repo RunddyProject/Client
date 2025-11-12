@@ -5,7 +5,6 @@ import {
 } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router';
-import { toast } from 'sonner';
 
 import { CoursesApi } from '@/features/course/api/course.api';
 import {
@@ -126,13 +125,6 @@ export function useCourses({
     enabled: !!userLocation,
     placeholderData: keepPreviousData
   });
-
-  useEffect(() => {
-    if (query.isError) {
-      toast.error('코스 불러오기 실패');
-      console.error('Failed to fetch courses:', query.error);
-    }
-  }, [query.isError, query.errorUpdatedAt, query.error]);
 
   return {
     courses: query.data ?? [],

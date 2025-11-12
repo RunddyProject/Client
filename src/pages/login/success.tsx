@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { toast } from 'sonner';
 
 import { authService } from '@/features/user/api/auth';
 
@@ -13,15 +12,12 @@ const LoginSuccess = () => {
         const token = await authService.getAccessToken();
 
         if (token) {
-          toast.success('로그인 성공');
           navigate('/', { replace: true });
         } else {
-          toast.error('토큰 발급 실패');
           navigate('/login', { replace: true });
         }
       } catch (error) {
         console.error('[LoginSuccess] 로그인 처리 실패:', error);
-        toast.error('로그인 실패');
         navigate('/login', { replace: true });
       }
     };

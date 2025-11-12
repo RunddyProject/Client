@@ -1,5 +1,4 @@
 import { useNavigate, useParams } from 'react-router';
-import { toast } from 'sonner';
 
 import { useCourseDetail } from '@/features/course/hooks/useCourseDetail';
 import { SHAPE_TYPE_COLOR } from '@/features/course/model/constants';
@@ -23,7 +22,6 @@ function CourseInfoMap() {
   }
 
   if (!course) {
-    toast.error('코스 불러오기 실패');
     navigate('/');
     return null;
   }
