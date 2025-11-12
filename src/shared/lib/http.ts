@@ -6,6 +6,22 @@ interface ApiRequestOptions extends RequestInit {
   responseType?: ResponseType;
 }
 
+export class ApiError extends Error {
+  status: number;
+  statusText: string;
+  body?: string;
+
+  constructor(status: number, statusText: string, body?: string) {
+    super(`API Error: ${status} ${statusText}`);
+    this.name = 'ApiError';
+    this.status = status;
+    this.statusText = statusText;
+    this.body = body;
+
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
+
 // Fetch wrapper that automatically adds JWT token to headers
 export async function apiRequest<T = any>(
   endpoint: string,
@@ -36,9 +52,7 @@ export async function apiRequest<T = any>(
 
   if (!response.ok) {
     const body = await response.text().catch(() => '');
-    throw new Error(
-      `API Error: ${response.status} ${response.statusText} ${body}`
-    );
+    throw new ApiError(response.status, response.statusText, body);
   }
 
   if (response.status === 204 || response.status === 205) {
