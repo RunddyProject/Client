@@ -48,3 +48,20 @@
 
   --color-state-error: #f45b50;
 }
+
+[data-sonner-toast] {
+  pointer-events: auto !important;
+  max-width: min(92vw, 560px) !important;
+  width: fit-content !important;
+  white-space: normal !important;
+  word-break: keep-all !important;
+  overflow-wrap: break-word !important;
+
+  position: fixed !important;
+  left: 50% !important;
+  bottom: calc(32px + env(safe-area-inset-bottom)) !important;
+  transform: translateX(-50%) !important;
+  gap: 10px !important;
+  pointer-events: none !important;
+  z-index: 9999 !important;
+}
