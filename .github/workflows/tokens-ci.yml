@@ -21,12 +21,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'yarn'
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install --immutable
 
       - name: Generate design tokens (CSS / Tailwind / Shadcn)
-        run: npm run tokens:all
+        run: yarn tokens:all
 
       - name: Commit updated tokens
         run: |
@@ -41,4 +42,4 @@ jobs:
           fi
 
       - name: Build project
-        run: npm run build
+        run: yarn build
