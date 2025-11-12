@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router';
 
 import { useCourseReviewForm } from '@/features/course/hooks/useCourseReviewForm';
@@ -19,10 +19,6 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/shared/ui/primitives/popover';
-import {
-  ToggleGroup,
-  ToggleGroupItem
-} from '@/shared/ui/primitives/toggle-group';
 
 const CourseReviewMine = () => {
   const { uuid } = useParams<{ uuid: string }>();
@@ -30,15 +26,6 @@ const CourseReviewMine = () => {
   const { deleteReview, isDeleting } = useDeleteCourseReview(uuid!);
 
   const [open, setOpen] = useState(false);
-
-  const selectedIds = useMemo(
-    () =>
-      formDetail
-        .flatMap((c) => c.keywords)
-        .filter((k) => k.isSelected)
-        .map((k) => String(k.keywordId)),
-    [formDetail]
-  );
 
   return (
     <div className='relative'>
@@ -56,7 +43,7 @@ const CourseReviewMine = () => {
         <DialogPortal>
           <DialogContent
             fullWidth
-            className='fixed inset-0 top-1/2 left-1/2 z-[10000] flex h-full w-full flex-col rounded-none bg-white p-0'
+            className='bg-w-100 fixed inset-0 top-1/2 left-1/2 z-[10000] flex h-full w-full flex-col rounded-none p-0'
           >
             <DialogHeader>
               <DialogClose className='justify-self-start rounded'>
@@ -84,23 +71,23 @@ const CourseReviewMine = () => {
                   side='bottom'
                   align='center'
                   sideOffset={4}
-                  className='relative z-[10002] mt-3 mr-5 flex w-[168px] flex-col bg-white px-1 py-0 text-sm'
+                  className='bg-w-100 text-contents-r15 relative z-[10002] mt-3 mr-5 flex w-[168px] flex-col px-1 py-0'
                 >
-                  <div className='flex h-[48px] w-full flex-col justify-center border-b border-gray-200'>
+                  <div className='border-g-20 flex h-[46px] w-full flex-col justify-center border-b'>
                     <CourseReviewWrite triggerMode='editReview' />
                   </div>
                   <Button
                     variant='ghost'
                     onClick={() => deleteReview()}
-                    className='flex h-[48px] w-full items-center justify-between'
+                    className='flex h-[46px] w-full items-center justify-between'
                     disabled={isDeleting}
                   >
-                    <span>삭제하기</span>
+                    <span className='text-contents-r14'>삭제하기</span>
                     <Icon
                       name='trash'
                       size={16}
                       color='currentColor'
-                      className='text-[#727787]'
+                      className='text-line-ter'
                     />
                   </Button>
                 </PopoverContent>
@@ -116,26 +103,21 @@ const CourseReviewMine = () => {
 
                 return (
                   <div key={category.categoryCode} className='py-5 first:pt-0'>
-                    <h3 className='mb-4 text-base font-semibold'>
+                    <div className='text-contents-b16 mb-4'>
                       {category.label}
-                    </h3>
-                    <ToggleGroup
-                      type='multiple'
-                      value={selectedIds}
-                      className='flex flex-wrap gap-x-2.5 gap-y-3'
-                      // 읽기 전용 표시이므로 onValueChange 없음
-                    >
+                    </div>
+                    <div className='flex flex-wrap gap-x-2.5 gap-y-3'>
                       {selectedKeywords.map((keyword) => (
-                        <ToggleGroupItem
+                        <div
                           key={keyword.keywordId}
-                          value={String(keyword.keywordId)}
-                          className='flex items-center gap-1 rounded-full bg-gray-100 px-3 py-2 text-sm data-[state=on]:bg-gray-900 data-[state=on]:text-white'
+                          style={{ backgroundColor: keyword.color }}
+                          className='text-contents-m15 flex items-center gap-1 rounded-full px-3 py-2'
                         >
                           <span>{keyword.emoji}</span>
                           <span>{keyword.label}</span>
-                        </ToggleGroupItem>
+                        </div>
                       ))}
-                    </ToggleGroup>
+                    </div>
                   </div>
                 );
               })}

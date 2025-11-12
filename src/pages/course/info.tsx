@@ -122,9 +122,9 @@ const CourseInfo = () => {
 
       <div className='space-y-1 px-5 pt-6 pb-7.5'>
         <div className='flex items-center justify-between gap-1'>
-          <h3 className='text-md truncate font-semibold'>
+          <div className='text-title-b18 truncate'>
             {course?.name || '코스이름'}
-          </h3>
+          </div>
           <Button
             variant='ghost'
             size='icon'
@@ -139,25 +139,25 @@ const CourseInfo = () => {
             />
           </Button>
         </div>
-        <div className='text-blue text-3xl font-bold'>
+        <div className='text-runddy-blue text-[32px] font-bold'>
           {(course.totalDistance / 1000).toFixed(1)}km
         </div>
       </div>
 
       <Tabs defaultValue={tab}>
-        <TabsList className='grid w-full grid-cols-2 border-b-[1.2px] border-gray-200 px-5'>
-          <TabsTrigger value='detail'>상세정보</TabsTrigger>
+        <TabsList className='border-g-20 grid w-full grid-cols-2 border-b-[1.2px] px-5'>
+          <TabsTrigger value='detail'>
+            <span>상세정보</span>
+          </TabsTrigger>
           <TabsTrigger value='review'>
             <span>리뷰</span>
-            <span className='font-regular ml-1 text-sm'>
-              {courseReviewCount}
-            </span>
+            <span className='text-contents-r15 ml-1'>{courseReviewCount}</span>
           </TabsTrigger>
         </TabsList>
         <TabsContent value='detail' className='mt-6'>
           <CourseDetail />
         </TabsContent>
-        <TabsContent value='review' className='mt-7'>
+        <TabsContent value='review' className='mt-2'>
           <CourseReview />
         </TabsContent>
       </Tabs>

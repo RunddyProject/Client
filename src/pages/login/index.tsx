@@ -11,14 +11,14 @@ const Login = () => {
 
   return (
     <div className='flex min-h-screen flex-col items-center'>
-      <div className='mt-[58px] w-fit rounded-md bg-gray-100 px-2 py-1 text-gray-600'>
+      <div className='bg-g-10 text-g-60 text-caption-m12 mt-[58px] w-fit rounded-md px-2 py-1'>
         러닝코스
       </div>
-      <h3 className='mt-4 text-center text-lg font-bold'>
+      <div className='text-g-90 text-title-b21 mt-4 text-center'>
         진짜 러너들을 위한
         <br />
         러닝 코스를 제공해요
-      </h3>
+      </div>
       <div className='mt-12'>
         <IndicatorCarousel slides={slides} />
       </div>
@@ -29,7 +29,9 @@ const Login = () => {
           size='lg'
         >
           <Icon name='kakao' size={18} />
-          카카오로 시작하기
+          <span className='text-g-black text-contents-m16'>
+            카카오로 시작하기
+          </span>
         </Button>
 
         <Button
@@ -38,7 +40,9 @@ const Login = () => {
           size='lg'
         >
           <Icon name='naver' size={18} />
-          네이버로 시작하기
+          <span className='text-g-black text-contents-m16'>
+            네이버로 시작하기
+          </span>
         </Button>
       </div>
     </div>

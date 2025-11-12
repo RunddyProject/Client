@@ -34,12 +34,13 @@ const Search = ({ className }: SearchProps) => {
       <Icon
         name='search'
         size={24}
-        className='absolute top-1/2 left-4 -translate-y-1/2'
+        color='currentColor'
+        className='text-line-ter absolute top-1/2 left-4 -translate-y-1/2'
       />
       <Input
         placeholder='지역, 코스이름 검색'
         value={params.get('keyword') ?? keyword}
-        className={cn('bg-white pl-13', className)}
+        className={cn('bg-w-100 text-placeholder text-m18 pl-13', className)}
         onClick={() => setOpen(true)}
         readOnly
       />
@@ -48,13 +49,13 @@ const Search = ({ className }: SearchProps) => {
         <DialogPortal>
           <DialogContent
             fullWidth
-            className='absolute top-1/2 left-1/2 z-100 flex h-full -translate-y-1/2 transform-none flex-col rounded-none bg-white py-1 pr-5 pl-2'
+            className='bg-w-100 absolute top-1/2 left-1/2 z-100 flex h-full -translate-y-1/2 transform-none flex-col rounded-none py-1 pr-5 pl-2'
           >
             <div className='mb-4 flex items-center'>
               <Button
                 variant='ghost'
                 size='icon'
-                className='h-8 w-8'
+                className='h-12 w-12'
                 onClick={() => setOpen(false)}
               >
                 <Icon name='chevron_left' size={24} />
@@ -65,7 +66,7 @@ const Search = ({ className }: SearchProps) => {
                 inputMode='search'
                 placeholder='지역, 코스이름 검색'
                 value={keyword}
-                className='h-[42px] bg-gray-100'
+                className='bg-g-10 text-contents-m16 text-placeholder h-[42px]'
                 onChange={(e) => setKeyword(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {

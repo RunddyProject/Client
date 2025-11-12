@@ -175,15 +175,15 @@ const CourseMap = ({
       {showSearchButton && (
         <div className='fixed top-[178px] left-1/2 z-50 -translate-x-1/2 transform'>
           <Button
-            className='rounded-full px-6 shadow-lg'
+            className='shadow-runddy gap-1.5 rounded-full px-3 py-2'
             onClick={handleSearchHere}
             disabled={isFetching}
           >
             <Icon
               name='refresh'
               size={20}
-              color='#E7E9F0'
-              secondary='#272930'
+              color='var(--g-20)'
+              secondary='var(--g-90)'
             />
             현재 위치에서 검색
           </Button>
@@ -193,7 +193,7 @@ const CourseMap = ({
       <div className='pointer-events-none absolute top-[calc(env(safe-area-inset-top)+52px)] right-0 bottom-0 left-0 z-10 grid grid-rows-[auto_1fr_auto]'>
         {/* Search */}
         <div className='pointer-events-auto px-5 pt-[calc(env(safe-area-inset-top)+12px)]'>
-          <Search />
+          <Search className='shadow-runddy' />
         </div>
 
         {/* Filter */}
@@ -208,7 +208,7 @@ const CourseMap = ({
               {/* <Button
                 size='icon'
                 variant='secondary'
-                className='rounded-full w-9.5 h-9.5 shadow-lg bg-white'
+                className='rounded-full w-9.5 h-9.5 shadow-runddy bg-w-100'
                 onClick={handleWeather}
               >
                 <Icon name='weather' size={24} />
@@ -217,25 +217,29 @@ const CourseMap = ({
                 size='icon'
                 variant='secondary'
                 disabled={isLocationLoading}
-                className='pointer-events-auto h-9.5 w-9.5 rounded-full bg-white shadow-lg'
+                className='shadow-runddy bg-w-100 pointer-events-auto h-9.5 w-9.5 rounded-full'
                 onClick={handleSearchByCurrentLocation}
               >
-                <Icon name='my_location' size={24} />
+                <Icon
+                  name='my_location'
+                  size={24}
+                  color='currentColor'
+                  className='text-g-60'
+                />
               </Button>
             </div>
 
             <Button
-              variant='secondary'
-              className='pointer-events-auto rounded-full bg-white px-3 shadow-lg'
+              className='shadow-runddy bg-w-100 pointer-events-auto gap-1 rounded-full px-3'
               onClick={() => onViewModeChange('list')}
             >
               <Icon
                 name='list'
                 size={20}
                 color='currentColor'
-                className='text-gray-600'
+                className='text-g-60'
               />
-              목록 보기
+              <span className='text-sec text-contents-r-14'>목록 보기</span>
             </Button>
           </div>
         </div>
@@ -243,13 +247,13 @@ const CourseMap = ({
         {/* Course Cards */}
         {courses.length === 0 && (
           <div className='px-4 pb-5'>
-            <div className='flex [touch-action:none] gap-4 rounded-2xl bg-white p-5 shadow-xl'>
+            <div className='bg-w-100 flex [touch-action:none] gap-4 rounded-2xl p-5 shadow-xl'>
               <div className='bg-muted/60 flex h-12 w-12 items-center justify-center rounded-xl'>
                 course
               </div>
-              <div className='flex-1'>
-                <p className='font-semibold'>조건에 맞는 코스가 없어요</p>
-                <p className='text-muted-foreground text-sm'>
+              <div className='flex-1 space-y-1'>
+                <p className='text-title-b18'>조건에 맞는 코스가 없어요</p>
+                <p className='text-ter text-contents-r14'>
                   설정된 필터를 변경해 보세요
                 </p>
               </div>

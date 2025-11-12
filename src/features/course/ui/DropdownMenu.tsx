@@ -32,12 +32,12 @@ const CourseDropdownMenu = ({
           variant='secondary'
           className='flex items-center gap-1 rounded-full px-3 py-2'
         >
-          <span className='text-sm'>{itemTitle[checkedValue]}</span>
+          <span className='text-contents-r15'>{itemTitle[checkedValue]}</span>
           <Icon
             name='drop_down'
             size={12}
             color='currentColor'
-            className='text-gray-600'
+            className='text-g-60'
           />
         </Button>
       </DropdownMenuTrigger>

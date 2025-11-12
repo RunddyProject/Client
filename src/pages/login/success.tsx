@@ -33,7 +33,7 @@ const LoginSuccess = () => {
     <div className='flex min-h-screen items-center justify-center'>
       <div className='space-y-4 text-center'>
         <div className='border-primary mx-auto h-12 w-12 animate-spin rounded-full border-b-2'></div>
-        <p className='text-muted-foreground'>로그인 처리 중...</p>
+        <p className='text-ter'>로그인 처리 중...</p>
       </div>
     </div>
   );

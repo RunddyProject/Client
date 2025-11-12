@@ -82,10 +82,12 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
       case 'firstReview':
         return (
           <div
-            className='flex items-center gap-1 rounded-xl bg-gray-100 px-4 py-2.5'
+            className='bg-g-10 flex items-center gap-1 rounded-xl px-4 py-2.5'
             onClick={handleClick}
           >
-            <span className='pl-1'>첫 코스톡 남기기</span>
+            <span className='text-ter text-contents-m15 pl-1'>
+              첫 코스톡 남기기
+            </span>
             <Icon name='chevron_right' size={16} className='pr-1' />
           </div>
         );
@@ -99,15 +101,15 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
       case 'editReview':
         return (
           <div
-            className='flex w-full items-center justify-between px-3'
+            className='flex w-full items-center justify-between px-4'
             onClick={handleClick}
           >
-            <span>수정하기</span>
+            <span className='text-contents-r14'>수정하기</span>
             <Icon
               name='edit'
               size={16}
               color='currentColor'
-              className='text-[#727787]'
+              className='text-line-ter'
             />
           </div>
         );
@@ -122,7 +124,7 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
         <DialogPortal>
           <DialogContent
             fullWidth
-            className='fixed inset-0 top-1/2 left-1/2 z-[10003] flex h-full w-full flex-col rounded-none bg-white p-0'
+            className='bg-w-100 fixed inset-0 top-1/2 left-1/2 z-[10003] flex h-full w-full flex-col rounded-none p-0'
           >
             <DialogHeader>
               <DialogClose className='justify-self-start rounded'>
@@ -143,9 +145,7 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
             <div className='flex-1 overflow-y-auto px-5 pt-1 pb-6'>
               {categories.map((category) => (
                 <div key={category.categoryCode} className='py-5 first:pt-0'>
-                  <h3 className='mb-4 text-base font-semibold'>
-                    {category.label}
-                  </h3>
+                  <div className='text-contents-b16 mb-4'>{category.label}</div>
                   <ToggleGroup
                     type='multiple'
                     value={category.keywords
@@ -160,7 +160,7 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
                       <ToggleGroupItem
                         key={keyword.keywordId}
                         value={String(keyword.keywordId)}
-                        className='flex items-center gap-2 rounded-full bg-gray-100 px-3 py-2 text-sm data-[state=on]:bg-gray-900 data-[state=on]:text-white'
+                        className='bg-g-10 data-[state=on]:bg-g-90 data-[state=on]:text-w-100 text-contents-m15 flex items-center gap-2 rounded-full px-3 py-2'
                       >
                         <span>{keyword.emoji}</span>
                         <span> {keyword.label}</span>
@@ -171,7 +171,7 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
               ))}
             </div>
 
-            <div className='fixed right-0 bottom-0 left-0 bg-white p-5'>
+            <div className='bg-w-100 fixed right-0 bottom-0 left-0 p-5'>
               <Button
                 size='lg'
                 className='w-full'

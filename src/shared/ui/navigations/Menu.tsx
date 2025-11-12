@@ -23,14 +23,19 @@ const Menu = ({ titles }: MenuProps) => {
       <SheetTrigger className='p-3'>
         <Icon name='menu' size={24} />
       </SheetTrigger>
-      <SheetContent className='fixed z-[10002] w-full bg-white'>
+      <SheetContent className='bg-w-100 fixed z-[10002] w-full'>
         <SheetHeader className='flex h-13 items-center justify-between pr-2 pl-5'>
           <VisuallyHidden asChild>
             <SheetTitle>메뉴</SheetTitle>
           </VisuallyHidden>
           <img src={logoImgUrl} width='90' />
           <SheetClose className='p-3'>
-            <Icon name='close' size={24} />
+            <Icon
+              name='close'
+              size={24}
+              color='currentColor'
+              className='text-line-ter'
+            />
             <span className='sr-only'>Close</span>
           </SheetClose>
         </SheetHeader>
@@ -42,8 +47,13 @@ const Menu = ({ titles }: MenuProps) => {
                   to={path}
                   className='flex items-center justify-between p-5'
                 >
-                  <span>{title}</span>
-                  <Icon name='chevron_right' size={24} />
+                  <span className='text-m18 text-g-90'>{title}</span>
+                  <Icon
+                    name='chevron_right'
+                    size={18}
+                    color='currentColor'
+                    className='text-g-30'
+                  />
                 </Link>
               </SheetClose>
             </li>

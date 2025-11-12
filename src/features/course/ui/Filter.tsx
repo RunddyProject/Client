@@ -75,15 +75,10 @@ const FilterChipsBar = ({
     <Button
       aria-label='remove'
       onClick={onClick}
-      className='pointer-events-auto flex h-8.5 items-center gap-1 rounded-full bg-gray-900 px-3 py-2'
+      className='bg-g-90 pointer-events-auto flex h-8.5 items-center gap-1 rounded-full px-3 py-2'
     >
-      <span className='text-sm'>{children}</span>
-      <Icon
-        name='close'
-        size={14}
-        color='currentColor'
-        className='text-gray-200'
-      />
+      <span className='text-contents-m14'>{children}</span>
+      <Icon name='close' size={14} color='currentColor' className='text-g-20' />
     </Button>
   );
 
@@ -301,16 +296,21 @@ const CourseFilter = () => {
             <Button
               size='icon'
               variant='secondary'
-              className='pointer-events-auto flex h-8.5 w-fit items-center gap-1 rounded-full px-3'
+              className='bg-w-100 shadow-runddy pointer-events-auto flex h-8.5 w-fit items-center gap-1 rounded-full px-3'
             >
-              <Icon name='filter' size={18} />
-              <span>필터</span>
+              <Icon
+                name='filter'
+                size={18}
+                color='currentColor'
+                className='text-g-70'
+              />
+              <span className='text-sec text-contents-m14'>필터</span>
             </Button>
           ) : (
             <Button
               size='icon'
               variant='secondary'
-              className='pointer-events-auto flex h-8.5 w-fit items-center gap-1 rounded-full px-3'
+              className='pointer-events-auto flex h-8.5 w-8.5 items-center gap-1 rounded-full'
             >
               <Icon name='filter' size={18} />
             </Button>
@@ -326,7 +326,7 @@ const CourseFilter = () => {
         <DialogOverlay className='fixed inset-0 z-[10000]' />
         <DialogContent
           fullWidth
-          className='z-[10001] flex h-full flex-col bg-white'
+          className='bg-w-100 z-[10001] flex h-full flex-col'
         >
           <DialogHeader>
             <DialogTitle>상세 필터</DialogTitle>
@@ -339,7 +339,7 @@ const CourseFilter = () => {
 
           <div className='flex-1 overflow-x-clip overflow-y-auto'>
             <div className='p-5'>
-              <h3 className='mb-5 text-base font-semibold'>난이도</h3>
+              <div className='text-contents-b16 mb-5'>난이도</div>
               <ToggleGroup
                 type='multiple'
                 value={draft.grade}
@@ -358,7 +358,7 @@ const CourseFilter = () => {
             </div>
 
             <div className='p-5'>
-              <h3 className='mb-5 text-base font-semibold'>러닝 장소</h3>
+              <div className='text-contents-b16 mb-5'>러닝 장소</div>
               <ToggleGroup
                 type='multiple'
                 value={draft.envType}
@@ -378,7 +378,7 @@ const CourseFilter = () => {
             </div>
 
             <div className='p-5'>
-              <h3 className='mb-5 text-base font-semibold'>코스 모양</h3>
+              <div className='text-contents-b16 mb-5'>코스 모양</div>
               <ToggleGroup
                 type='multiple'
                 value={draft.shapeType}
@@ -398,7 +398,7 @@ const CourseFilter = () => {
             </div>
 
             <div className='p-5'>
-              <h3 className='mb-5 text-base font-semibold'>코스 길이</h3>
+              <div className='text-contents-b16 mb-5'>코스 길이</div>
               <Slider
                 value={draft.distanceRange}
                 onValueChange={setDistanceRange}
@@ -406,7 +406,7 @@ const CourseFilter = () => {
                 max={40}
                 step={1}
               />
-              <div className='flex justify-between pt-2 text-sm text-gray-400'>
+              <div className='text-ter text-contents-r14 flex justify-between pt-2'>
                 <span>0km</span>
                 <span>20km</span>
                 <span>40km 이상</span>
@@ -414,7 +414,7 @@ const CourseFilter = () => {
             </div>
 
             <div className='p-5'>
-              <h3 className='mb-5 text-base font-semibold'>코스 경사</h3>
+              <div className='text-contents-b16 mb-5'>코스 경사</div>
               <Slider
                 value={draft.elevationRange}
                 onValueChange={setElevationRange}
@@ -422,7 +422,7 @@ const CourseFilter = () => {
                 max={1000}
                 step={10}
               />
-              <div className='flex justify-between pt-2 text-sm text-gray-400'>
+              <div className='text-ter text-contents-r14 flex justify-between pt-2'>
                 <span>0m</span>
                 <span>500m</span>
                 <span>1000m 이상</span>

@@ -97,10 +97,7 @@ function MeEdit() {
             </div>
 
             <div className='space-y-2'>
-              <Label
-                htmlFor='userName'
-                className='text-muted-foreground text-xs'
-              >
+              <Label htmlFor='userName' className='text-g-60 text-caption-m12'>
                 닉네임
               </Label>
 
@@ -117,14 +114,16 @@ function MeEdit() {
               />
 
               {isTooLong && (
-                <div className='text-error flex items-center space-x-1'>
+                <div className='text-state-error flex items-center space-x-1'>
                   <Icon
                     name='warning'
                     size={16}
                     color='currentColor'
-                    className='text-error'
+                    className='text-state-error'
                   />
-                  <p className='text-xs'>닉네임은 11자 이상 작성할 수 없어요</p>
+                  <p className='text-contents-r14'>
+                    닉네임은 11자 이상 작성할 수 없어요
+                  </p>
                 </div>
               )}
             </div>
@@ -143,12 +142,14 @@ function MeEdit() {
         </form>
       </FormProvider>
 
-      <div className='flex items-center justify-center gap-3 bg-white pt-6 pb-27 text-sm text-gray-500'>
+      <div className='text-g-50 bg-w-100 text-contents-r15 flex items-center justify-center gap-3 pt-6 pb-27'>
         <AlertDialog>
           <AlertDialogOverlay />
 
           <AlertDialogTrigger asChild>
-            <Button variant='ghost'>로그아웃</Button>
+            <Button variant='ghost'>
+              <span className='text-g-50 text-contents-r14'>로그아웃</span>
+            </Button>
           </AlertDialogTrigger>
 
           <AlertDialogContent>
@@ -161,11 +162,13 @@ function MeEdit() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-        <span aria-hidden>|</span>
+        <span className='text-g-50 text-contents-r14'>|</span>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             {/* TODO: navigate to /me/delete */}
-            <Button variant='ghost'> 회원탈퇴</Button>
+            <Button variant='ghost'>
+              <span className='text-g-50 text-contents-r14'>회원탈퇴</span>
+            </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>

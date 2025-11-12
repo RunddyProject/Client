@@ -74,7 +74,7 @@ const Header = () => {
         </DialogTrigger>
         <DialogPortal>
           <DialogOverlay className='fixed inset-0 z-[10000]' />
-          <DialogContent className='fixed top-1/2 left-1/2 z-[10001] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-6 shadow-xl'>
+          <DialogContent className='bg-w-100 fixed top-1/2 left-1/2 z-[10001] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg p-6 shadow-xl'>
             <DialogHeader>
               <DialogTitle>개발용 AccessToken 설정</DialogTitle>
               <DialogDescription>
@@ -110,7 +110,7 @@ const Header = () => {
     <header
       className={cn(
         'top-0 z-50 w-full',
-        isCoursePage ? 'absolute left-0' : 'sticky bg-white'
+        isCoursePage ? 'absolute left-0' : 'bg-w-100 sticky'
       )}
     >
       <div className='flex h-13 items-center justify-between pr-2 pl-4'>
@@ -146,9 +146,9 @@ const Header = () => {
 
             {/* Title - Page */}
             {config.title && (
-              <h1 className='absolute left-1/2 -translate-x-1/2 text-base font-semibold'>
+              <div className='text-sec text-r18 absolute left-1/2 -translate-x-1/2'>
                 {config.title}
-              </h1>
+              </div>
             )}
 
             {/* Right Button */}

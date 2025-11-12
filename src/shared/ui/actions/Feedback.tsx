@@ -47,16 +47,16 @@ const Feedback = ({ feedbackType }: FeedbackProps) => {
     <div className='relative'>
       <div
         onClick={handleClick}
-        className='flex items-center gap-3 rounded-xl bg-gray-200 p-4'
+        className='bg-g-20 flex items-center gap-3 rounded-xl p-4'
       >
         <Icon name='edit_blue' size={48} />
         <div className='flex-1 space-y-0.5'>
-          <div className='text-text-secondary font-bold'>
+          <div className='text-sec text-contents-b16'>
             {feedbackType === 'FEEDBACK'
               ? '런디, 어떠셨나요?'
               : '잘못된 정보가 있나요?'}
           </div>
-          <div className='text-text-secondary text-xs'>
+          <div className='text-sec text-contents-r14'>
             {feedbackType === 'FEEDBACK'
               ? '더 나은 서비스를 위해 의견을 남겨주세요!'
               : '수정이 필요하다면 알려주세요!'}
@@ -66,14 +66,14 @@ const Feedback = ({ feedbackType }: FeedbackProps) => {
           name='chevron_right'
           size={16}
           color='currentColor'
-          className='text-gray-400'
+          className='text-g-40'
         />
       </div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogPortal>
           <DialogContent
             fullWidth
-            className='fixed inset-0 top-1/2 left-1/2 z-[10003] flex h-full w-full flex-col rounded-none bg-white p-0'
+            className='bg-w-100 fixed inset-0 top-1/2 left-1/2 z-[10003] flex h-full w-full flex-col rounded-none p-0'
           >
             <DialogHeader>
               <DialogClose className='justify-self-start rounded'>
@@ -92,14 +92,14 @@ const Feedback = ({ feedbackType }: FeedbackProps) => {
             </DialogHeader>
 
             <div className='flex-1 overflow-y-auto px-5 pt-6'>
-              <h3 className='pb-2 font-bold'>
+              <div className='text-title-b23 pb-2'>
                 {feedbackType === 'FEEDBACK'
                   ? '런디에게 전달하고 싶은 의견이 있다면'
                   : '수정이 필요한 사항에 대해'}
                 <br />
                 작성해 주세요
-              </h3>
-              <div className='text-text-secondary pb-6 text-[15px]'>
+              </div>
+              <div className='text-sec text-contents-r15 pb-6'>
                 {feedbackType === 'FEEDBACK'
                   ? '작성해 주신 의견은 모두 꼼꼼히 확인할게요'
                   : '그 외 자유로운 의견도 환영해요'}
@@ -115,7 +115,7 @@ const Feedback = ({ feedbackType }: FeedbackProps) => {
               />
             </div>
 
-            <div className='fixed right-0 bottom-0 left-0 bg-white p-5'>
+            <div className='bg-w-100 fixed right-0 bottom-0 left-0 p-5'>
               <Button
                 size='lg'
                 className='w-full'

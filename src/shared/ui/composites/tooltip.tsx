@@ -24,7 +24,7 @@ const Tooltip = ({ title, body }: TooltipProps) => {
             name='tooltip'
             size={16}
             color='currentColor'
-            className='text-gray-900'
+            className='text-g-90'
           />
         </Button>
       </PopoverTrigger>
@@ -32,9 +32,9 @@ const Tooltip = ({ title, body }: TooltipProps) => {
         side='bottom'
         align='center'
         sideOffset={4}
-        className='relative z-[10002] flex w-fit flex-col gap-1 bg-gray-800 px-5 py-4 text-sm text-white'
+        className='bg-g-80 text-w-100 text-contents-r15 relative z-[10002] flex w-fit flex-col gap-1 px-5 py-4'
       >
-        <PopoverArrow className='fill-gray-800' width={16} height={8} />
+        <PopoverArrow className='fill-g-80' width={16} height={8} />
         <div className='flex items-center justify-between gap-1'>
           <div>{title}</div>
           <PopoverClose>
@@ -42,7 +42,7 @@ const Tooltip = ({ title, body }: TooltipProps) => {
               name='close'
               size={16}
               color='currentColor'
-              className='text-gray-300'
+              className='text-g-30'
             />
           </PopoverClose>
         </div>

@@ -20,7 +20,7 @@ import type { Course } from '@/features/course/model/types';
 
 const Chip = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className='min-w-0 shrink-0 rounded-full bg-gray-100 px-3 py-1.5 font-medium'>
+    <div className='bg-g-10 text-sec text-contents-m15 min-w-0 shrink-0 rounded-full px-3 py-1.5'>
       {children}
     </div>
   );
@@ -73,16 +73,16 @@ const CourseDetail = () => {
       <div className='px-5'>
         <div className='space-y-8'>
           <div className='flex items-center justify-between gap-1'>
-            <div className='font-bold'>난이도</div>
+            <div className='text-contents-b16'>난이도</div>
             <Chip>{GRADE_TO_NAME[course.grade]}</Chip>
           </div>
           <div className='flex items-center justify-between gap-1'>
-            <div className='font-bold'>러닝 장소</div>
+            <div className='text-contents-b16'>러닝 장소</div>
             <Chip>{course.envTypeName}</Chip>
           </div>
           <div className='flex items-center justify-between gap-1'>
             <div className='flex items-center gap-1'>
-              <div className='font-bold'>코스 모양</div>
+              <div className='text-contents-b16'>코스 모양</div>
               <Tooltip
                 title={'코스 모양에 대해 설명해 드릴게요'}
                 body={
@@ -102,7 +102,7 @@ const CourseDetail = () => {
 
           <div>
             <div className='flex items-center justify-between gap-1 pb-4'>
-              <div className='font-bold'>고도</div>
+              <div className='text-contents-b16'>고도</div>
               <div className='flex gap-2'>
                 <Chip>상승 {course.elevationGain.toFixed()}m</Chip>
                 <Chip>하강 {course.elevationLoss.toFixed()}m</Chip>
@@ -119,27 +119,31 @@ const CourseDetail = () => {
 
         {/* Location Info */}
         <div className='pt-9 pb-10'>
-          <div className='mb-4 font-bold'>출발 · 도착지</div>
+          <div className='text-contents-b16 mb-4'>출발 · 도착지</div>
           <div className='space-y-3'>
             <div className='flex items-center gap-2'>
               <Icon
                 name='active_start'
                 size={24}
                 color='currentColor'
-                className='flex-shrink-0 text-gray-800'
+                className='text-g-80 flex-shrink-0'
               />
-              <span className='truncate'>{course.startAddress}</span>
+              <span className='text-sec text-contents-m15 truncate'>
+                {course.startAddress}
+              </span>
               {!isCopying['startAddress'] ? (
                 <Button
                   variant='ghost'
                   className='h-5 justify-start p-0'
                   onClick={() => handleClickCopy('startAddress')}
                 >
-                  <span className='text-blue text-sm'>복사</span>
+                  <span className='text-runddy-blue text-contents-r14'>
+                    복사
+                  </span>
                 </Button>
               ) : (
-                <div className='text-green flex flex-shrink-0 items-center gap-1'>
-                  <span className='text-sm'>복사됨</span>
+                <div className='text-runddy-green flex flex-shrink-0 items-center gap-1'>
+                  <span className='text-contents-r14'>복사됨</span>
                   <Icon name='check' size={12} color='currentColor' />
                 </div>
               )}
@@ -149,20 +153,24 @@ const CourseDetail = () => {
                 name='active_end'
                 size={24}
                 color='currentColor'
-                className='flex-shrink-0 text-gray-800'
+                className='text-g-80 flex-shrink-0'
               />
-              <span className='truncate'>{course.endAddress}</span>
+              <span className='text-sec text-contents-m15 truncate'>
+                {course.endAddress}
+              </span>
               {!isCopying['endAddress'] ? (
                 <Button
                   variant='ghost'
                   className='h-5 p-0'
                   onClick={() => handleClickCopy('endAddress')}
                 >
-                  <span className='text-blue text-sm'>복사</span>
+                  <span className='text-runddy-blue text-contents-r14'>
+                    복사
+                  </span>
                 </Button>
               ) : (
-                <div className='text-green flex flex-shrink-0 items-center gap-1'>
-                  <span className='text-sm'>복사됨</span>
+                <div className='text-runddy-green flex flex-shrink-0 items-center gap-1'>
+                  <span className='text-contents-r14'>복사됨</span>
                   <Icon name='check' size={12} color='currentColor' />
                 </div>
               )}
@@ -177,14 +185,19 @@ const CourseDetail = () => {
               className='flex-1 rounded-tl-none rounded-bl-none shadow-none'
               onClick={handleDownloadGPX}
             >
-              <Icon name='download' size={24} />
-              GPX 다운로드
+              <Icon
+                name='download'
+                size={24}
+                color='currentColor'
+                className='text-g-70'
+              />
+              <span className='text-sec text-contents-m16'>GPX 다운로드</span>
             </Button>
           </div>
         </div>
       </div>
 
-      <div className='h-3 w-full bg-gray-100' />
+      <div className='bg-g-10 h-3 w-full' />
 
       <div className='px-5 py-10'>
         <Feedback feedbackType='COURSE' />

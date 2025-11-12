@@ -30,10 +30,10 @@ const CourseReview = () => {
   return (
     <>
       {courseReviewCount > 0 ? (
-        <div className='flex min-h-screen flex-col bg-white pb-[100px]'>
+        <div className='bg-w-100 flex min-h-screen flex-col pb-[100px]'>
           <div className='px-5 pt-5'>
             <div className='mb-5 flex items-center justify-between'>
-              <h2 className='font-bold'>가장 많이 남긴 리뷰</h2>
+              <div className='text-contents-b16'>가장 많이 남긴 리뷰</div>
               {hasMyReview ? (
                 <CourseReviewMine />
               ) : (
@@ -49,7 +49,9 @@ const CourseReview = () => {
               if (filteredKeywords.length === 0) return null;
               return (
                 <div key={cat.categoryCode} className='mb-5'>
-                  <h3 className='mb-3 text-base font-semibold'>{cat.label}</h3>
+                  <div className='text-ter text-contents-r15 mb-3'>
+                    {cat.label}
+                  </div>
                   <div className='flex flex-wrap gap-x-2.5 gap-y-3'>
                     {cat.keywords
                       .filter((kw) => kw.count > 0)
@@ -57,11 +59,11 @@ const CourseReview = () => {
                         <div
                           key={kw.keywordId}
                           style={{ backgroundColor: kw.color }}
-                          className='flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-sm'
+                          className='bg-g-10 flex items-center gap-1 rounded-full px-3 py-1'
                         >
-                          <span>{kw.emoji}</span>
-                          <span>{kw.label}</span>
-                          <span className='text-xs text-gray-400'>
+                          <span className='text-contents-r15'>{kw.emoji}</span>
+                          <span className='text-contents-r15'>{kw.label}</span>
+                          <span className='text-contents-r14 text-sec'>
                             {kw.count}
                           </span>
                         </div>
@@ -72,13 +74,13 @@ const CourseReview = () => {
             })}
           </div>
 
-          <div className='px-5'>
-            <h3 className='font-bold'>리뷰 전체보기</h3>
+          <div className='px-5 pt-8'>
+            <div className='text-contents-b16'>리뷰 전체보기</div>
             <div className='flex flex-col'>
               {courseReviewDetail.map((review, idx) => (
                 <div
                   key={idx}
-                  className='flex flex-col items-start gap-3 border-b border-gray-100 py-[22px] last:border-0'
+                  className='border-g-10 flex flex-col items-start gap-3 border-b py-[22px] last:border-0'
                 >
                   <div className='flex items-center gap-3'>
                     <Avatar className='h-9 w-9 flex-shrink-0 cursor-pointer'>
@@ -92,10 +94,10 @@ const CourseReview = () => {
                       </AvatarFallback>
                     </Avatar>
                     <div className='flex flex-col gap-0.5'>
-                      <div className='text-sm font-medium'>
+                      <div className='text-contents-m14 text-sec'>
                         {review.userName}
                       </div>
-                      <div className='text-xs text-gray-400'>
+                      <div className='text-g-40 text-[12px]'>
                         {formatReviewDate(review.createdAt)}
                       </div>
                     </div>
@@ -106,7 +108,7 @@ const CourseReview = () => {
                       {review.keywords.map((kw) => (
                         <div
                           key={kw.keywordId}
-                          className='flex items-center gap-1 text-[15px] after:mx-1 after:content-["·"] last:after:content-[""]'
+                          className='text-contents-m15 flex items-center gap-1 after:mx-1 after:content-["·"] last:after:content-[""]'
                         >
                           <span>{kw.emoji}</span>
                           <span>{kw.label}</span>
@@ -120,10 +122,10 @@ const CourseReview = () => {
           </div>
         </div>
       ) : (
-        <div className='flex flex-col items-center space-y-4 py-28'>
+        <div className='flex flex-col items-center space-y-4 pt-28'>
           <Icon name='empty_graphic' size={140} />
           <div className='flex flex-col items-center space-y-5 text-center'>
-            <div className='text-placeholder'>
+            <div className='text-placeholder text-contents-m16'>
               지금까지 나눈 코스톡이 없어요
             </div>
             <ReviewWrite triggerMode='firstReview' />

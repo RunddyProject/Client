@@ -22,7 +22,7 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
       {/* <div className='left-0 right-0 bottom-0 z-10 pointer-events-none flex flex-col top-[calc(env(safe-area-inset-top)+52px)]'> */}
       {/* Search bar */}
       <div className='pointer-events-auto pt-[calc(env(safe-area-inset-top)+12px)]'>
-        <Search className='bg-gray-100' />
+        <Search className='bg-g-10' />
       </div>
 
       <div className='overflow-y-auto'>
@@ -37,7 +37,7 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
             <CourseInfoCard
               key={course.uuid}
               course={course}
-              className='border-b border-b-gray-200 py-5.5 last:border-0'
+              className='border-b-g-20 border-b py-5.5 last:border-0'
             />
           ))}
         </div>
@@ -46,11 +46,11 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
       {/* Bottom Button */}
       <div className='fixed bottom-5 left-1/2 z-50 -translate-x-1/2 transform'>
         <Button
-          className='rounded-full px-6 shadow-lg'
+          className='shadow-runddy gap-1 rounded-full px-3 py-[9px]'
           onClick={() => onViewModeChange('map')}
         >
           <Icon name='map' size={20} color='#E7E9F0' secondary='#272930' />
-          지도 보기
+          <span className='text-contents-r14'>지도 보기</span>
         </Button>
       </div>
     </div>

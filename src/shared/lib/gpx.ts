@@ -90,7 +90,7 @@ export const calculateGradeFromGradient = (
     return {
       grade: 1,
       gradeKo: '쉬움',
-      color: 'text-green-600',
+      color: 'text-runddy-green-600',
       bgColor: 'bg-green-50',
       description: '평탄한 코스로 초보자도 편하게 달릴 수 있습니다.',
       gradient: avgGradient

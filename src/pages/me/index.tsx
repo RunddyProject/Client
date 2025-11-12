@@ -43,14 +43,14 @@ function Me() {
             </AvatarFallback>
           </Avatar>
           <div className='flex flex-col'>
-            <h2 className='mb-2 text-lg font-semibold'>
+            <div className='text-title-b21 mb-2'>
               {user?.userName || '런디'}
-            </h2>
+            </div>
             <Link
               to='/me/edit'
-              className='text-primary flex items-center gap-1 text-sm hover:underline'
+              className='text-primary text-contents-r15 flex items-center gap-1 hover:underline'
             >
-              <p className='text-muted-foreground text-sm'>프로필 수정</p>
+              <p className='text-ter text-contents-m15'>프로필 수정</p>
               <Icon name='chevron_right' size={14} />
             </Link>
           </div>
@@ -59,7 +59,7 @@ function Me() {
 
       {/* Tabs Section */}
       <Tabs defaultValue='bookmarked'>
-        <TabsList className='grid w-full grid-cols-2 border-b-[1.2px] border-gray-200 px-5'>
+        <TabsList className='border-g-20 grid w-full grid-cols-2 border-b-[1.2px] px-5'>
           <TabsTrigger value='bookmarked'>저장</TabsTrigger>
           <TabsTrigger value='review'>리뷰 남긴 코스</TabsTrigger>
         </TabsList>
@@ -76,7 +76,7 @@ function Me() {
                 <CourseInfoCard
                   key={course.uuid}
                   course={course}
-                  className='cursor-pointer border-b border-b-gray-200 py-5.5 last:border-0'
+                  className='border-b-g-20 cursor-pointer border-b py-5.5 last:border-0'
                 />
               );
             })
@@ -96,7 +96,7 @@ function Me() {
                   key={course.uuid}
                   course={course}
                   onClick={() => handleClickReview(course.uuid)}
-                  className='cursor-pointer border-b border-b-gray-200 py-5.5 last:border-0'
+                  className='border-b-g-20 cursor-pointer border-b py-5.5 last:border-0'
                 />
               );
             })

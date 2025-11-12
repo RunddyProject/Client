@@ -65,7 +65,7 @@ export function IndicatorCarousel({
               className={cn(
                 'rounded-full transition-all',
                 'h-1.5 w-1.5',
-                i === currentIndex ? 'bg-gray-500' : 'bg-gray-200'
+                i === currentIndex ? 'bg-g-50' : 'bg-g-20'
               )}
             />
           ))}

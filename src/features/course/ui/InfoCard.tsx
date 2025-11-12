@@ -47,7 +47,7 @@ const CourseInfoCard = ({
   return (
     <div
       className={cn(
-        'flex cursor-pointer justify-between gap-4 bg-white',
+        'bg-w-100 flex cursor-pointer justify-between gap-4',
         className
       )}
       onClick={onClick ?? handleClick}
@@ -66,14 +66,14 @@ const CourseInfoCard = ({
           />
         </div>
       ) : (
-        <div className='h-15 w-15 rounded-xl bg-gray-900' />
+        <div className='bg-g-90 h-15 w-15 rounded-xl' />
       )}
 
       <div className='flex min-w-0 flex-1 flex-col gap-2'>
         <div className='flex items-center justify-between gap-1'>
-          <h3 className='text-md truncate font-semibold'>
+          <div className='text-title-b18 truncate'>
             {course?.name || '코스이름'}
-          </h3>
+          </div>
           <Button
             variant='ghost'
             size='icon'
@@ -88,7 +88,7 @@ const CourseInfoCard = ({
             />
           </Button>
         </div>
-        <div className='flex items-center gap-1 overflow-x-auto text-sm'>
+        <div className='flex items-center gap-1 overflow-x-auto'>
           <Badge>{GRADE_TO_NAME[(course?.grade || 1) as GradeType]}</Badge>
           <Badge>{course?.envTypeName || '공원'}</Badge>
           <Badge>{((course?.totalDistance || 5000) / 1000).toFixed(1)}km</Badge>
