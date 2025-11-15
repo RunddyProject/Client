@@ -36,25 +36,41 @@ const CourseMap = ({
 }) => {
   const mapRef = useRef<naver.maps.Map | null>(null);
 
-  // Use zustand selectors with stable setter references
+  // Use zustand selectors for read-only values
   const lastSearchedCenter = useLocationStore((state) => state.lastSearchedCenter);
   const lastSearchedRadius = useLocationStore((state) => state.lastSearchedRadius);
   const lastSearchedZoom = useLocationStore((state) => state.lastSearchedZoom);
   const currentMapCenter = useLocationStore((state) => state.currentMapCenter);
   const currentMapZoom = useLocationStore((state) => state.currentMapZoom);
-  const activeCourseId = useLocationStore((state) => state.activeCourseId);
   const keywordCenter = useLocationStore((state) => state.keywordCenter);
 
   // Use refs for setters to avoid recreating callbacks
   const setLastSearchedAreaRef = useRef(useLocationStore.getState().setLastSearchedArea);
   const setCurrentMapViewRef = useRef(useLocationStore.getState().setCurrentMapView);
-  const setActiveCourseIdRef = useRef(useLocationStore.getState().setActiveCourseId);
 
   useEffect(() => {
     setLastSearchedAreaRef.current = useLocationStore.getState().setLastSearchedArea;
     setCurrentMapViewRef.current = useLocationStore.getState().setCurrentMapView;
-    setActiveCourseIdRef.current = useLocationStore.getState().setActiveCourseId;
   });
+
+  // activeCourseId as LOCAL state to prevent infinite loops
+  // Only sync with store on mount/unmount
+  const [activeCourseId, setActiveCourseId] = useState<string | null>(() => {
+    return useLocationStore.getState().activeCourseId;
+  });
+
+  // Keep ref updated for cleanup
+  const activeCourseIdRef = useRef(activeCourseId);
+  useEffect(() => {
+    activeCourseIdRef.current = activeCourseId;
+  }, [activeCourseId]);
+
+  // Save to store only on unmount
+  useEffect(() => {
+    return () => {
+      useLocationStore.getState().setActiveCourseId(activeCourseIdRef.current);
+    };
+  }, []);
 
   const { getCurrentLocation, isLoading: isLocationLoading } = useGeolocation();
 
@@ -111,14 +127,14 @@ const CourseMap = ({
   };
 
   const handleMarkerClick = (uuid: Course['uuid']) => {
-    setActiveCourseIdRef.current(uuid);
+    setActiveCourseId(uuid);
     requestAnimationFrame(() => scrollToCenter(uuid));
   };
 
   // Separate handler for scroll events - only updates active state, no scrolling
   const handleScrollChange = useCallback((uuid: Course['uuid']) => {
-    setActiveCourseIdRef.current(uuid);
-  }, []); // Empty deps - stable ref
+    setActiveCourseId(uuid);
+  }, []);
 
   useCenteredActiveByScroll({
     container: scrollerRef as RefObject<HTMLElement>,
@@ -128,11 +144,11 @@ const CourseMap = ({
 
   useEffect(() => {
     if (courses.length === 0) {
-      setActiveCourseIdRef.current(null);
+      setActiveCourseId(null);
     } else if (!activeCourseId) {
-      setActiveCourseIdRef.current(courses[0].uuid);
+      setActiveCourseId(courses[0].uuid);
     } else if (!courses.find((c) => c.uuid === activeCourseId)) {
-      setActiveCourseIdRef.current(courses[0].uuid);
+      setActiveCourseId(courses[0].uuid);
     }
   }, [courses, activeCourseId]);
 
