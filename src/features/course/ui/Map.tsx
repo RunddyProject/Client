@@ -36,7 +36,7 @@ const CourseMap = ({
 }) => {
   const mapRef = useRef<naver.maps.Map | null>(null);
 
-  // Use zustand selectors to prevent unnecessary re-renders
+  // Use zustand selectors with stable setter references
   const lastSearchedCenter = useLocationStore((state) => state.lastSearchedCenter);
   const lastSearchedRadius = useLocationStore((state) => state.lastSearchedRadius);
   const lastSearchedZoom = useLocationStore((state) => state.lastSearchedZoom);
@@ -44,9 +44,17 @@ const CourseMap = ({
   const currentMapZoom = useLocationStore((state) => state.currentMapZoom);
   const activeCourseId = useLocationStore((state) => state.activeCourseId);
   const keywordCenter = useLocationStore((state) => state.keywordCenter);
-  const setLastSearchedArea = useLocationStore((state) => state.setLastSearchedArea);
-  const setCurrentMapView = useLocationStore((state) => state.setCurrentMapView);
-  const setActiveCourseId = useLocationStore((state) => state.setActiveCourseId);
+
+  // Use refs for setters to avoid recreating callbacks
+  const setLastSearchedAreaRef = useRef(useLocationStore.getState().setLastSearchedArea);
+  const setCurrentMapViewRef = useRef(useLocationStore.getState().setCurrentMapView);
+  const setActiveCourseIdRef = useRef(useLocationStore.getState().setActiveCourseId);
+
+  useEffect(() => {
+    setLastSearchedAreaRef.current = useLocationStore.getState().setLastSearchedArea;
+    setCurrentMapViewRef.current = useLocationStore.getState().setCurrentMapView;
+    setActiveCourseIdRef.current = useLocationStore.getState().setActiveCourseId;
+  });
 
   const { getCurrentLocation, isLoading: isLocationLoading } = useGeolocation();
 
@@ -83,7 +91,7 @@ const CourseMap = ({
     const zoom = mapRef.current?.getZoom?.() || DEFAULT_ZOOM;
     const center = keywordCenter ?? viewport.center;
 
-    setLastSearchedArea(center, viewport.radius, zoom);
+    setLastSearchedAreaRef.current(center, viewport.radius, zoom);
     resetMovedByUser();
 
     if (mapRef.current) {
@@ -95,7 +103,7 @@ const CourseMap = ({
     const zoom = mapRef.current?.getZoom?.() || DEFAULT_ZOOM;
     const center = await getCurrentLocation();
 
-    setLastSearchedArea(center, viewport.radius, zoom);
+    setLastSearchedAreaRef.current(center, viewport.radius, zoom);
 
     if (mapRef.current) {
       mapRef.current.setCenter(new naver.maps.LatLng(center.lat, center.lng));
@@ -103,14 +111,14 @@ const CourseMap = ({
   };
 
   const handleMarkerClick = (uuid: Course['uuid']) => {
-    setActiveCourseId(uuid);
+    setActiveCourseIdRef.current(uuid);
     requestAnimationFrame(() => scrollToCenter(uuid));
   };
 
   // Separate handler for scroll events - only updates active state, no scrolling
   const handleScrollChange = useCallback((uuid: Course['uuid']) => {
-    setActiveCourseId(uuid);
-  }, [setActiveCourseId]);
+    setActiveCourseIdRef.current(uuid);
+  }, []); // Empty deps - stable ref
 
   useCenteredActiveByScroll({
     container: scrollerRef as RefObject<HTMLElement>,
@@ -120,33 +128,33 @@ const CourseMap = ({
 
   useEffect(() => {
     if (courses.length === 0) {
-      setActiveCourseId(null);
+      setActiveCourseIdRef.current(null);
     } else if (!activeCourseId) {
-      setActiveCourseId(courses[0].uuid);
+      setActiveCourseIdRef.current(courses[0].uuid);
     } else if (!courses.find((c) => c.uuid === activeCourseId)) {
-      setActiveCourseId(courses[0].uuid);
+      setActiveCourseIdRef.current(courses[0].uuid);
     }
-  }, [courses, activeCourseId, setActiveCourseId]);
+  }, [courses, activeCourseId]);
 
-  // Restore map view on mount, then listen to search area changes
+  // Restore map view and listen to search area changes
+  const hasRestoredRef = useRef(false);
+
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
-    // Restore saved map view if available, otherwise use last searched area
-    const targetCenter = currentMapCenter ?? lastSearchedCenter;
-    const targetZoom = currentMapZoom ?? lastSearchedZoom ?? DEFAULT_ZOOM;
+    // Restore view once on first map initialization
+    if (!hasRestoredRef.current) {
+      hasRestoredRef.current = true;
+      const targetCenter = currentMapCenter ?? lastSearchedCenter;
+      const targetZoom = currentMapZoom ?? lastSearchedZoom ?? DEFAULT_ZOOM;
 
-    map.setCenter(new naver.maps.LatLng(targetCenter.lat, targetCenter.lng));
-    map.setZoom(targetZoom);
-  }, []); // Only run on mount
+      map.setCenter(new naver.maps.LatLng(targetCenter.lat, targetCenter.lng));
+      map.setZoom(targetZoom);
+      return;
+    }
 
-  // Update map when search area changes (explicit user action)
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-
-    // Only update if lastSearchedCenter actually changed
+    // Update map when search area changes (explicit user action)
     const currentCenter = map.getCenter();
     const centerChanged =
       Math.abs(currentCenter.lat() - lastSearchedCenter.lat) > 0.0001 ||
@@ -158,25 +166,34 @@ const CourseMap = ({
       );
       map.setZoom(lastSearchedZoom ?? DEFAULT_ZOOM);
     }
-  }, [lastSearchedCenter, lastSearchedZoom]);
+  }, [lastSearchedCenter, lastSearchedZoom, currentMapCenter, currentMapZoom]);
 
-  // Save current map view when user stops interacting
+  // Save current map view when user stops interacting (throttled)
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
+    let throttleTimer: number | null = null;
+
     const handleIdle = () => {
-      const center = map.getCenter();
-      const zoom = map.getZoom();
-      setCurrentMapView({ lat: center.lat(), lng: center.lng() }, zoom);
+      // Throttle: only save once per second
+      if (throttleTimer) return;
+
+      throttleTimer = window.setTimeout(() => {
+        const center = map.getCenter();
+        const zoom = map.getZoom();
+        setCurrentMapViewRef.current({ lat: center.lat(), lng: center.lng() }, zoom);
+        throttleTimer = null;
+      }, 1000);
     };
 
     const listener = naver.maps.Event.addListener(map, 'idle', handleIdle);
 
     return () => {
       naver.maps.Event.removeListener(listener);
+      if (throttleTimer) clearTimeout(throttleTimer);
     };
-  }, [setCurrentMapView]);
+  }, []); // Stable - no deps needed
 
   return (
     <div className='relative h-[100dvh]'>
