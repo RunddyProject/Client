@@ -40,8 +40,13 @@ const CourseMap = ({
     lastSearchedCenter,
     lastSearchedRadius,
     lastSearchedZoom,
+    currentMapCenter,
+    currentMapZoom,
+    activeCourseId,
     keywordCenter,
-    setLastSearchedArea
+    setLastSearchedArea,
+    setCurrentMapView,
+    setActiveCourseId
   } = useLocationStore();
   const { getCurrentLocation, isLoading: isLocationLoading } = useGeolocation();
 
@@ -54,10 +59,7 @@ const CourseMap = ({
     radius: lastSearchedRadius
   });
 
-  const [activeCourseId, setActiveCourseId] = useState<string>(
-    courses[0]?.uuid ?? ''
-  );
-  const { coursePointList } = useCoursePoint(activeCourseId);
+  const { coursePointList } = useCoursePoint(activeCourseId ?? '');
 
   const activeCourse =
     courses.find((c) => c.uuid === activeCourseId) ?? courses[0];
@@ -118,23 +120,63 @@ const CourseMap = ({
 
   useEffect(() => {
     if (courses.length === 0) {
-      setActiveCourseId('');
+      setActiveCourseId(null);
     } else if (!activeCourseId) {
       setActiveCourseId(courses[0].uuid);
     } else if (!courses.find((c) => c.uuid === activeCourseId)) {
       setActiveCourseId(courses[0].uuid);
     }
-  }, [courses, activeCourseId]);
+  }, [courses, activeCourseId, setActiveCourseId]);
 
+  // Restore map view on mount, then listen to search area changes
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
-    map.setCenter(
-      new naver.maps.LatLng(lastSearchedCenter.lat, lastSearchedCenter.lng)
-    );
-    map.setZoom(lastSearchedZoom ?? DEFAULT_ZOOM);
+    // Restore saved map view if available, otherwise use last searched area
+    const targetCenter = currentMapCenter ?? lastSearchedCenter;
+    const targetZoom = currentMapZoom ?? lastSearchedZoom ?? DEFAULT_ZOOM;
+
+    map.setCenter(new naver.maps.LatLng(targetCenter.lat, targetCenter.lng));
+    map.setZoom(targetZoom);
+  }, []); // Only run on mount
+
+  // Update map when search area changes (explicit user action)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    // Only update if lastSearchedCenter actually changed
+    const currentCenter = map.getCenter();
+    const centerChanged =
+      Math.abs(currentCenter.lat() - lastSearchedCenter.lat) > 0.0001 ||
+      Math.abs(currentCenter.lng() - lastSearchedCenter.lng) > 0.0001;
+
+    if (centerChanged) {
+      map.setCenter(
+        new naver.maps.LatLng(lastSearchedCenter.lat, lastSearchedCenter.lng)
+      );
+      map.setZoom(lastSearchedZoom ?? DEFAULT_ZOOM);
+    }
   }, [lastSearchedCenter, lastSearchedZoom]);
+
+  // Save current map view when user stops interacting
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const handleIdle = () => {
+      const center = map.getCenter();
+      const zoom = map.getZoom();
+      setCurrentMapView({ lat: center.lat(), lng: center.lng() }, zoom);
+    };
+
+    const listener = naver.maps.Event.addListener(map, 'idle', handleIdle);
+
+    return () => {
+      naver.maps.Event.removeListener(listener);
+    };
+  }, [setCurrentMapView]);
 
   return (
     <div className='relative h-[100dvh]'>
