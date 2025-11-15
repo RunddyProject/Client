@@ -100,34 +100,31 @@ const CourseMap = ({
     }
   };
 
-  const handleActiveCourseId = useCallback(
-    (uuid: Course['uuid']) => {
-      setActiveCourseId(uuid);
-      requestAnimationFrame(() => scrollToCenter(uuid));
-    },
-    [scrollToCenter]
-  );
-
   const handleMarkerClick = (uuid: Course['uuid']) => {
-    handleActiveCourseId(uuid);
+    setActiveCourseId(uuid);
+    requestAnimationFrame(() => scrollToCenter(uuid));
   };
+
+  // Separate handler for scroll events - only updates active state, no scrolling
+  const handleScrollChange = useCallback((uuid: Course['uuid']) => {
+    setActiveCourseId(uuid);
+  }, []);
 
   useCenteredActiveByScroll({
     container: scrollerRef as RefObject<HTMLElement>,
     itemAttr: 'uuid',
-    onChange: handleActiveCourseId
+    onChange: handleScrollChange
   });
 
   useEffect(() => {
     if (courses.length === 0) {
       setActiveCourseId('');
-    } else if (
-      !activeCourseId ||
-      !courses.find((c) => c.uuid === activeCourseId)
-    ) {
-      handleActiveCourseId(courses[0].uuid);
+    } else if (!activeCourseId) {
+      setActiveCourseId(courses[0].uuid);
+    } else if (!courses.find((c) => c.uuid === activeCourseId)) {
+      setActiveCourseId(courses[0].uuid);
     }
-  }, [courses, activeCourseId, handleActiveCourseId]);
+  }, [courses, activeCourseId]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -168,6 +165,7 @@ const CourseMap = ({
         })}
         focusKey={activeCourseId ?? undefined}
         fitEnabled={false}
+        panEnabled={false}
         onInit={(map) => (mapRef.current = map)}
         onMarkerClick={handleMarkerClick}
       />

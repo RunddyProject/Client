@@ -22,6 +22,7 @@ type Props = {
   markerSize?: number;
   focusKey?: Course['uuid'];
   fitEnabled?: boolean;
+  panEnabled?: boolean;
   interactionsEnabled?: boolean;
   onInit?: (map: naver.maps.Map) => void;
   onMarkerClick?: (id: string) => void;
@@ -38,6 +39,7 @@ export function NaverMap({
   markerSize = 42,
   focusKey,
   fitEnabled = false,
+  panEnabled = true,
   interactionsEnabled = true,
   onInit,
   onMarkerClick,
@@ -68,7 +70,7 @@ export function NaverMap({
     focusColor: color,
     size: markerSize
   });
-  usePanToActiveMarker(map, markerMapRef, focusKey);
+  usePanToActiveMarker(map, markerMapRef, panEnabled ? focusKey : null);
   useFitLatLngBoundsScale(
     map,
     fitEnabled ? bounds : undefined,
