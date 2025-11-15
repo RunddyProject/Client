@@ -36,18 +36,18 @@ const CourseMap = ({
 }) => {
   const mapRef = useRef<naver.maps.Map | null>(null);
 
-  const {
-    lastSearchedCenter,
-    lastSearchedRadius,
-    lastSearchedZoom,
-    currentMapCenter,
-    currentMapZoom,
-    activeCourseId,
-    keywordCenter,
-    setLastSearchedArea,
-    setCurrentMapView,
-    setActiveCourseId
-  } = useLocationStore();
+  // Use zustand selectors to prevent unnecessary re-renders
+  const lastSearchedCenter = useLocationStore((state) => state.lastSearchedCenter);
+  const lastSearchedRadius = useLocationStore((state) => state.lastSearchedRadius);
+  const lastSearchedZoom = useLocationStore((state) => state.lastSearchedZoom);
+  const currentMapCenter = useLocationStore((state) => state.currentMapCenter);
+  const currentMapZoom = useLocationStore((state) => state.currentMapZoom);
+  const activeCourseId = useLocationStore((state) => state.activeCourseId);
+  const keywordCenter = useLocationStore((state) => state.keywordCenter);
+  const setLastSearchedArea = useLocationStore((state) => state.setLastSearchedArea);
+  const setCurrentMapView = useLocationStore((state) => state.setCurrentMapView);
+  const setActiveCourseId = useLocationStore((state) => state.setActiveCourseId);
+
   const { getCurrentLocation, isLoading: isLocationLoading } = useGeolocation();
 
   const { viewport, movedByUser, resetMovedByUser } = useMapViewport(
@@ -110,7 +110,7 @@ const CourseMap = ({
   // Separate handler for scroll events - only updates active state, no scrolling
   const handleScrollChange = useCallback((uuid: Course['uuid']) => {
     setActiveCourseId(uuid);
-  }, []);
+  }, [setActiveCourseId]);
 
   useCenteredActiveByScroll({
     container: scrollerRef as RefObject<HTMLElement>,
