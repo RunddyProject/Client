@@ -13,7 +13,7 @@ import {
 } from '@/features/course/model/constants';
 import { Icon } from '@/shared/icons/icon';
 import { buildQuery } from '@/shared/lib/query';
-import { deepEqual } from '@/shared/lib/utils';
+import { cn, deepEqual } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/primitives/button';
 import {
   Dialog,
@@ -120,7 +120,7 @@ const FilterChipsBar = ({
   );
 };
 
-const CourseFilter = () => {
+const CourseFilter = ({ className }: { className?: string }) => {
   const [open, setOpen] = useState(false);
   const [params] = useSearchParams();
   const navigate = useNavigate();
@@ -296,7 +296,10 @@ const CourseFilter = () => {
             <Button
               size='icon'
               variant='secondary'
-              className='bg-w-100 shadow-runddy pointer-events-auto flex h-8.5 w-fit items-center gap-1 rounded-full px-3'
+              className={cn(
+                'pointer-events-auto flex h-8.5 w-fit items-center gap-1 rounded-full px-3',
+                className
+              )}
             >
               <Icon
                 name='filter'
@@ -310,7 +313,10 @@ const CourseFilter = () => {
             <Button
               size='icon'
               variant='secondary'
-              className='pointer-events-auto flex h-8.5 w-8.5 items-center gap-1 rounded-full'
+              className={cn(
+                'pointer-events-auto flex h-8.5 w-8.5 items-center gap-1 rounded-full',
+                className
+              )}
             >
               <Icon name='filter' size={18} />
             </Button>

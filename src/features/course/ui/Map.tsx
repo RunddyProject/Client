@@ -198,7 +198,7 @@ const CourseMap = ({
 
         {/* Filter */}
         <div className='mt-3 overflow-x-auto px-5'>
-          <CourseFilter />
+          <CourseFilter className='bg-w-100 shadow-runddy' />
         </div>
 
         {/* Bottom Controls */}
