@@ -194,7 +194,18 @@ const CourseMap = ({
     }
 
     if (!activeCourseId || !courses.find((c) => c.uuid === activeCourseId)) {
-      setActiveCourseId(courses[0].uuid);
+      const newId = courses[0].uuid;
+      setActiveCourseId(newId);
+      hasScrolledToActiveRef.current = true;
+      isProgrammaticScrollRef.current = true;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          scrollToCenter(newId);
+          setTimeout(() => {
+            isProgrammaticScrollRef.current = false;
+          }, 500);
+        });
+      });
     }
   }, [courses, activeCourseId, scrollToCenter]);
 
