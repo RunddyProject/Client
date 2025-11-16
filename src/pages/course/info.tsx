@@ -96,6 +96,7 @@ const CourseInfo = () => {
       <div className='relative'>
         <div className='h-78 px-5 pt-3'>
           <NaverMap
+            key={`course-info-${course.uuid}`}
             center={{ lat: course.lat, lng: course.lng }}
             points={course.coursePointList}
             bounds={{
