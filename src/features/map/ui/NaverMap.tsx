@@ -64,6 +64,20 @@ export function NaverMap({
     });
   }, [map, interactionsEnabled, onInit]);
 
+  // Apply center and zoom props when provided
+  useEffect(() => {
+    if (!map.current) return;
+
+    // For info.tsx: apply center/zoom from props (controlled mode)
+    // For Map.tsx: center/zoom not provided, managed internally
+    if (center) {
+      map.current.setCenter(new naver.maps.LatLng(center.lat, center.lng));
+    }
+    if (zoom !== undefined) {
+      map.current.setZoom(zoom);
+    }
+  }, [map, center, zoom]);
+
   useGpxPolyline(map, polylineRef, points, color, { fit: 'never' });
   useMarkers(map, markerMapRef, markerListenersRef, markers, onMarkerClick, {
     focusKey,
