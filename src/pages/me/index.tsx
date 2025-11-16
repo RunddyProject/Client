@@ -4,7 +4,6 @@ import { useAuth } from '@/app/providers/AuthContext';
 import CourseInfoCard from '@/features/course/ui/InfoCard';
 import { useUserBookmarks } from '@/features/user/hooks/useUserBookmarks';
 import { useUserReviews } from '@/features/user/hooks/useUserReviews';
-import profileImgUrl from '@/shared/assets/basic_profile.png';
 import { Icon } from '@/shared/icons/icon';
 import {
   Avatar,
@@ -39,7 +38,7 @@ function Me() {
           <Avatar className='h-20 w-20'>
             <AvatarImage src={user?.profileUrl || ''} />
             <AvatarFallback className='bg-primary/10 text-primary text-2xl'>
-              <img src={profileImgUrl} alt='Profile' width='80' height='80' />
+              <Icon name='basic_profile' size={80} />
             </AvatarFallback>
           </Avatar>
           <div className='flex flex-col'>

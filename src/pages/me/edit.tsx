@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { useAuth } from '@/app/providers/AuthContext';
-import profileImgUrl from '@/shared/assets/basic_profile.png';
 import { Icon } from '@/shared/icons/icon';
 import { api } from '@/shared/lib/http';
 import { ClearableInput } from '@/shared/ui/composites/input-clearable';
@@ -89,12 +88,7 @@ function MeEdit() {
               >
                 <AvatarImage src={user?.profileUrl || ''} />
                 <AvatarFallback className='bg-primary/10 text-primary text-2xl'>
-                  <img
-                    src={profileImgUrl}
-                    alt='Profile'
-                    width='80'
-                    height='80'
-                  />
+                  <Icon name='basic_profile' size={80} />
                 </AvatarFallback>
               </Avatar>
             </div>

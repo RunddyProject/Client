@@ -5,7 +5,6 @@ import { useCourseReviewForm } from '@/features/course/hooks/useCourseReviewForm
 import CourseReviewMine from '@/features/course/ui/CourseReviewMine';
 import CourseReviewWrite from '@/features/course/ui/CourseReviewWrite';
 import ReviewWrite from '@/features/course/ui/CourseReviewWrite';
-import profileImgUrl from '@/shared/assets/basic_profile.png';
 import { Icon } from '@/shared/icons/icon';
 import { formatReviewDate } from '@/shared/lib/date';
 import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
@@ -85,12 +84,7 @@ const CourseReview = () => {
                   <div className='flex items-center gap-3'>
                     <Avatar className='h-9 w-9 flex-shrink-0 cursor-pointer'>
                       <AvatarFallback>
-                        <img
-                          src={profileImgUrl}
-                          alt='Profile'
-                          width='36'
-                          height='36'
-                        />
+                        <Icon name='basic_profile' size={36} />
                       </AvatarFallback>
                     </Avatar>
                     <div className='flex flex-col gap-0.5'>
