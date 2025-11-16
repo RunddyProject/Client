@@ -129,10 +129,6 @@ const CourseMap = ({
     setLastSearchedAreaRef.current(center, viewport.radius, zoom);
     resetMovedByUser();
 
-    // Reset refs to allow scrolling to the new active course
-    hasScrolledToActiveRef.current = false;
-    setActiveCourseId(null);
-
     if (mapRef.current) {
       mapRef.current.setCenter(new naver.maps.LatLng(center.lat, center.lng));
     }
@@ -172,12 +168,42 @@ const CourseMap = ({
     onChange: handleScrollChange
   });
 
+  // Track the first course uuid to detect when courses data changes
+  const previousFirstCourseIdRef = useRef<string | null>(null);
+
   useEffect(() => {
     if (courses.length === 0) {
       setActiveCourseId(null);
+      previousFirstCourseIdRef.current = null;
       return;
     }
 
+    const currentFirstCourseId = courses[0]?.uuid;
+
+    // Detect if courses data has changed (new search results)
+    const coursesChanged = previousFirstCourseIdRef.current !== null &&
+                          previousFirstCourseIdRef.current !== currentFirstCourseId;
+
+    if (coursesChanged) {
+      // New search results - reset and scroll to first course
+      previousFirstCourseIdRef.current = currentFirstCourseId;
+      const newId = courses[0].uuid;
+      setActiveCourseId(newId);
+      hasScrolledToActiveRef.current = false;
+      isProgrammaticScrollRef.current = true;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          scrollToCenter(newId);
+          setTimeout(() => {
+            isProgrammaticScrollRef.current = false;
+            hasScrolledToActiveRef.current = true;
+          }, 500);
+        });
+      });
+      return;
+    }
+
+    // Initial load or activeCourseId still exists in courses
     if (activeCourseId && courses.find((c) => c.uuid === activeCourseId)) {
       if (!hasScrolledToActiveRef.current) {
         hasScrolledToActiveRef.current = true;
@@ -191,10 +217,15 @@ const CourseMap = ({
           });
         });
       }
+      if (previousFirstCourseIdRef.current === null) {
+        previousFirstCourseIdRef.current = currentFirstCourseId;
+      }
       return;
     }
 
+    // No active course or active course not in list - set to first
     if (!activeCourseId || !courses.find((c) => c.uuid === activeCourseId)) {
+      previousFirstCourseIdRef.current = currentFirstCourseId;
       const newId = courses[0].uuid;
       setActiveCourseId(newId);
       hasScrolledToActiveRef.current = true;
