@@ -1,4 +1,4 @@
-export type MarkerKind = 'start' | 'end';
+export type MarkerKind = 'start' | 'end' | 'current_location';
 export type MarkerInput = {
   id: string;
   lat: number;
