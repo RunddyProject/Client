@@ -16,6 +16,7 @@
   }
   body {
     color: var(--text-pri);
+    background-color: var(--color-g-10);
   }
 }
 
