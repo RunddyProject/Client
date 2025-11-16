@@ -129,9 +129,6 @@ const CourseMap = ({
     setLastSearchedAreaRef.current(center, viewport.radius, zoom);
     resetMovedByUser();
 
-    hasScrolledToActiveRef.current = false;
-    setActiveCourseId(null);
-
     if (mapRef.current) {
       mapRef.current.setCenter(new naver.maps.LatLng(center.lat, center.lng));
     }
@@ -171,9 +168,35 @@ const CourseMap = ({
     onChange: handleScrollChange
   });
 
+  const previousFirstCourseIdRef = useRef<string | null>(null);
+
   useEffect(() => {
     if (courses.length === 0) {
       setActiveCourseId(null);
+      previousFirstCourseIdRef.current = null;
+      return;
+    }
+    const currentFirstCourseId = courses[0]?.uuid;
+
+    const coursesChanged =
+      previousFirstCourseIdRef.current !== null &&
+      previousFirstCourseIdRef.current !== currentFirstCourseId;
+
+    if (coursesChanged) {
+      previousFirstCourseIdRef.current = currentFirstCourseId;
+      const newId = courses[0].uuid;
+      setActiveCourseId(newId);
+      hasScrolledToActiveRef.current = false;
+      isProgrammaticScrollRef.current = true;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          scrollToCenter(newId);
+          setTimeout(() => {
+            isProgrammaticScrollRef.current = false;
+            hasScrolledToActiveRef.current = true;
+          }, 500);
+        });
+      });
       return;
     }
 
@@ -190,10 +213,14 @@ const CourseMap = ({
           });
         });
       }
+      if (previousFirstCourseIdRef.current === null) {
+        previousFirstCourseIdRef.current = currentFirstCourseId;
+      }
       return;
     }
 
     if (!activeCourseId || !courses.find((c) => c.uuid === activeCourseId)) {
+      previousFirstCourseIdRef.current = currentFirstCourseId;
       const newId = courses[0].uuid;
       setActiveCourseId(newId);
       hasScrolledToActiveRef.current = true;
