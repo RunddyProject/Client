@@ -40,7 +40,7 @@ const Search = ({ className }: SearchProps) => {
       <Input
         placeholder='지역, 코스이름 검색'
         value={params.get('keyword') ?? keyword}
-        className={cn('bg-w-100 text-placeholder text-m18 pl-13', className)}
+        className={cn('bg-w-100 text-m18 pl-13', className)}
         onClick={() => setOpen(true)}
         readOnly
       />
@@ -66,7 +66,7 @@ const Search = ({ className }: SearchProps) => {
                 inputMode='search'
                 placeholder='지역, 코스이름 검색'
                 value={keyword}
-                className='bg-g-10 text-contents-m16 text-placeholder h-[42px]'
+                className='bg-g-10 text-contents-m16 h-[42px]'
                 onChange={(e) => setKeyword(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
