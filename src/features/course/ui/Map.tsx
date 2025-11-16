@@ -167,6 +167,12 @@ const CourseMap = ({
     // If we have a saved activeCourseId and it exists in current courses, keep it
     if (activeCourseId && courses.find((c) => c.uuid === activeCourseId)) {
       console.log('✅ Keeping activeCourseId:', activeCourseId);
+      // Scroll to the saved course to sync scroll position with activeCourseId
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          scrollToCenter(activeCourseId);
+        });
+      });
       return; // Keep current selection
     }
 
@@ -175,7 +181,7 @@ const CourseMap = ({
       console.log('⚠️ Setting activeCourseId to first course:', courses[0].uuid);
       setActiveCourseId(courses[0].uuid);
     }
-  }, [courses, activeCourseId]);
+  }, [courses, activeCourseId, scrollToCenter]);
 
   // Restore map view on mount, then update only on explicit search
   const hasRestoredRef = useRef(false);
