@@ -198,12 +198,11 @@ const CourseMap = ({
     }
   }, [courses, activeCourseId, scrollToCenter]);
 
-  // Restore map view on mount, then update only on explicit search
+  // Restore map view on mount
+  // IMPORTANT: Map restoration uses ONLY currentMapCenter/Zoom (user's actual view)
+  // lastSearchedCenter is ONLY for showing "Search Here" button
   const hasRestoredRef = useRef(false);
   const hasScrolledToActiveRef = useRef(false);
-
-  // Initialize to the center we'll actually restore to prevent false "changes"
-  const lastSearchedCenterRef = useRef(lastSearchedCenter);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -221,48 +220,38 @@ const CourseMap = ({
       lastSearchedZoom
     });
 
-    // Prioritize saved view over last searched area
+    // Prioritize saved view (user's last position) over last searched area
     if (savedCenter && savedZoom) {
       console.log('✅ [MOUNT] Restoring to savedCenter:', savedCenter, 'zoom:', savedZoom);
       map.setCenter(new naver.maps.LatLng(savedCenter.lat, savedCenter.lng));
       map.setZoom(savedZoom);
-      // IMPORTANT: Update ref to match restored center to prevent unwanted changes
-      lastSearchedCenterRef.current = savedCenter;
     } else {
-      // Fallback to last searched area only if no saved view
-      console.log('⚠️ [MOUNT] No saved view, using lastSearchedCenter');
+      // Fallback to last searched area only on first visit (no saved view yet)
+      console.log('⚠️ [MOUNT] No saved view, using lastSearchedCenter (first visit)');
       map.setCenter(new naver.maps.LatLng(lastSearchedCenter.lat, lastSearchedCenter.lng));
       map.setZoom(lastSearchedZoom ?? DEFAULT_ZOOM);
-      lastSearchedCenterRef.current = lastSearchedCenter;
     }
 
     hasRestoredRef.current = true;
   }); // No deps - runs every render until map exists and restoration completes
 
-  // Update map when user explicitly searches (lastSearchedCenter changes)
+  // Handle keyword search: move map when user searches by keyword (AFTER restoration)
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
+    if (!hasRestoredRef.current) return; // Wait until restoration is complete
+    if (!keywordCenter) return; // Only when keyword search has result
 
-    // Check if lastSearchedCenter actually changed
-    const prev = lastSearchedCenterRef.current;
-    const curr = lastSearchedCenter;
+    console.log('🔍 [KEYWORD] Moving to keyword search result:', keywordCenter);
 
-    const changed =
-      Math.abs(prev.lat - curr.lat) > 0.0001 ||
-      Math.abs(prev.lng - curr.lng) > 0.0001;
+    // Move map to keyword search result
+    map.setCenter(new naver.maps.LatLng(keywordCenter.lat, keywordCenter.lng));
+    map.setZoom(lastSearchedZoom ?? DEFAULT_ZOOM);
 
-    if (changed) {
-      console.log('🔍 [SEARCH] lastSearchedCenter changed, updating map:', {
-        from: prev,
-        to: curr,
-        zoom: lastSearchedZoom
-      });
-      lastSearchedCenterRef.current = lastSearchedCenter;
-      map.setCenter(new naver.maps.LatLng(curr.lat, curr.lng));
-      map.setZoom(lastSearchedZoom ?? DEFAULT_ZOOM);
-    }
-  }, [lastSearchedCenter, lastSearchedZoom]);
+    // Update lastSearchedArea to match
+    const zoom = map.getZoom();
+    setLastSearchedAreaRef.current(keywordCenter, viewport.radius, zoom);
+  }, [keywordCenter, lastSearchedZoom, viewport.radius]);
 
   // Save current map view when user stops interacting (throttled)
   useEffect(() => {
