@@ -108,6 +108,9 @@ const CourseMap = ({
   const shouldFetchPoints = courses.length > 0 && activeCourseId !== null;
   const { coursePointList } = useCoursePoint(shouldFetchPoints ? activeCourseId : '');
 
+  // Explicitly clear polyline when no courses (prevent caching issues)
+  const displayPoints = courses.length > 0 && activeCourseId ? coursePointList : [];
+
   const activeCourse =
     courses.find((c) => c.uuid === activeCourseId) ?? courses[0];
   const activeColor: RUNDDY_COLOR = activeCourse
@@ -310,7 +313,7 @@ const CourseMap = ({
         glassTopOverlay
         center={initialCenter ?? undefined}
         zoom={initialZoom}
-        points={coursePointList}
+        points={displayPoints}
         color={activeColor}
         markers={courses.flatMap((c) => {
           const start: MarkerInput = {
