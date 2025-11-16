@@ -44,6 +44,7 @@ const CourseMap = ({
   );
   const lastSearchedZoom = useLocationStore((state) => state.lastSearchedZoom);
   const keywordCenter = useLocationStore((state) => state.keywordCenter);
+  const userLocation = useLocationStore((state) => state.userLocation);
 
   const setLastSearchedAreaRef = useRef(
     useLocationStore.getState().setLastSearchedArea
@@ -272,25 +273,37 @@ const CourseMap = ({
         zoom={initialZoom}
         points={displayPoints}
         color={activeColor}
-        markers={courses.flatMap((c) => {
-          const start: MarkerInput = {
-            id: c.uuid,
-            lat: c.lat,
-            lng: c.lng,
-            kind: 'start'
-          };
-          const endPoint = coursePointList[coursePointList.length - 1];
-          if (c.uuid === activeCourseId && endPoint?.lat && endPoint?.lng) {
-            const end: MarkerInput = {
-              id: `${c.uuid}__end`,
-              lat: endPoint.lat,
-              lng: endPoint.lng,
-              kind: 'end'
+        markers={[
+          ...courses.flatMap((c) => {
+            const start: MarkerInput = {
+              id: c.uuid,
+              lat: c.lat,
+              lng: c.lng,
+              kind: 'start'
             };
-            return [start, end];
-          }
-          return [start];
-        })}
+            const endPoint = coursePointList[coursePointList.length - 1];
+            if (c.uuid === activeCourseId && endPoint?.lat && endPoint?.lng) {
+              const end: MarkerInput = {
+                id: `${c.uuid}__end`,
+                lat: endPoint.lat,
+                lng: endPoint.lng,
+                kind: 'end'
+              };
+              return [start, end];
+            }
+            return [start];
+          }),
+          ...(userLocation
+            ? [
+                {
+                  id: 'user_current_location',
+                  lat: userLocation.lat,
+                  lng: userLocation.lng,
+                  kind: 'current_location' as const
+                }
+              ]
+            : [])
+        ]}
         focusKey={activeCourseId ?? undefined}
         fitEnabled={false}
         panEnabled={false}

@@ -9,6 +9,7 @@ import type { MarkerInput } from '@/features/map/model/types';
 const BASE_Z = 100;
 const ACTIVE_Z = 100000;
 const ACTIVE_Z_START = ACTIVE_Z + 1;
+const CURRENT_LOCATION_Z = ACTIVE_Z + 100;
 
 export function useMarkers(
   mapRef: RefObject<naver.maps.Map | null>,
@@ -54,12 +55,16 @@ export function useMarkers(
       const isActiveStart = m.kind === 'start' && m.id === focusKey;
       const isActiveEnd = m.kind === 'end' && m.id.startsWith(`${focusKey}__`);
 
+      const isCurrentLocation = m.kind === 'current_location';
+
       const iconName =
         m.kind === 'end'
           ? 'active_end'
-          : isActiveStart
-            ? 'active_start'
-            : 'pin_default';
+          : isCurrentLocation
+            ? 'current_location'
+            : isActiveStart
+              ? 'active_start'
+              : 'pin_default';
 
       const iconVars = {
         '--icon-primary': isActiveStart || isActiveEnd ? focusHex : undefined
@@ -103,7 +108,8 @@ export function useMarkers(
         }
       }
 
-      if (isActiveStart) mk.setZIndex(ACTIVE_Z_START);
+      if (isCurrentLocation) mk.setZIndex(CURRENT_LOCATION_Z);
+      else if (isActiveStart) mk.setZIndex(ACTIVE_Z_START);
       else if (isActiveEnd) mk.setZIndex(ACTIVE_Z);
       else mk.setZIndex(BASE_Z);
     });
