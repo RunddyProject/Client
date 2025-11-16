@@ -59,5 +59,9 @@ export default defineConfig({
       '@features': path.resolve(__dirname, 'src/features'),
       '@pages': path.resolve(__dirname, 'src/pages')
     }
+  },
+
+  esbuild: {
+    drop: ['console', 'debugger']
   }
 });
