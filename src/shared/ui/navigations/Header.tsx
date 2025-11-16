@@ -113,7 +113,7 @@ const Header = () => {
         isCoursePage ? 'absolute left-0' : 'bg-w-100 sticky'
       )}
     >
-      <div className='flex h-13 items-center justify-between pr-2 pl-4'>
+      <div className='flex h-13 items-center justify-between pr-2 pl-4 mx-auto max-w-3xl'>
         {isHomeHeader ? (
           // Home Header: Runddy Logo | Profile | Menu
           <>
