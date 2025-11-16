@@ -19,15 +19,14 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
 
   return (
     <div className='bg-background flex min-h-screen flex-col px-5 pt-[calc(env(safe-area-inset-top)+52px)]'>
-      {/* <div className='left-0 right-0 bottom-0 z-10 pointer-events-none flex flex-col top-[calc(env(safe-area-inset-top)+52px)]'> */}
       {/* Search bar */}
       <div className='pointer-events-auto pt-[calc(env(safe-area-inset-top)+12px)]'>
         <Search className='bg-g-10' />
       </div>
 
-      <div className='overflow-y-auto'>
+      <div className='no-scrollbar mt-3 overflow-y-auto'>
         {/* Filter */}
-        <div className='mt-3 overflow-x-auto'>
+        <div className='overflow-x-auto'>
           <CourseFilter />
         </div>
 

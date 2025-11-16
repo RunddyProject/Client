@@ -50,5 +50,19 @@ export default {
       }
     }
   },
-  plugins: []
+  plugins: [
+    function ({ addUtilities }) {
+      addUtilities({
+        '.no-scrollbar': {
+          /* Firefox */
+          'scrollbar-width': 'none',
+
+          /* Safari / Chrome / Edge */
+          '&::-webkit-scrollbar': {
+            display: 'none'
+          }
+        }
+      });
+    }
+  ]
 } satisfies Config;

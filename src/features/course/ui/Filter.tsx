@@ -350,7 +350,7 @@ const CourseFilter = ({ className }: { className?: string }) => {
               <ToggleGroup
                 type='multiple'
                 value={draft.grade}
-                className='w-full overflow-x-auto'
+                className='no-scrollbar w-full overflow-x-auto'
               >
                 {grades.map((grd) => (
                   <ToggleGroupItem
@@ -369,7 +369,7 @@ const CourseFilter = ({ className }: { className?: string }) => {
               <ToggleGroup
                 type='multiple'
                 value={draft.envType}
-                className='w-full overflow-x-auto'
+                className='no-scrollbar w-full overflow-x-auto'
               >
                 {envTypeNames.map((env) => (
                   <ToggleGroupItem
@@ -390,7 +390,7 @@ const CourseFilter = ({ className }: { className?: string }) => {
                 <Tooltip
                   title={'코스 모양에 대해 설명해 드릴게요'}
                   body={
-                    <ul className='text-w-100 list-disc space-y-1 pl-5 marker:text-white/70'>
+                    <ul className='text-w-100 marker:text-w-100/70 list-disc space-y-1 pl-5'>
                       <li>순환코스: 출발한 곳으로 돌아오는 원형 코스</li>
                       <li>
                         직선코스: 한방향으로 쭉 달리는 형태(출발, 도착 다름)
@@ -404,7 +404,7 @@ const CourseFilter = ({ className }: { className?: string }) => {
               <ToggleGroup
                 type='multiple'
                 value={draft.shapeType}
-                className='w-full overflow-x-auto'
+                className='no-scrollbar w-full overflow-x-auto'
               >
                 {shapeTypeNames.map((shape) => (
                   <ToggleGroupItem

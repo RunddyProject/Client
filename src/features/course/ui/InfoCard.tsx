@@ -88,7 +88,7 @@ const CourseInfoCard = ({
             />
           </Button>
         </div>
-        <div className='flex items-center gap-1 overflow-x-auto'>
+        <div className='no-scrollbar flex items-center gap-1 overflow-x-auto'>
           <Badge>{GRADE_TO_NAME[(course?.grade || 1) as GradeType]}</Badge>
           <Badge>{course?.envTypeName || '공원'}</Badge>
           <Badge>{((course?.totalDistance || 5000) / 1000).toFixed(1)}km</Badge>
