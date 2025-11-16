@@ -63,6 +63,9 @@ const CourseMap = ({
     activeCourseIdRef.current = activeCourseId;
   }, [activeCourseId]);
 
+  // Save scroll position ref
+  const savedScrollPositionRef = useRef<number>(0);
+
   // Save to store on unmount
   useEffect(() => {
     return () => {
@@ -81,6 +84,12 @@ const CourseMap = ({
       } else {
         console.log('⚠️ [UNMOUNT] No map instance to save');
       }
+
+      // Save scroll position
+      if (scrollerRef.current) {
+        savedScrollPositionRef.current = scrollerRef.current.scrollLeft;
+        console.log('💾 [UNMOUNT] Saving scroll position:', savedScrollPositionRef.current);
+      }
     };
   }, []);
 
@@ -95,7 +104,9 @@ const CourseMap = ({
     radius: lastSearchedRadius
   });
 
-  const { coursePointList } = useCoursePoint(activeCourseId ?? '');
+  // Only fetch course points if courses exist and activeCourseId is valid
+  const shouldFetchPoints = courses.length > 0 && activeCourseId !== null;
+  const { coursePointList } = useCoursePoint(shouldFetchPoints ? activeCourseId : '');
 
   const activeCourse =
     courses.find((c) => c.uuid === activeCourseId) ?? courses[0];
@@ -174,19 +185,21 @@ const CourseMap = ({
 
     // If we have a saved activeCourseId and it exists in current courses, keep it
     if (activeCourseId && courses.find((c) => c.uuid === activeCourseId)) {
-      // Only scroll once after restoration
-      if (!hasScrolledToActiveRef.current) {
+      // Restore scroll position once after mount (no animation)
+      if (!hasScrolledToActiveRef.current && scrollerRef.current) {
         hasScrolledToActiveRef.current = true;
-        // Scroll to the saved course to sync scroll position with activeCourseId
         isProgrammaticScrollRef.current = true;
+
+        // Restore saved scroll position directly (no animation)
         requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            scrollToCenter(activeCourseId);
-            // Reset flag after scroll completes
-            setTimeout(() => {
-              isProgrammaticScrollRef.current = false;
-            }, 500);
-          });
+          if (scrollerRef.current && savedScrollPositionRef.current > 0) {
+            console.log('📜 [RESTORE] Restoring scroll position:', savedScrollPositionRef.current);
+            scrollerRef.current.scrollLeft = savedScrollPositionRef.current;
+          }
+          // Reset flag after scroll restore
+          setTimeout(() => {
+            isProgrammaticScrollRef.current = false;
+          }, 100);
         });
       }
       return; // Keep current selection
@@ -196,7 +209,7 @@ const CourseMap = ({
     if (!activeCourseId || !courses.find((c) => c.uuid === activeCourseId)) {
       setActiveCourseId(courses[0].uuid);
     }
-  }, [courses, activeCourseId, scrollToCenter]);
+  }, [courses, activeCourseId]);
 
   // Restore map view on mount
   // IMPORTANT: Map restoration uses ONLY currentMapCenter/Zoom (user's actual view)
