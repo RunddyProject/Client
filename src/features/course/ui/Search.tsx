@@ -16,16 +16,22 @@ interface SearchProps {
 }
 
 const Search = ({ className }: SearchProps) => {
-  const [open, setOpen] = useState(false);
-  const [keyword, setKeyword] = useState('');
   const navigate = useNavigate();
   const [params] = useSearchParams();
+
+  const [open, setOpen] = useState(false);
+  const [keyword, setKeyword] = useState(params.get('keyword') ?? '');
 
   const handleSearch = () => {
     const newParams = new URLSearchParams(params);
     newParams.set('keyword', keyword);
 
     navigate({ search: newParams.toString() });
+    setOpen(false);
+  };
+
+  const handleClose = () => {
+    setKeyword(params.get('keyword') ?? '');
     setOpen(false);
   };
 
@@ -56,7 +62,7 @@ const Search = ({ className }: SearchProps) => {
                 variant='ghost'
                 size='icon'
                 className='h-12 w-12'
-                onClick={() => setOpen(false)}
+                onClick={handleClose}
               >
                 <Icon name='chevron_left' size={24} />
               </Button>
