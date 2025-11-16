@@ -176,23 +176,30 @@ const CourseMap = ({
     console.log('🔍 activeCourseId effect:', {
       activeCourseId,
       coursesLength: courses.length,
-      firstCourseId: courses[0]?.uuid
+      firstCourseId: courses[0]?.uuid,
+      hasScrolledToActive: hasScrolledToActiveRef.current
     });
 
     // If we have a saved activeCourseId and it exists in current courses, keep it
     if (activeCourseId && courses.find((c) => c.uuid === activeCourseId)) {
       console.log('✅ Keeping activeCourseId:', activeCourseId);
-      // Scroll to the saved course to sync scroll position with activeCourseId
-      isProgrammaticScrollRef.current = true;
-      requestAnimationFrame(() => {
+
+      // Only scroll once after restoration
+      if (!hasScrolledToActiveRef.current) {
+        console.log('📜 Scrolling to restored activeCourseId');
+        hasScrolledToActiveRef.current = true;
+        // Scroll to the saved course to sync scroll position with activeCourseId
+        isProgrammaticScrollRef.current = true;
         requestAnimationFrame(() => {
-          scrollToCenter(activeCourseId);
-          // Reset flag after scroll completes
-          setTimeout(() => {
-            isProgrammaticScrollRef.current = false;
-          }, 500);
+          requestAnimationFrame(() => {
+            scrollToCenter(activeCourseId);
+            // Reset flag after scroll completes
+            setTimeout(() => {
+              isProgrammaticScrollRef.current = false;
+            }, 500);
+          });
         });
-      });
+      }
       return; // Keep current selection
     }
 
@@ -205,6 +212,7 @@ const CourseMap = ({
 
   // Restore map view on mount, then update only on explicit search
   const hasRestoredRef = useRef(false);
+  const hasScrolledToActiveRef = useRef(false);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -252,6 +260,10 @@ const CourseMap = ({
       Math.abs(prev.lng - curr.lng) > 0.0001;
 
     if (changed) {
+      console.log('🔄 lastSearchedCenter changed, updating map:', {
+        from: prev,
+        to: curr
+      });
       lastSearchedCenterRef.current = lastSearchedCenter;
       map.setCenter(new naver.maps.LatLng(curr.lat, curr.lng));
       map.setZoom(lastSearchedZoom ?? DEFAULT_ZOOM);
