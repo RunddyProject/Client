@@ -5,6 +5,16 @@ import { useCourseReviewForm } from '@/features/course/hooks/useCourseReviewForm
 import { useDeleteCourseReview } from '@/features/course/hooks/useDeleteCourseReview';
 import CourseReviewWrite from '@/features/course/ui/CourseReviewWrite';
 import { Icon } from '@/shared/icons/icon';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  AlertDialogTitle
+} from '@/shared/ui/primitives/alert-dialog';
 import { Button } from '@/shared/ui/primitives/button';
 import {
   Dialog,
@@ -26,6 +36,7 @@ const CourseReviewMine = () => {
   const { deleteReview, isDeleting } = useDeleteCourseReview(uuid!);
 
   const [open, setOpen] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
 
   return (
     <div className='relative'>
@@ -78,7 +89,9 @@ const CourseReviewMine = () => {
                   </div>
                   <Button
                     variant='ghost'
-                    onClick={() => deleteReview()}
+                    onClick={() => {
+                      setOpenDelete(true);
+                    }}
                     className='flex h-[46px] w-full items-center justify-between'
                     disabled={isDeleting}
                   >
@@ -122,6 +135,29 @@ const CourseReviewMine = () => {
                 );
               })}
             </div>
+            <AlertDialog open={openDelete} onOpenChange={setOpenDelete}>
+              <AlertDialogOverlay />
+
+              <AlertDialogContent className='z-[10005]'>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    작성하신 리뷰를 삭제하시겠어요?
+                  </AlertDialogTitle>
+                </AlertDialogHeader>
+
+                <AlertDialogFooter>
+                  <AlertDialogCancel>아니요</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      deleteReview();
+                      setOpenDelete(false);
+                    }}
+                  >
+                    네
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </DialogContent>
         </DialogPortal>
       </Dialog>
