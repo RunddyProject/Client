@@ -116,9 +116,8 @@ const CourseMap = ({
 
   const showSearchButton = movedByUser && hasCenterChanged;
 
-  const handleSearchHere = () => {
+  const handleSearch = (center: { lat: number; lng: number }) => {
     const zoom = mapRef.current?.getZoom?.() || DEFAULT_ZOOM;
-    const center = keywordCenter ?? viewport.center;
 
     setLastSearchedAreaRef.current(center, viewport.radius, zoom);
     resetMovedByUser();
@@ -128,15 +127,14 @@ const CourseMap = ({
     }
   };
 
+  const handleSearchHere = () => {
+    const center = keywordCenter ?? viewport.center;
+    handleSearch(center);
+  };
+
   const handleSearchByCurrentLocation = async () => {
-    const zoom = mapRef.current?.getZoom?.() || DEFAULT_ZOOM;
     const center = await getCurrentLocation();
-
-    setLastSearchedAreaRef.current(center, viewport.radius, zoom);
-
-    if (mapRef.current) {
-      mapRef.current.setCenter(new naver.maps.LatLng(center.lat, center.lng));
-    }
+    handleSearch(center);
   };
 
   const handleMarkerClick = (uuid: Course['uuid']) => {
