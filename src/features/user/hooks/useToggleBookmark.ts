@@ -50,6 +50,22 @@ export function useToggleBookmark() {
         queryKey: ['courses']
       });
 
+      // Find course data from courses queries if courseDetail is not available
+      let courseData: Course | CourseDetail | undefined = courseDetail;
+      if (!courseData) {
+        const coursesQueries = queryClient.getQueriesData<Course[]>({
+          queryKey: ['courses']
+        });
+        for (const [, list] of coursesQueries) {
+          if (!list) continue;
+          const found = list.find((c) => c.uuid === payload.courseUuid);
+          if (found) {
+            courseData = found;
+            break;
+          }
+        }
+      }
+
       // bookmarks update
       let next: UserBookmarksResponse | undefined = prevBookmarks;
 
@@ -59,23 +75,23 @@ export function useToggleBookmark() {
         );
 
         if (payload.isBookmarked) {
-          if (existsIdx === -1 && courseDetail) {
+          if (existsIdx === -1 && courseData) {
             next = {
               bookmarkList: [
                 ...prevBookmarks.bookmarkList,
                 {
-                  uuid: courseDetail.uuid,
-                  lat: courseDetail.lat,
-                  lng: courseDetail.lng,
-                  name: courseDetail.name,
-                  type: courseDetail.type,
-                  grade: courseDetail.grade,
-                  envType: courseDetail.envType,
-                  envTypeName: courseDetail.envTypeName,
-                  shapeType: courseDetail.shapeType,
-                  shapeTypeName: courseDetail.shapeTypeName,
-                  totalDistance: courseDetail.totalDistance,
-                  svg: courseDetail.svg,
+                  uuid: courseData.uuid,
+                  lat: courseData.lat,
+                  lng: courseData.lng,
+                  name: courseData.name,
+                  type: courseData.type,
+                  grade: courseData.grade,
+                  envType: courseData.envType,
+                  envTypeName: courseData.envTypeName,
+                  shapeType: courseData.shapeType,
+                  shapeTypeName: courseData.shapeTypeName,
+                  totalDistance: courseData.totalDistance,
+                  svg: courseData.svg,
                   isBookmarked: true
                 }
               ]
