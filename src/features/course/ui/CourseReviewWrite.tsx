@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/app/providers/AuthContext';
 import { useCourseReviewForm } from '@/features/course/hooks/useCourseReviewForm';
 import { Icon } from '@/shared/icons/icon';
+import { deepEqual } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/primitives/button';
 import {
   Dialog,
@@ -38,9 +39,12 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
   const [categories, setCategories] = useState<DisplayFormCategory[]>([]);
 
   useEffect(() => {
-    if (formDetail) {
-      setCategories(JSON.parse(JSON.stringify(formDetail)));
-    }
+    if (!formDetail) return;
+
+    setCategories((prev) => {
+      if (deepEqual(prev, formDetail)) return prev;
+      return JSON.parse(JSON.stringify(formDetail));
+    });
   }, [formDetail]);
 
   const handleToggleChange = (categoryCode: string, newValues: string[]) => {
