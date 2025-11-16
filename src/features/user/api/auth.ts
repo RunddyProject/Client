@@ -98,6 +98,19 @@ export class AuthService {
     }
   }
 
+  // Check if token is expired
+  private isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1])) as UserToken;
+      const currentTime = Math.floor(Date.now() / 1000);
+      // Add 10 second buffer to prevent edge cases
+      return payload.exp <= currentTime + 10;
+    } catch (error) {
+      console.error('[Auth] Failed to check token expiration:', error);
+      return true;
+    }
+  }
+
   // Public getters
   getToken(): string | null {
     return this.readToken();
@@ -105,13 +118,19 @@ export class AuthService {
 
   getUserFromToken(): User | null {
     const token = this.getToken();
-    if (!token) return null;
+    if (!token || this.isTokenExpired(token)) return null;
     return this.decodeToken(token);
   }
 
   private async checkAuthOnServer(): Promise<boolean> {
     const token = this.getToken();
-    if (!token || !this.decodeToken(token)) return false;
+    if (!token || this.isTokenExpired(token) || !this.decodeToken(token)) {
+      if (token && this.isTokenExpired(token)) {
+        console.warn('[Auth] Token expired, clearing');
+        this.clearToken();
+      }
+      return false;
+    }
 
     try {
       await api.get('/users', {
@@ -155,7 +174,12 @@ export class AuthService {
   async isAuthenticated(opts?: { validate?: boolean }): Promise<boolean> {
     const { validate = false } = opts ?? {};
     const token = this.getToken();
-    if (!token || !this.decodeToken(token)) return false;
+    if (!token || this.isTokenExpired(token) || !this.decodeToken(token)) {
+      if (token && this.isTokenExpired(token)) {
+        this.clearToken();
+      }
+      return false;
+    }
     if (!validate) return true;
     return this.checkAuthOnServer();
   }
@@ -184,14 +208,18 @@ export class AuthService {
   async initialize(): Promise<boolean> {
     if (import.meta.env.DEV) {
       const t = this.getToken();
-      return !!(t && this.decodeToken(t));
+      return !!(t && this.decodeToken(t) && !this.isTokenExpired(t));
     }
     const existing = this.getToken();
-    if (!(existing && this.decodeToken(existing))) {
+    // Check if token exists, is valid, and not expired
+    const isValidToken =
+      existing && this.decodeToken(existing) && !this.isTokenExpired(existing);
+
+    if (!isValidToken) {
+      // Token is missing, invalid, or expired - get new token from server
       const newToken = await this.getAccessToken();
       if (!newToken) return false;
     }
-    // PROD에서는 최초 1회만 서버 검증
     return this.isAuthenticated({ validate: true });
   }
 
