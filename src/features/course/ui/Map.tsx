@@ -202,6 +202,9 @@ const CourseMap = ({
   const hasRestoredRef = useRef(false);
   const hasScrolledToActiveRef = useRef(false);
 
+  // Initialize to the center we'll actually restore to prevent false "changes"
+  const lastSearchedCenterRef = useRef(lastSearchedCenter);
+
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -223,21 +226,20 @@ const CourseMap = ({
       console.log('✅ [MOUNT] Restoring to savedCenter:', savedCenter, 'zoom:', savedZoom);
       map.setCenter(new naver.maps.LatLng(savedCenter.lat, savedCenter.lng));
       map.setZoom(savedZoom);
+      // IMPORTANT: Update ref to match restored center to prevent unwanted changes
+      lastSearchedCenterRef.current = savedCenter;
     } else {
       // Fallback to last searched area only if no saved view
       console.log('⚠️ [MOUNT] No saved view, using lastSearchedCenter');
       map.setCenter(new naver.maps.LatLng(lastSearchedCenter.lat, lastSearchedCenter.lng));
       map.setZoom(lastSearchedZoom ?? DEFAULT_ZOOM);
+      lastSearchedCenterRef.current = lastSearchedCenter;
     }
 
     hasRestoredRef.current = true;
   }); // No deps - runs every render until map exists and restoration completes
 
   // Update map when user explicitly searches (lastSearchedCenter changes)
-  // Initialize to the center we'll actually restore to prevent false "changes"
-  const lastSearchedCenterRef = useRef(
-    useLocationStore.getState().currentMapCenter ?? lastSearchedCenter
-  );
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
