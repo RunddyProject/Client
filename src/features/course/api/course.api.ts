@@ -51,7 +51,7 @@ export const CoursesApi = {
   getCourseGpx: async (uuid: Course['uuid']): Promise<void> => {
     return api.download(`/course/${uuid}/gpx`, {
       headers: { Accept: 'application/gpx+xml' },
-      fallbackName: 'route.gpx' // TODO: courseName
+      fallbackName: 'route.gpx'
     });
   },
   getCourseReview: async (
