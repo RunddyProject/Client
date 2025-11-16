@@ -35,7 +35,7 @@ const Tooltip = ({ title, body }: TooltipProps) => {
         className='bg-g-80 text-w-100 text-contents-r15 relative z-[10002] flex w-fit flex-col gap-1 px-5 py-4'
       >
         <PopoverArrow className='fill-g-80' width={16} height={8} />
-        <div className='flex items-center justify-between gap-1'>
+        <div className='text-contents-r14 text-w-100 flex items-center justify-between gap-1'>
           <div>{title}</div>
           <PopoverClose>
             <Icon
