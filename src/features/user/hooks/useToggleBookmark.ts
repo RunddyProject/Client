@@ -6,7 +6,8 @@ import { UserApi } from '@/features/user/api/user.api';
 import type { Course, CourseDetail } from '@/features/course/model/types';
 import type {
   BookmarkPatchRequest,
-  UserBookmarksResponse
+  UserBookmarksResponse,
+  UserReviewsResponse
 } from '@/features/user/model/types';
 import type { ApiError } from '@/shared/lib/http';
 
@@ -33,6 +34,10 @@ export function useToggleBookmark() {
 
       const prevBookmarks = queryClient.getQueryData<UserBookmarksResponse>([
         'bookmarks'
+      ]);
+
+      const prevReviews = queryClient.getQueryData<UserReviewsResponse>([
+        'reviews'
       ]);
 
       const courseDetail = queryClient.getQueryData<CourseDetail>([
@@ -85,6 +90,18 @@ export function useToggleBookmark() {
         }
 
         queryClient.setQueryData<UserBookmarksResponse>(['bookmarks'], next);
+      }
+
+      // user reviews update
+      if (prevReviews) {
+        const nextReviews: UserReviewsResponse = {
+          courseList: prevReviews.courseList.map((c) =>
+            c.uuid === payload.courseUuid
+              ? { ...c, isBookmarked: payload.isBookmarked }
+              : c
+          )
+        };
+        queryClient.setQueryData(['reviews'], nextReviews);
       }
 
       // course detail update
