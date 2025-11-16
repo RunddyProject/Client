@@ -365,16 +365,16 @@ const CourseMap = ({
 
         {/* Course Cards */}
         {courses.length === 0 && (
-          <div className='px-4 pb-5'>
-            <div className='bg-w-100 flex [touch-action:none] gap-4 rounded-2xl p-5 shadow-xl'>
+          <div className='px-5 pb-5'>
+            <div className='bg-w-100 pointer-events-auto flex items-center gap-4 rounded-2xl px-5 py-4.5 shadow-xl'>
               <div className='bg-muted/60 flex h-12 w-12 items-center justify-center rounded-xl'>
                 course
               </div>
-              <div className='flex-1 space-y-1'>
-                <p className='text-title-b18'>조건에 맞는 코스가 없어요</p>
-                <p className='text-ter text-contents-r14'>
+              <div className='flex flex-col space-y-1'>
+                <div className='text-title-b18'>조건에 맞는 코스가 없어요</div>
+                <div className='text-ter text-contents-r14'>
                   설정된 필터를 변경해 보세요
-                </p>
+                </div>
               </div>
             </div>
           </div>
@@ -384,7 +384,7 @@ const CourseMap = ({
           <div className='px-4 pb-5'>
             <CourseInfoCard
               course={courses[0]}
-              className='rounded-2xl p-5 shadow-xl'
+              className='rounded-2xl px-5 py-4.5 shadow-xl'
             />
           </div>
         )}
@@ -407,7 +407,7 @@ const CourseMap = ({
               >
                 <CourseInfoCard
                   course={course}
-                  className='rounded-2xl p-5 shadow-xl'
+                  className='rounded-2xl px-5 py-4.5 shadow-xl'
                 />
               </div>
             ))}

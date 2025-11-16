@@ -69,7 +69,7 @@ const CourseInfoCard = ({
         <div className='bg-g-90 h-15 w-15 rounded-xl' />
       )}
 
-      <div className='flex min-w-0 flex-1 flex-col gap-2 py-1'>
+      <div className='flex min-w-0 flex-1 flex-col gap-2'>
         <div className='flex items-center justify-between gap-1'>
           <div className='text-title-b18 truncate'>
             {course?.name || '코스이름'}
