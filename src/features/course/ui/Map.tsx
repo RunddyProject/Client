@@ -129,6 +129,10 @@ const CourseMap = ({
     setLastSearchedAreaRef.current(center, viewport.radius, zoom);
     resetMovedByUser();
 
+    // Reset refs to allow scrolling to the new active course
+    hasScrolledToActiveRef.current = false;
+    setActiveCourseId(null);
+
     if (mapRef.current) {
       mapRef.current.setCenter(new naver.maps.LatLng(center.lat, center.lng));
     }
