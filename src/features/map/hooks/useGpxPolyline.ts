@@ -54,17 +54,24 @@ export function useGpxPolyline(
       });
     }
 
+    // If no points, remove polyline from map completely
+    if (!points?.length) {
+      if (polylineRef.current.getMap()) {
+        polylineRef.current.setMap(null);
+      }
+      return;
+    }
+
+    // Show polyline on map
     if (polylineRef.current.getMap() !== map) {
       polylineRef.current.setMap(map);
     }
 
-    const path = points?.length
-      ? points.map((p) => new naver.maps.LatLng(p.lat, p.lng))
-      : [];
+    const path = points.map((p) => new naver.maps.LatLng(p.lat, p.lng));
     polylineRef.current.setPath(path);
     (polylineRef.current as any).setOptions?.({ strokeColor });
 
-    if (!points?.length || fit === 'never') return;
+    if (fit === 'never') return;
 
     // Temporarily block fit while interacting
     const setInteractingTrue = () => (interactingRef.current = true);
