@@ -68,6 +68,7 @@ const CourseMap = ({
     return () => {
       // Save both activeCourseId and current map view on unmount
       const activeId = activeCourseIdRef.current;
+      console.log('💾 [UNMOUNT] Saving activeCourseId:', activeId);
       useLocationStore.getState().setActiveCourseId(activeId);
 
       const map = mapRef.current;
@@ -75,7 +76,10 @@ const CourseMap = ({
         const center = map.getCenter();
         const zoom = map.getZoom();
         const centerObj = { lat: center.lat(), lng: center.lng() };
+        console.log('💾 [UNMOUNT] Saving center:', centerObj, 'zoom:', zoom);
         useLocationStore.getState().setCurrentMapView(centerObj, zoom);
+      } else {
+        console.log('⚠️ [UNMOUNT] No map instance to save');
       }
     };
   }, []);
@@ -207,12 +211,21 @@ const CourseMap = ({
     const savedCenter = useLocationStore.getState().currentMapCenter;
     const savedZoom = useLocationStore.getState().currentMapZoom;
 
+    console.log('🔄 [MOUNT] Restoring map view:', {
+      savedCenter,
+      savedZoom,
+      lastSearchedCenter,
+      lastSearchedZoom
+    });
+
     // Prioritize saved view over last searched area
     if (savedCenter && savedZoom) {
+      console.log('✅ [MOUNT] Restoring to savedCenter:', savedCenter, 'zoom:', savedZoom);
       map.setCenter(new naver.maps.LatLng(savedCenter.lat, savedCenter.lng));
       map.setZoom(savedZoom);
     } else {
       // Fallback to last searched area only if no saved view
+      console.log('⚠️ [MOUNT] No saved view, using lastSearchedCenter');
       map.setCenter(new naver.maps.LatLng(lastSearchedCenter.lat, lastSearchedCenter.lng));
       map.setZoom(lastSearchedZoom ?? DEFAULT_ZOOM);
     }
@@ -238,6 +251,11 @@ const CourseMap = ({
       Math.abs(prev.lng - curr.lng) > 0.0001;
 
     if (changed) {
+      console.log('🔍 [SEARCH] lastSearchedCenter changed, updating map:', {
+        from: prev,
+        to: curr,
+        zoom: lastSearchedZoom
+      });
       lastSearchedCenterRef.current = lastSearchedCenter;
       map.setCenter(new naver.maps.LatLng(curr.lat, curr.lng));
       map.setZoom(lastSearchedZoom ?? DEFAULT_ZOOM);
@@ -258,7 +276,9 @@ const CourseMap = ({
       throttleTimer = window.setTimeout(() => {
         const center = map.getCenter();
         const zoom = map.getZoom();
-        setCurrentMapViewRef.current({ lat: center.lat(), lng: center.lng() }, zoom);
+        const centerObj = { lat: center.lat(), lng: center.lng() };
+        console.log('⏸️ [IDLE] Saving current view:', centerObj, 'zoom:', zoom);
+        setCurrentMapViewRef.current(centerObj, zoom);
         throttleTimer = null;
       }, 1000);
     };
