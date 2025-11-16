@@ -367,9 +367,7 @@ const CourseMap = ({
         {courses.length === 0 && (
           <div className='px-5 pb-5'>
             <div className='bg-w-100 pointer-events-auto flex items-center gap-4 rounded-2xl px-5 py-4.5 shadow-xl'>
-              <div className='bg-muted/60 flex h-12 w-12 items-center justify-center rounded-xl'>
-                course
-              </div>
+              <Icon name='no_course' size={60} />
               <div className='flex flex-col space-y-1'>
                 <div className='text-title-b18'>조건에 맞는 코스가 없어요</div>
                 <div className='text-ter text-contents-r14'>
