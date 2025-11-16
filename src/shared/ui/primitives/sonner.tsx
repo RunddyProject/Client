@@ -33,7 +33,7 @@ export function Toaster(props: ToasterProps) {
         unstyled: true,
         classNames: {
           toast:
-            'rounded-full bg-g-80 text-white shadow-runddy px-5 py-4 flex items-center gap-2.5',
+            'rounded-full bg-g-80 text-w-100 shadow-runddy px-5 py-4 flex items-center gap-2.5',
           title: 'text-contents-m15'
         }
       }}

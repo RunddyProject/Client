@@ -6,6 +6,7 @@ import Course from '@/pages/course/index';
 import CourseInfo from '@/pages/course/info';
 import CourseInfoLayout from '@/pages/course/info-layout';
 import CourseInfoMap from '@/pages/course/info-map';
+import Error from '@/pages/error';
 import Login from '@/pages/login/index';
 import LoginSuccess from '@/pages/login/success';
 import MeDelete from '@/pages/me/delete';
@@ -27,7 +28,7 @@ export const router = createBrowserRouter([
     path: '/',
     element: <App />,
     handle: { header: { showMenu: true } satisfies HeaderMeta },
-    errorElement: <NotFound />,
+    errorElement: <Error />,
     children: [
       { index: true, element: <Course /> },
       {
@@ -97,6 +98,10 @@ export const router = createBrowserRouter([
               </ProtectedRoute>
             ),
             handle: { header: { title: '회원탈퇴', rightButton: null } }
+          },
+          {
+            path: '*',
+            element: <NotFound />
           }
         ]
       }
