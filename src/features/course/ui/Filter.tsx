@@ -179,10 +179,10 @@ const CourseFilter = ({ className }: { className?: string }) => {
           : undefined,
       gradeList: draft.grade.length > 0 ? draft.grade.map(Number) : undefined,
       minDist: !deepEqual(draft.distanceRange, DEFAULTS.distanceRange)
-        ? draft.distanceRange[0]
+        ? draft.distanceRange[0] * 1000
         : undefined,
       maxDist: !deepEqual(draft.distanceRange, DEFAULTS.distanceRange)
-        ? draft.distanceRange[1]
+        ? draft.distanceRange[1] * 1000
         : undefined,
       minEle: !deepEqual(draft.elevationRange, DEFAULTS.elevationRange)
         ? draft.elevationRange[0] * 1000
