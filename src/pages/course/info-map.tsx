@@ -48,6 +48,7 @@ function CourseInfoMap() {
   return (
     <div className='relative h-[100dvh]'>
       <NaverMap
+        key={`course-info-map-${course.uuid}`}
         center={{ lat: course.lat, lng: course.lng }}
         points={course.coursePointList}
         bounds={{

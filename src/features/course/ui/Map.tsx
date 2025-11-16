@@ -36,13 +36,53 @@ const CourseMap = ({
 }) => {
   const mapRef = useRef<naver.maps.Map | null>(null);
 
-  const {
-    lastSearchedCenter,
-    lastSearchedRadius,
-    lastSearchedZoom,
-    keywordCenter,
-    setLastSearchedArea
-  } = useLocationStore();
+  const lastSearchedCenter = useLocationStore(
+    (state) => state.lastSearchedCenter
+  );
+  const lastSearchedRadius = useLocationStore(
+    (state) => state.lastSearchedRadius
+  );
+  const lastSearchedZoom = useLocationStore((state) => state.lastSearchedZoom);
+  const keywordCenter = useLocationStore((state) => state.keywordCenter);
+
+  const setLastSearchedAreaRef = useRef(
+    useLocationStore.getState().setLastSearchedArea
+  );
+  const setCurrentMapViewRef = useRef(
+    useLocationStore.getState().setCurrentMapView
+  );
+
+  useEffect(() => {
+    setLastSearchedAreaRef.current =
+      useLocationStore.getState().setLastSearchedArea;
+    setCurrentMapViewRef.current =
+      useLocationStore.getState().setCurrentMapView;
+  });
+
+  const [activeCourseId, setActiveCourseId] = useState<string | null>(() => {
+    return useLocationStore.getState().activeCourseId;
+  });
+
+  const activeCourseIdRef = useRef(activeCourseId);
+  useEffect(() => {
+    activeCourseIdRef.current = activeCourseId;
+  }, [activeCourseId]);
+
+  useEffect(() => {
+    return () => {
+      const activeId = activeCourseIdRef.current;
+      useLocationStore.getState().setActiveCourseId(activeId);
+
+      const map = mapRef.current;
+      if (map) {
+        const center = map.getCenter() as naver.maps.LatLng;
+        const zoom = map.getZoom();
+        const centerObj = { lat: center.lat(), lng: center.lng() };
+        useLocationStore.getState().setCurrentMapView(centerObj, zoom);
+      }
+    };
+  }, []);
+
   const { getCurrentLocation, isLoading: isLocationLoading } = useGeolocation();
 
   const { viewport, movedByUser, resetMovedByUser } = useMapViewport(
@@ -54,10 +94,7 @@ const CourseMap = ({
     radius: lastSearchedRadius
   });
 
-  const [activeCourseId, setActiveCourseId] = useState<string>(
-    courses[0]?.uuid ?? ''
-  );
-  const { coursePointList } = useCoursePoint(activeCourseId);
+  const { coursePointList } = useCoursePoint(activeCourseId ?? '');
 
   const activeCourse =
     courses.find((c) => c.uuid === activeCourseId) ?? courses[0];
@@ -71,6 +108,8 @@ const CourseMap = ({
     'uuid'
   );
 
+  const isProgrammaticScrollRef = useRef(false);
+
   const hasCenterChanged =
     Math.abs(viewport.center.lat - lastSearchedCenter.lat) > 0.0001 ||
     Math.abs(viewport.center.lng - lastSearchedCenter.lng) > 0.0001;
@@ -81,7 +120,7 @@ const CourseMap = ({
     const zoom = mapRef.current?.getZoom?.() || DEFAULT_ZOOM;
     const center = keywordCenter ?? viewport.center;
 
-    setLastSearchedArea(center, viewport.radius, zoom);
+    setLastSearchedAreaRef.current(center, viewport.radius, zoom);
     resetMovedByUser();
 
     if (mapRef.current) {
@@ -93,51 +132,128 @@ const CourseMap = ({
     const zoom = mapRef.current?.getZoom?.() || DEFAULT_ZOOM;
     const center = await getCurrentLocation();
 
-    setLastSearchedArea(center, viewport.radius, zoom);
+    setLastSearchedAreaRef.current(center, viewport.radius, zoom);
 
     if (mapRef.current) {
       mapRef.current.setCenter(new naver.maps.LatLng(center.lat, center.lng));
     }
   };
 
-  const handleActiveCourseId = useCallback(
-    (uuid: Course['uuid']) => {
-      setActiveCourseId(uuid);
-      requestAnimationFrame(() => scrollToCenter(uuid));
-    },
-    [scrollToCenter]
-  );
-
   const handleMarkerClick = (uuid: Course['uuid']) => {
-    handleActiveCourseId(uuid);
+    setActiveCourseId(uuid);
+    isProgrammaticScrollRef.current = true;
+    requestAnimationFrame(() => {
+      scrollToCenter(uuid);
+      setTimeout(() => {
+        isProgrammaticScrollRef.current = false;
+      }, 500);
+    });
   };
+
+  const handleScrollChange = useCallback((uuid: Course['uuid']) => {
+    if (isProgrammaticScrollRef.current) {
+      return;
+    }
+    setActiveCourseId(uuid);
+  }, []);
 
   useCenteredActiveByScroll({
     container: scrollerRef as RefObject<HTMLElement>,
     itemAttr: 'uuid',
-    onChange: handleActiveCourseId
+    onChange: handleScrollChange
   });
 
   useEffect(() => {
-    if (courses.length === 0) {
-      setActiveCourseId('');
-    } else if (
-      !activeCourseId ||
-      !courses.find((c) => c.uuid === activeCourseId)
-    ) {
-      handleActiveCourseId(courses[0].uuid);
+    if (courses.length === 0) return;
+
+    if (activeCourseId && courses.find((c) => c.uuid === activeCourseId)) {
+      if (!hasScrolledToActiveRef.current) {
+        hasScrolledToActiveRef.current = true;
+        isProgrammaticScrollRef.current = true;
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            scrollToCenter(activeCourseId);
+            setTimeout(() => {
+              isProgrammaticScrollRef.current = false;
+            }, 500);
+          });
+        });
+      }
+      return;
     }
-  }, [courses, activeCourseId, handleActiveCourseId]);
+
+    if (!activeCourseId || !courses.find((c) => c.uuid === activeCourseId)) {
+      setActiveCourseId(courses[0].uuid);
+    }
+  }, [courses, activeCourseId, scrollToCenter]);
+
+  const hasRestoredRef = useRef(false);
+  const hasScrolledToActiveRef = useRef(false);
+
+  const [initialCenter, setInitialCenter] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(() => {
+    const savedCenter = useLocationStore.getState().currentMapCenter;
+    return savedCenter ?? lastSearchedCenter;
+  });
+
+  const [initialZoom, setInitialZoom] = useState<number | undefined>(() => {
+    const savedZoom = useLocationStore.getState().currentMapZoom;
+    return savedZoom ?? lastSearchedZoom ?? DEFAULT_ZOOM;
+  });
+
+  const handleMapInit = useCallback((map: naver.maps.Map) => {
+    mapRef.current = map;
+
+    if (!hasRestoredRef.current) {
+      hasRestoredRef.current = true;
+
+      requestAnimationFrame(() => {
+        setInitialCenter(null);
+        setInitialZoom(undefined);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    if (!hasRestoredRef.current) return;
+    if (!keywordCenter) return;
+
+    map.setCenter(new naver.maps.LatLng(keywordCenter.lat, keywordCenter.lng));
+    map.setZoom(lastSearchedZoom ?? DEFAULT_ZOOM);
+
+    const zoom = map.getZoom();
+    setLastSearchedAreaRef.current(keywordCenter, viewport.radius, zoom);
+  }, [keywordCenter, lastSearchedZoom, viewport.radius]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
-    map.setCenter(
-      new naver.maps.LatLng(lastSearchedCenter.lat, lastSearchedCenter.lng)
-    );
-    map.setZoom(lastSearchedZoom ?? DEFAULT_ZOOM);
-  }, [lastSearchedCenter, lastSearchedZoom]);
+    let throttleTimer: number | null = null;
+
+    const handleIdle = () => {
+      if (throttleTimer) return;
+
+      throttleTimer = window.setTimeout(() => {
+        const center = map.getCenter() as naver.maps.LatLng;
+        const zoom = map.getZoom();
+        const centerObj = { lat: center.lat(), lng: center.lng() };
+        setCurrentMapViewRef.current(centerObj, zoom);
+        throttleTimer = null;
+      }, 1000);
+    };
+
+    const listener = naver.maps.Event.addListener(map, 'idle', handleIdle);
+
+    return () => {
+      naver.maps.Event.removeListener(listener);
+      if (throttleTimer) clearTimeout(throttleTimer);
+    };
+  }, []);
 
   return (
     <div className='relative h-[100dvh]'>
@@ -145,6 +261,8 @@ const CourseMap = ({
         key='runddy-naver-map'
         className='absolute inset-0'
         glassTopOverlay
+        center={initialCenter ?? undefined}
+        zoom={initialZoom}
         points={coursePointList}
         color={activeColor}
         markers={courses.flatMap((c) => {
@@ -168,7 +286,8 @@ const CourseMap = ({
         })}
         focusKey={activeCourseId ?? undefined}
         fitEnabled={false}
-        onInit={(map) => (mapRef.current = map)}
+        panEnabled={false}
+        onInit={handleMapInit}
         onMarkerClick={handleMarkerClick}
       />
 

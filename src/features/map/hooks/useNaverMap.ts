@@ -32,14 +32,6 @@ export function useNaverMap() {
         mapTypeControl: false
       });
       mapInstanceRef.current = map;
-    } else {
-      const map = mapInstanceRef.current!;
-      const currentZoom = map.getZoom();
-      map.setCenter(new naver.maps.LatLng(DEFAULT_CENTER));
-      const onceIdle = naver.maps.Event.once(map, 'idle', () => {
-        if (map.getZoom() !== currentZoom) map.setZoom(currentZoom, true);
-      });
-      return () => naver.maps.Event.removeListener(onceIdle);
     }
 
     return () => {
