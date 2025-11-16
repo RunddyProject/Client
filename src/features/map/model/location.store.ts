@@ -14,7 +14,7 @@ interface Location {
   lng: number;
 }
 interface LocationStore {
-  userLocation: Location;
+  userLocation: Location | null;
   lastSearchedCenter: Location;
   lastSearchedRadius: number;
   lastSearchedZoom: number;
@@ -34,7 +34,7 @@ interface LocationStore {
 export const useLocationStore = create<LocationStore>()(
   persist(
     (set) => ({
-      userLocation: DEFAULT_CENTER,
+      userLocation: null,
       lastSearchedCenter: DEFAULT_CENTER,
       lastSearchedRadius: DEFAULT_RADIUS,
       lastSearchedZoom: DEFAULT_ZOOM,
@@ -42,8 +42,7 @@ export const useLocationStore = create<LocationStore>()(
       currentMapZoom: null,
       activeCourseId: null,
       isLocationLoading: false,
-      setUserLocation: (location) =>
-        set({ userLocation: location || DEFAULT_CENTER }),
+      setUserLocation: (location) => set({ userLocation: location }),
       setLastSearchedArea: (center, radius, zoom) =>
         set({
           lastSearchedCenter: center || DEFAULT_CENTER,
