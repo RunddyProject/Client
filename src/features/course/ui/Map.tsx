@@ -204,36 +204,38 @@ const CourseMap = ({
   const hasRestoredRef = useRef(false);
   const hasScrolledToActiveRef = useRef(false);
 
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    if (hasRestoredRef.current) return; // Already restored
-
-    // Restore saved view on mount (read once from store)
+  // Calculate initial center/zoom for NaverMap (prop-based restoration)
+  const [initialCenter, setInitialCenter] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(() => {
     const savedCenter = useLocationStore.getState().currentMapCenter;
+    console.log('🎯 [INIT] Calculating initial center:', savedCenter ?? lastSearchedCenter);
+    return savedCenter ?? lastSearchedCenter;
+  });
+
+  const [initialZoom, setInitialZoom] = useState<number | undefined>(() => {
     const savedZoom = useLocationStore.getState().currentMapZoom;
+    console.log('🎯 [INIT] Calculating initial zoom:', savedZoom ?? lastSearchedZoom);
+    return savedZoom ?? lastSearchedZoom ?? DEFAULT_ZOOM;
+  });
 
-    console.log('🔄 [MOUNT] Restoring map view:', {
-      savedCenter,
-      savedZoom,
-      lastSearchedCenter,
-      lastSearchedZoom
-    });
+  // Handle map initialization
+  const handleMapInit = useCallback((map: naver.maps.Map) => {
+    mapRef.current = map;
 
-    // Prioritize saved view (user's last position) over last searched area
-    if (savedCenter && savedZoom) {
-      console.log('✅ [MOUNT] Restoring to savedCenter:', savedCenter, 'zoom:', savedZoom);
-      map.setCenter(new naver.maps.LatLng(savedCenter.lat, savedCenter.lng));
-      map.setZoom(savedZoom);
-    } else {
-      // Fallback to last searched area only on first visit (no saved view yet)
-      console.log('⚠️ [MOUNT] No saved view, using lastSearchedCenter (first visit)');
-      map.setCenter(new naver.maps.LatLng(lastSearchedCenter.lat, lastSearchedCenter.lng));
-      map.setZoom(lastSearchedZoom ?? DEFAULT_ZOOM);
+    if (!hasRestoredRef.current) {
+      console.log('✅ [MOUNT] Map initialized with initial center/zoom, switching to uncontrolled mode');
+      hasRestoredRef.current = true;
+
+      // Switch to uncontrolled mode after initial render
+      // NaverMap will ignore null/undefined center/zoom
+      requestAnimationFrame(() => {
+        setInitialCenter(null);
+        setInitialZoom(undefined);
+      });
     }
-
-    hasRestoredRef.current = true;
-  }); // No deps - runs every render until map exists and restoration completes
+  }, []);
 
   // Handle keyword search: move map when user searches by keyword (AFTER restoration)
   useEffect(() => {
@@ -289,6 +291,8 @@ const CourseMap = ({
         key='runddy-naver-map'
         className='absolute inset-0'
         glassTopOverlay
+        center={initialCenter ?? undefined}
+        zoom={initialZoom}
         points={coursePointList}
         color={activeColor}
         markers={courses.flatMap((c) => {
@@ -313,7 +317,7 @@ const CourseMap = ({
         focusKey={activeCourseId ?? undefined}
         fitEnabled={false}
         panEnabled={false}
-        onInit={(map) => (mapRef.current = map)}
+        onInit={handleMapInit}
         onMarkerClick={handleMarkerClick}
       />
 
