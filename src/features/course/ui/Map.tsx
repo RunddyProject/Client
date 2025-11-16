@@ -246,7 +246,10 @@ const CourseMap = ({
   }); // No deps - runs every render until map exists and restoration completes
 
   // Update map when user explicitly searches (lastSearchedCenter changes)
-  const lastSearchedCenterRef = useRef(lastSearchedCenter);
+  // Initialize to the center we'll actually restore to prevent false "changes"
+  const lastSearchedCenterRef = useRef(
+    useLocationStore.getState().currentMapCenter ?? lastSearchedCenter
+  );
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
