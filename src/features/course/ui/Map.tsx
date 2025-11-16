@@ -180,8 +180,12 @@ const CourseMap = ({
   });
 
   useEffect(() => {
-    // Don't change activeCourseId while courses are loading or empty
-    if (courses.length === 0) return;
+    // Clear activeCourseId when no courses (clears markers and polyline)
+    if (courses.length === 0) {
+      console.log('🧹 [CLEAR] No courses, clearing activeCourseId');
+      setActiveCourseId(null);
+      return;
+    }
 
     // If we have a saved activeCourseId and it exists in current courses, keep it
     if (activeCourseId && courses.find((c) => c.uuid === activeCourseId)) {
