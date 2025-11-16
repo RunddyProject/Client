@@ -109,7 +109,8 @@ const CourseMap = ({
   const { coursePointList } = useCoursePoint(shouldFetchPoints ? activeCourseId : '');
 
   // Explicitly clear polyline when no courses (prevent caching issues)
-  const displayPoints = courses.length > 0 && activeCourseId ? coursePointList : [];
+  // IMPORTANT: Check courses.length first to handle initial render correctly
+  const displayPoints = courses.length === 0 ? [] : (activeCourseId ? coursePointList : []);
 
   const activeCourse =
     courses.find((c) => c.uuid === activeCourseId) ?? courses[0];
