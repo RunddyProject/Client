@@ -151,9 +151,12 @@ const CourseMap = ({
   }, [courses, activeCourseId]);
 
   // Restore map view on mount, then update only on explicit search
+  const hasRestoredRef = useRef(false);
+
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
+    if (hasRestoredRef.current) return; // Already restored
 
     // Restore saved view on mount (read once from store)
     const savedCenter = useLocationStore.getState().currentMapCenter;
@@ -164,7 +167,9 @@ const CourseMap = ({
 
     map.setCenter(new naver.maps.LatLng(targetCenter.lat, targetCenter.lng));
     map.setZoom(targetZoom);
-  }, []); // Only on mount
+
+    hasRestoredRef.current = true;
+  }); // No deps - runs every render until map exists and restoration completes
 
   // Update map when user explicitly searches (lastSearchedCenter changes)
   const lastSearchedCenterRef = useRef(lastSearchedCenter);
