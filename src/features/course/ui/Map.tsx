@@ -165,7 +165,10 @@ const CourseMap = ({
   });
 
   useEffect(() => {
-    if (courses.length === 0) return;
+    if (courses.length === 0) {
+      setActiveCourseId(null);
+      return;
+    }
 
     if (activeCourseId && courses.find((c) => c.uuid === activeCourseId)) {
       if (!hasScrolledToActiveRef.current) {
