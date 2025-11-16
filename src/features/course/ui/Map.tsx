@@ -94,7 +94,10 @@ const CourseMap = ({
     radius: lastSearchedRadius
   });
 
-  const { coursePointList } = useCoursePoint(activeCourseId ?? '');
+  const shouldFetchPoints = courses.length > 0 && activeCourseId !== null;
+  const { coursePointList } = useCoursePoint(
+    shouldFetchPoints ? activeCourseId : ''
+  );
 
   const activeCourse =
     courses.find((c) => c.uuid === activeCourseId) ?? courses[0];
