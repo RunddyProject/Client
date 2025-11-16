@@ -67,16 +67,19 @@ const CourseMap = ({
   useEffect(() => {
     return () => {
       // Save both activeCourseId and current map view on unmount
-      useLocationStore.getState().setActiveCourseId(activeCourseIdRef.current);
+      const activeId = activeCourseIdRef.current;
+      console.log('💾 Saving on unmount - activeCourseId:', activeId);
+      useLocationStore.getState().setActiveCourseId(activeId);
 
       const map = mapRef.current;
       if (map) {
         const center = map.getCenter();
         const zoom = map.getZoom();
-        useLocationStore.getState().setCurrentMapView(
-          { lat: center.lat(), lng: center.lng() },
-          zoom
-        );
+        const centerObj = { lat: center.lat(), lng: center.lng() };
+        console.log('💾 Saving on unmount - center:', centerObj, 'zoom:', zoom);
+        useLocationStore.getState().setCurrentMapView(centerObj, zoom);
+      } else {
+        console.log('⚠️ No map to save on unmount');
       }
     };
   }, []);
@@ -155,13 +158,21 @@ const CourseMap = ({
     // Don't change activeCourseId while courses are loading or empty
     if (courses.length === 0) return;
 
+    console.log('🔍 activeCourseId effect:', {
+      activeCourseId,
+      coursesLength: courses.length,
+      firstCourseId: courses[0]?.uuid
+    });
+
     // If we have a saved activeCourseId and it exists in current courses, keep it
     if (activeCourseId && courses.find((c) => c.uuid === activeCourseId)) {
+      console.log('✅ Keeping activeCourseId:', activeCourseId);
       return; // Keep current selection
     }
 
     // Only set to first course if we don't have a selection or it's invalid
     if (!activeCourseId || !courses.find((c) => c.uuid === activeCourseId)) {
+      console.log('⚠️ Setting activeCourseId to first course:', courses[0].uuid);
       setActiveCourseId(courses[0].uuid);
     }
   }, [courses, activeCourseId]);
@@ -178,12 +189,21 @@ const CourseMap = ({
     const savedCenter = useLocationStore.getState().currentMapCenter;
     const savedZoom = useLocationStore.getState().currentMapZoom;
 
+    console.log('🔄 Restoring map view:', {
+      savedCenter,
+      savedZoom,
+      lastSearchedCenter,
+      lastSearchedZoom
+    });
+
     // Prioritize saved view over last searched area
     if (savedCenter && savedZoom) {
+      console.log('✅ Using saved center:', savedCenter, savedZoom);
       map.setCenter(new naver.maps.LatLng(savedCenter.lat, savedCenter.lng));
       map.setZoom(savedZoom);
     } else {
       // Fallback to last searched area only if no saved view
+      console.log('⚠️ Using lastSearchedCenter (no saved view):', lastSearchedCenter);
       map.setCenter(new naver.maps.LatLng(lastSearchedCenter.lat, lastSearchedCenter.lng));
       map.setZoom(lastSearchedZoom ?? DEFAULT_ZOOM);
     }
