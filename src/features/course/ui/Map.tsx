@@ -109,6 +109,9 @@ const CourseMap = ({
     'uuid'
   );
 
+  // Track if we're programmatically scrolling to prevent onChange conflicts
+  const isProgrammaticScrollRef = useRef(false);
+
   const hasCenterChanged =
     Math.abs(viewport.center.lat - lastSearchedCenter.lat) > 0.0001 ||
     Math.abs(viewport.center.lng - lastSearchedCenter.lng) > 0.0001;
@@ -140,11 +143,23 @@ const CourseMap = ({
 
   const handleMarkerClick = (uuid: Course['uuid']) => {
     setActiveCourseId(uuid);
-    requestAnimationFrame(() => scrollToCenter(uuid));
+    isProgrammaticScrollRef.current = true;
+    requestAnimationFrame(() => {
+      scrollToCenter(uuid);
+      // Reset flag after scroll completes
+      setTimeout(() => {
+        isProgrammaticScrollRef.current = false;
+      }, 500); // Wait for scroll animation to finish
+    });
   };
 
   // Separate handler for scroll events - only updates active state, no scrolling
   const handleScrollChange = useCallback((uuid: Course['uuid']) => {
+    // Ignore scroll changes during programmatic scrolling
+    if (isProgrammaticScrollRef.current) {
+      console.log('⏭️ Ignoring scroll change during programmatic scroll');
+      return;
+    }
     setActiveCourseId(uuid);
   }, []);
 
@@ -168,9 +183,14 @@ const CourseMap = ({
     if (activeCourseId && courses.find((c) => c.uuid === activeCourseId)) {
       console.log('✅ Keeping activeCourseId:', activeCourseId);
       // Scroll to the saved course to sync scroll position with activeCourseId
+      isProgrammaticScrollRef.current = true;
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           scrollToCenter(activeCourseId);
+          // Reset flag after scroll completes
+          setTimeout(() => {
+            isProgrammaticScrollRef.current = false;
+          }, 500);
         });
       });
       return; // Keep current selection
