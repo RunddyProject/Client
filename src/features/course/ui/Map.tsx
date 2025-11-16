@@ -63,10 +63,21 @@ const CourseMap = ({
     activeCourseIdRef.current = activeCourseId;
   }, [activeCourseId]);
 
-  // Save to store only on unmount
+  // Save to store on unmount
   useEffect(() => {
     return () => {
+      // Save both activeCourseId and current map view on unmount
       useLocationStore.getState().setActiveCourseId(activeCourseIdRef.current);
+
+      const map = mapRef.current;
+      if (map) {
+        const center = map.getCenter();
+        const zoom = map.getZoom();
+        useLocationStore.getState().setCurrentMapView(
+          { lat: center.lat(), lng: center.lng() },
+          zoom
+        );
+      }
     };
   }, []);
 
@@ -141,11 +152,16 @@ const CourseMap = ({
   });
 
   useEffect(() => {
-    if (courses.length === 0) {
-      setActiveCourseId(null);
-    } else if (!activeCourseId) {
-      setActiveCourseId(courses[0].uuid);
-    } else if (!courses.find((c) => c.uuid === activeCourseId)) {
+    // Don't change activeCourseId while courses are loading or empty
+    if (courses.length === 0) return;
+
+    // If we have a saved activeCourseId and it exists in current courses, keep it
+    if (activeCourseId && courses.find((c) => c.uuid === activeCourseId)) {
+      return; // Keep current selection
+    }
+
+    // Only set to first course if we don't have a selection or it's invalid
+    if (!activeCourseId || !courses.find((c) => c.uuid === activeCourseId)) {
       setActiveCourseId(courses[0].uuid);
     }
   }, [courses, activeCourseId]);
@@ -162,11 +178,15 @@ const CourseMap = ({
     const savedCenter = useLocationStore.getState().currentMapCenter;
     const savedZoom = useLocationStore.getState().currentMapZoom;
 
-    const targetCenter = savedCenter ?? lastSearchedCenter;
-    const targetZoom = savedZoom ?? lastSearchedZoom ?? DEFAULT_ZOOM;
-
-    map.setCenter(new naver.maps.LatLng(targetCenter.lat, targetCenter.lng));
-    map.setZoom(targetZoom);
+    // Prioritize saved view over last searched area
+    if (savedCenter && savedZoom) {
+      map.setCenter(new naver.maps.LatLng(savedCenter.lat, savedCenter.lng));
+      map.setZoom(savedZoom);
+    } else {
+      // Fallback to last searched area only if no saved view
+      map.setCenter(new naver.maps.LatLng(lastSearchedCenter.lat, lastSearchedCenter.lng));
+      map.setZoom(lastSearchedZoom ?? DEFAULT_ZOOM);
+    }
 
     hasRestoredRef.current = true;
   }); // No deps - runs every render until map exists and restoration completes
@@ -216,11 +236,7 @@ const CourseMap = ({
     return () => {
       naver.maps.Event.removeListener(listener);
       if (throttleTimer) clearTimeout(throttleTimer);
-
-      // Save final position on unmount
-      const center = map.getCenter();
-      const zoom = map.getZoom();
-      setCurrentMapViewRef.current({ lat: center.lat(), lng: center.lng() }, zoom);
+      // Final save is now handled in component unmount effect above
     };
   }, []); // Stable - no deps needed
 
