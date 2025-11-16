@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { useAuth } from '@/app/providers/AuthContext';
@@ -17,7 +17,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-  AlertDialogDescription,
   AlertDialogOverlay
 } from '@/shared/ui/primitives/alert-dialog';
 import {
@@ -33,7 +32,7 @@ type FormValues = { userName: string };
 function MeEdit() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { logout, deleteAccount } = useAuth();
+  const { logout } = useAuth();
 
   const methods = useForm<FormValues>({
     defaultValues: { userName: user?.userName || '' },
@@ -50,7 +49,11 @@ function MeEdit() {
   const userName = watch('userName');
   const isTooLong = (userName?.length ?? 0) > 10;
   const disableSave =
-    isSubmitting || !userName?.trim() || isTooLong || !isValid;
+    user?.userName === userName ||
+    isSubmitting ||
+    !userName?.trim() ||
+    isTooLong ||
+    !isValid;
 
   useEffect(() => {
     if (user?.userName != null) reset({ userName: user.userName });
@@ -147,9 +150,7 @@ function MeEdit() {
           <AlertDialogOverlay />
 
           <AlertDialogTrigger asChild>
-            <Button variant='ghost'>
-              <span className='text-g-50 text-contents-r14'>로그아웃</span>
-            </Button>
+            <span className='text-g-50 text-contents-r14'>로그아웃</span>
           </AlertDialogTrigger>
 
           <AlertDialogContent>
@@ -163,38 +164,9 @@ function MeEdit() {
           </AlertDialogContent>
         </AlertDialog>
         <span className='text-g-50 text-contents-r14'>|</span>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            {/* TODO: navigate to /me/delete */}
-            <Button variant='ghost'>
-              <span className='text-g-50 text-contents-r14'>회원탈퇴</span>
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>정말 계정을 삭제하시겠어요?</AlertDialogTitle>
-              <AlertDialogDescription>
-                계정을 삭제하시면 모든 활동 정보가 삭제돼요
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>닫기</AlertDialogCancel>
-              {/* TODO: update user reasonList! */}
-              <AlertDialogAction
-                onClick={() =>
-                  deleteAccount([
-                    '러닝 코스가 도움이 되지 않아서',
-                    '커뮤니티 기능이 별로여서',
-                    '사용하기 불편해서',
-                    '자주 사용하지 않아서'
-                  ])
-                }
-              >
-                회원탈퇴
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <Link to='/me/delete'>
+          <span className='text-g-50 text-contents-r14'>회원탈퇴</span>
+        </Link>
       </div>
     </div>
   );

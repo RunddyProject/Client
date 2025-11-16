@@ -8,6 +8,7 @@ import CourseInfoLayout from '@/pages/course/info-layout';
 import CourseInfoMap from '@/pages/course/info-map';
 import Login from '@/pages/login/index';
 import LoginSuccess from '@/pages/login/success';
+import MeDelete from '@/pages/me/delete';
 import MeEdit from '@/pages/me/edit';
 import Me from '@/pages/me/index';
 import NotFound from '@/pages/not-found';
@@ -86,7 +87,16 @@ export const router = createBrowserRouter([
                 <MeEdit />
               </ProtectedRoute>
             ),
-            handle: { header: { title: '프로필 수정' } }
+            handle: { header: { title: '프로필 수정', rightButton: null } }
+          },
+          {
+            path: 'delete',
+            element: (
+              <ProtectedRoute>
+                <MeDelete />
+              </ProtectedRoute>
+            ),
+            handle: { header: { title: '회원탈퇴', rightButton: null } }
           }
         ]
       }
