@@ -44,6 +44,25 @@ const CourseInfoCard = ({
     toggle({ courseUuid: course.uuid, isBookmarked: !course.isBookmarked });
   };
 
+  // Sanitize SVG content to prevent XSS attacks
+  const sanitizeSvg = (svg: string): string => {
+    if (!svg) return '';
+    // Only allow basic SVG elements and attributes
+    const allowedTags = ['svg', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'g'];
+    const tagPattern = new RegExp(`<(${allowedTags.join('|')})([^>]*)>`, 'gi');
+    const scriptPattern = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
+    const eventPattern = /\s+on\w+\s*=/gi;
+
+    // Remove script tags and event handlers
+    let cleaned = svg.replace(scriptPattern, '').replace(eventPattern, '');
+
+    // Only keep allowed tags
+    const matches = cleaned.match(tagPattern);
+    if (!matches) return '';
+
+    return cleaned;
+  };
+
   return (
     <div
       className={cn(
@@ -62,7 +81,7 @@ const CourseInfoCard = ({
           />
           <div
             className='absolute inset-0'
-            dangerouslySetInnerHTML={{ __html: course.svg }}
+            dangerouslySetInnerHTML={{ __html: sanitizeSvg(course.svg) }}
           />
         </div>
       ) : (
