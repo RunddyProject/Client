@@ -7,16 +7,19 @@ import { useCourseDetail } from '@/features/course/hooks/useCourseDetail';
 import { buildElevationChartData } from '@/features/course/lib/elevation';
 import {
   GRADE_TO_NAME,
+  SHAPE_TYPE_COLOR,
   SHAPE_TYPE_TO_NAME
 } from '@/features/course/model/constants';
 import { ElevationChart } from '@/features/course/ui/ElevationChart';
 import { Icon } from '@/shared/icons/icon';
+import { runddyColor } from '@/shared/model/constants';
 import Feedback from '@/shared/ui/actions/Feedback';
 import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
 import Tooltip from '@/shared/ui/composites/tooltip';
 import { Button } from '@/shared/ui/primitives/button';
 
 import type { Course } from '@/features/course/model/types';
+import type { RUNDDY_COLOR } from '@/shared/model/types';
 
 const Chip = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -30,6 +33,9 @@ const CourseDetail = () => {
   const { uuid } = useParams<{ uuid: Course['uuid'] }>();
 
   const { courseDetail: course, isLoading } = useCourseDetail(uuid ?? '');
+  const activeColor: RUNDDY_COLOR = course
+    ? SHAPE_TYPE_COLOR[course.shapeType]
+    : 'blue';
 
   const elevationChartData = useMemo(
     () => course && buildElevationChartData(course.coursePointList),
@@ -113,6 +119,7 @@ const CourseDetail = () => {
               minEle={minEle}
               maxEle={maxEle}
               height={192}
+              color={runddyColor[activeColor]}
             />
           </div>
         </div>
@@ -137,7 +144,10 @@ const CourseDetail = () => {
                   className='h-5 justify-start p-0'
                   onClick={() => handleClickCopy('startAddress')}
                 >
-                  <span className='text-runddy-blue text-contents-r14'>
+                  <span
+                    className='text-contents-r14'
+                    style={{ color: runddyColor[activeColor] }}
+                  >
                     복사
                   </span>
                 </Button>
@@ -164,7 +174,10 @@ const CourseDetail = () => {
                   className='h-5 p-0'
                   onClick={() => handleClickCopy('endAddress')}
                 >
-                  <span className='text-runddy-blue text-contents-r14'>
+                  <span
+                    className='text-contents-r14'
+                    style={{ color: runddyColor[activeColor] }}
+                  >
                     복사
                   </span>
                 </Button>

@@ -69,7 +69,7 @@ const CourseInfo = () => {
 
   const activeColor: RUNDDY_COLOR = course
     ? SHAPE_TYPE_COLOR[course.shapeType]
-    : runddyColor['blue'];
+    : 'blue';
 
   const startPoint = course.coursePointList[0];
   const startMarker: MarkerInput = {
@@ -138,7 +138,10 @@ const CourseInfo = () => {
             />
           </Button>
         </div>
-        <div className='text-runddy-blue text-[32px] font-bold'>
+        <div
+          className='text-[32px] font-bold'
+          style={{ color: runddyColor[activeColor] }}
+        >
           {(course.totalDistance / 1000).toFixed(1)}km
         </div>
       </div>
