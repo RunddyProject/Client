@@ -12,9 +12,11 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <HeaderProvider>
-        <Toaster />
-        <Header />
-        <Outlet />
+        <div className='bg-w-100 mx-auto min-h-screen max-w-xl'>
+          <Toaster />
+          <Header />
+          <Outlet />
+        </div>
       </HeaderProvider>
     </AuthProvider>
   </QueryClientProvider>
