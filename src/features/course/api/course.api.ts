@@ -25,6 +25,7 @@ export const CoursesApi = {
       lng,
       radius: params.radius ?? 10,
       grade: params.grade,
+      shapeType: params.shapeType,
       envType: params.envType,
       minDist: params.minDist ? params.minDist * 1000 : undefined,
       maxDist: params.maxDist ? params.maxDist * 1000 : undefined,
