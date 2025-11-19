@@ -305,7 +305,7 @@ const CourseMap = ({
   }, []);
 
   return (
-    <div className='relative h-[100dvh]'>
+    <div className='relative h-[100dvh] overflow-hidden'>
       <NaverMap
         key='runddy-naver-map'
         className='absolute inset-0'
@@ -372,7 +372,7 @@ const CourseMap = ({
         </div>
       )}
 
-      <div className='pointer-events-none absolute top-[calc(env(safe-area-inset-top)+52px)] right-0 bottom-0 left-0 z-10 grid grid-rows-[auto_1fr_auto]'>
+      <div className='pointer-events-none absolute inset-x-0 top-[calc(env(safe-area-inset-top)+52px)] bottom-[env(safe-area-inset-bottom)] z-10 grid grid-rows-[auto_auto_1fr_auto]'>
         {/* Search */}
         <div className='pointer-events-auto px-5 pt-[calc(env(safe-area-inset-top)+12px)]'>
           <Search className='shadow-runddy' />
@@ -383,8 +383,11 @@ const CourseMap = ({
           <CourseFilter className='bg-w-100 shadow-runddy' />
         </div>
 
+        {/* Spacer for middle content */}
+        <div />
+
         {/* Bottom Controls */}
-        <div className='space-y-2 px-5 pb-[calc(env(safe-area-inset-bottom)+20px)]'>
+        <div className='space-y-2 px-5 pb-5'>
           <div className='flex items-end justify-between'>
             <div className='flex flex-col gap-2'>
               {/* <Button
