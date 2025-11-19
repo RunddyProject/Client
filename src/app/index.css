@@ -51,8 +51,8 @@
 
 [data-sonner-toast] {
   pointer-events: auto !important;
-  max-width: min(92vw, 560px) !important;
-  width: fit-content !important;
+  /* max-width: min(92vw, 560px) !important; */
+  /* width: fit-content !important; */
   white-space: normal !important;
   word-break: keep-all !important;
   overflow-wrap: break-word !important;
