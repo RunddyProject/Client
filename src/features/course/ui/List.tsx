@@ -18,39 +18,37 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
   });
 
   return (
-    <div className='bg-background flex min-h-screen flex-col px-5 pt-[calc(env(safe-area-inset-top)+52px)]'>
+    <div className='bg-background flex h-[100dvh] flex-col px-5 pt-[calc(env(safe-area-inset-top)+52px)]'>
       {/* Search bar */}
       <div className='pointer-events-auto pt-[calc(env(safe-area-inset-top)+12px)]'>
         <Search className='bg-g-10' />
       </div>
 
-      <div className='no-scrollbar mt-3 overflow-y-auto'>
-        {/* Filter */}
-        <div className='overflow-x-auto'>
-          <CourseFilter />
-        </div>
+      {/* Filter */}
+      <div className='no-scrollbar mt-3 overflow-x-auto'>
+        <CourseFilter />
+      </div>
 
-        {/* Course List */}
-        <div>
-          {courses.length > 0 ? (
-            courses.map((course) => (
-              <CourseInfoCard
-                key={course.uuid}
-                course={course}
-                className='border-b-g-20 border-b py-5.5 last:border-0'
-              />
-            ))
-          ) : (
-            <div className='flex flex-col items-center space-y-4 pt-[150px]'>
-              <Icon name='empty_graphic' size={100} />
-              <div className='text-placeholder'>조건에 맞는 코스가 없어요</div>
-            </div>
-          )}
-        </div>
+      {/* Course List */}
+      <div className='no-scrollbar flex-1 overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+80px)]'>
+        {courses.length > 0 ? (
+          courses.map((course) => (
+            <CourseInfoCard
+              key={course.uuid}
+              course={course}
+              className='border-b-g-20 border-b py-5.5 last:border-0'
+            />
+          ))
+        ) : (
+          <div className='flex flex-col items-center space-y-4 pt-[150px]'>
+            <Icon name='empty_graphic' size={100} />
+            <div className='text-placeholder'>조건에 맞는 코스가 없어요</div>
+          </div>
+        )}
       </div>
 
       {/* Bottom Button */}
-      <div className='fixed bottom-5 left-1/2 z-50 -translate-x-1/2 transform'>
+      <div className='fixed bottom-[calc(env(safe-area-inset-bottom)+20px)] left-1/2 z-50 -translate-x-1/2 transform'>
         <Button
           className='shadow-runddy gap-1 rounded-full px-3 py-[9px]'
           onClick={() => onViewModeChange('map')}
