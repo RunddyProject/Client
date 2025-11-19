@@ -87,7 +87,7 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
             onClick={handleClick}
           >
             <span className='text-ter text-contents-m15 pl-1'>
-              첫 코스톡 남기기
+              첫 리뷰 남기기
             </span>
             <Icon name='chevron_right' size={16} className='pr-1' />
           </div>

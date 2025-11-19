@@ -66,7 +66,7 @@ function Me() {
         <TabsContent value='bookmarked' className='px-5'>
           {bookmarkList.length === 0 ? (
             <div className='flex flex-col items-center space-y-4 pt-30'>
-              <Icon name='empty_graphic' size={120} />
+              <Icon name='empty_graphic' size={100} />
               <div className='text-placeholder'>저장된 런디코스가 없어요</div>
             </div>
           ) : (
@@ -85,8 +85,8 @@ function Me() {
         <TabsContent value='review' className='px-5'>
           {courseList.length === 0 ? (
             <div className='flex flex-col items-center space-y-4 pt-30'>
-              <Icon name='empty_graphic' size={120} />
-              <div className='text-placeholder'>작성한 리뷰가 없어요</div>
+              <Icon name='empty_graphic' size={100} />
+              <div className='text-placeholder'>리뷰를 남긴 코스가 없어요</div>
             </div>
           ) : (
             courseList.map((course: Course) => {

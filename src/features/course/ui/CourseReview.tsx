@@ -116,11 +116,11 @@ const CourseReview = () => {
           </div>
         </div>
       ) : (
-        <div className='flex flex-col items-center space-y-4 py-28'>
-          <Icon name='empty_graphic' size={140} />
+        <div className='flex flex-col items-center space-y-4 py-16'>
+          <Icon name='empty_graphic' size={80} />
           <div className='flex flex-col items-center space-y-5 text-center'>
             <div className='text-placeholder text-contents-m16'>
-              지금까지 나눈 코스톡이 없어요
+              아직 리뷰가 없어요
             </div>
             <ReviewWrite triggerMode='firstReview' />
           </div>

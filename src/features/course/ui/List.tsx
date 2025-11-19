@@ -32,13 +32,20 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
 
         {/* Course List */}
         <div>
-          {courses.map((course) => (
-            <CourseInfoCard
-              key={course.uuid}
-              course={course}
-              className='border-b-g-20 border-b py-5.5 last:border-0'
-            />
-          ))}
+          {courses.length > 0 ? (
+            courses.map((course) => (
+              <CourseInfoCard
+                key={course.uuid}
+                course={course}
+                className='border-b-g-20 border-b py-5.5 last:border-0'
+              />
+            ))
+          ) : (
+            <div className='flex flex-col items-center space-y-4 pt-[150px]'>
+              <Icon name='empty_graphic' size={100} />
+              <div className='text-placeholder'>조건에 맞는 코스가 없어요</div>
+            </div>
+          )}
         </div>
       </div>
 
