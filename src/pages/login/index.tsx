@@ -1,25 +1,28 @@
 import { useAuth } from '@/app/providers/AuthContext';
-import basicProfileUrl from '@/shared/assets/basic_profile.png';
+import onboarding01ImageUrl from '@/shared/assets/onboarding01.png';
+import onboarding02ImageUrl from '@/shared/assets/onboarding02.png';
 import { Icon } from '@/shared/icons/icon';
 import { IndicatorCarousel } from '@/shared/ui/composites/indicator-carousel';
 import { Button } from '@/shared/ui/primitives/button';
 
 const Login = () => {
   const { login } = useAuth();
-  // TODO: update graphic
-  const slides = [<img src={basicProfileUrl} />, <img src={basicProfileUrl} />];
+  const slides = [
+    <img src={onboarding01ImageUrl} width={220} height={220} />,
+    <img src={onboarding02ImageUrl} width={220} height={220} />
+  ];
 
   return (
     <div className='flex min-h-screen flex-col items-center'>
       <div className='bg-g-10 text-g-60 text-caption-m12 mt-[58px] w-fit rounded-md px-2 py-1'>
-        러닝코스
+        충분한 정보 탐색
       </div>
-      <div className='text-g-90 text-title-b21 mt-4 text-center'>
-        진짜 러너들을 위한
+      <div className='text-g-90 text-title-b21 mt-4 mb-12 text-center'>
+        상세한 코스 정보와 러너들의 리뷰를
         <br />
-        러닝 코스를 제공해요
+        간편하게 확인할 수 있어요
       </div>
-      <div className='mt-12'>
+      <div>
         <IndicatorCarousel slides={slides} />
       </div>
       <div className='fixed bottom-0 w-full space-y-3 p-5'>
