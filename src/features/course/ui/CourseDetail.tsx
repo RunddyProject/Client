@@ -52,15 +52,20 @@ const CourseDetail = () => {
     return null;
   }
 
-  const handleClickCopy = (text: 'startAddress' | 'endAddress') => {
+  const handleClickCopy = async (text: 'startAddress' | 'endAddress') => {
     setIsCopying({ ...isCopying, [text]: true });
 
-    navigator.clipboard.writeText(course[text]);
-    toast('주소가 복사되었어요');
-
-    setTimeout(() => {
-      setIsCopying({ ...isCopying, [text]: false });
-    }, 1000);
+    try {
+      await navigator.clipboard.writeText(course[text]);
+      toast('주소가 복사되었어요');
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
+      toast.error('주소 복사에 실패했어요');
+    } finally {
+      setTimeout(() => {
+        setIsCopying({ ...isCopying, [text]: false });
+      }, 1000);
+    }
   };
 
   const handleDownloadGPX = () => {

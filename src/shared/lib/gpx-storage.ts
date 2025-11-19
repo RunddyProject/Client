@@ -1,3 +1,5 @@
+import type GpxParser from 'gpxparser';
+
 export interface SavedGPX {
   id: string;
   name: string;
@@ -9,7 +11,7 @@ export interface SavedGPX {
   maxElevation: number;
   minElevation: number;
   grade: 1 | 2 | 3 | 4 | 5;
-  gpxData: any; // The parsed GPX data
+  gpxData: GpxParser; // The parsed GPX data
   miniMapSvg?: string; // SVG representation of the route
 }
 

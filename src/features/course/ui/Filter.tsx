@@ -11,6 +11,7 @@ import {
   SHAPE_NAME_TO_TYPE,
   GRADE_TO_NAME
 } from '@/features/course/model/constants';
+import { useLocationStore } from '@/features/map/model/location.store';
 import { Icon } from '@/shared/icons/icon';
 import { buildQuery } from '@/shared/lib/query';
 import { cn, deepEqual } from '@/shared/lib/utils';
@@ -125,6 +126,7 @@ const CourseFilter = ({ className }: { className?: string }) => {
   const [open, setOpen] = useState(false);
   const [params] = useSearchParams();
   const navigate = useNavigate();
+  const { lastSearchedCenter, lastSearchedRadius } = useLocationStore();
 
   const applied: FilterState = useMemo(
     () => ({
@@ -194,7 +196,10 @@ const CourseFilter = ({ className }: { className?: string }) => {
     [draft]
   );
 
-  const { courses } = useCourses();
+  const { courses } = useCourses({
+    userLocation: lastSearchedCenter,
+    radius: lastSearchedRadius
+  });
   const { count } = useCourseCount(payload);
 
   const isFilterChanged = !deepEqual(draft, applied);

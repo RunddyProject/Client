@@ -17,13 +17,13 @@ type Props = {
 };
 
 function Icon({ name, size = 24, color, secondary, className, title }: Props) {
-  const SvgAny: any = icons[name];
-  if (!SvgAny) return null;
+  const SvgComponent = icons[name];
+  if (!SvgComponent) return null;
 
-  if (typeof SvgAny === 'string') {
+  if (typeof SvgComponent === 'string') {
     return (
       <img
-        src={SvgAny}
+        src={SvgComponent}
         width={+size}
         height={+size}
         className={className}
@@ -32,7 +32,9 @@ function Icon({ name, size = 24, color, secondary, className, title }: Props) {
     );
   }
 
-  const Svg = SvgAny as React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  const Svg = SvgComponent as React.ComponentType<
+    React.SVGProps<SVGSVGElement>
+  >;
   if (!Svg) return null;
 
   const style: React.CSSProperties & IconVars = {};

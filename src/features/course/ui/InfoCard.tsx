@@ -44,6 +44,31 @@ const CourseInfoCard = ({
     toggle({ courseUuid: course.uuid, isBookmarked: !course.isBookmarked });
   };
 
+  const sanitizeSvg = (svg: string): string => {
+    if (!svg) return '';
+
+    const allowedTags = [
+      'svg',
+      'path',
+      'circle',
+      'rect',
+      'line',
+      'polyline',
+      'polygon',
+      'g'
+    ];
+    const tagPattern = new RegExp(`<(${allowedTags.join('|')})([^>]*)>`, 'gi');
+    const scriptPattern = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
+    const eventPattern = /\s+on\w+\s*=/gi;
+
+    const cleaned = svg.replace(scriptPattern, '').replace(eventPattern, '');
+
+    const matches = cleaned.match(tagPattern);
+    if (!matches) return '';
+
+    return cleaned;
+  };
+
   return (
     <div
       className={cn(
@@ -62,7 +87,7 @@ const CourseInfoCard = ({
           />
           <div
             className='absolute inset-0'
-            dangerouslySetInnerHTML={{ __html: course.svg }}
+            dangerouslySetInnerHTML={{ __html: sanitizeSvg(course.svg) }}
           />
         </div>
       ) : (

@@ -66,10 +66,10 @@ export function useMarkers(
               ? 'active_start'
               : 'pin_default';
 
-      const iconVars = {
+      const iconVars: Record<string, string | undefined> = {
         '--icon-primary': isActiveStart || isActiveEnd ? focusHex : undefined
         // '--icon-secondary': '#fff'
-      } as any;
+      };
 
       const iconKey = `${iconName}|${size}|${iconVars['--icon-primary'] ?? ''}`;
 

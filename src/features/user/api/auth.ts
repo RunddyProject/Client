@@ -1,6 +1,7 @@
 import { api } from '@/shared/lib/http';
+import { decodeJwt, isJwtExpired, type JwtPayload } from '@/shared/lib/jwt';
 
-export interface UserToken {
+export interface UserToken extends JwtPayload {
   iss: string;
   sub: string;
   roles: string[];
@@ -69,7 +70,11 @@ export class AuthService {
   // Get access token from server
   async getAccessToken(): Promise<string | null> {
     try {
-      const res = await api.post('/auth/access-token', undefined);
+      const res = await api.post<{
+        accessToken?: string;
+        token?: string;
+        data?: { accessToken?: string };
+      }>('/auth/access-token', undefined);
       const token = res?.accessToken || res?.token || res?.data?.accessToken;
       if (!token) throw new Error('No accessToken found in response');
 
@@ -88,27 +93,22 @@ export class AuthService {
 
   // Decode JWT
   private decodeToken(token: string): User | null {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1])) as UserToken;
-      const [provider, id] = payload.sub.split(':');
-      return { id, provider, roles: payload.roles };
-    } catch (error) {
-      console.error('[Auth] Failed to decode token:', error);
+    const payload = decodeJwt<UserToken>(token);
+    if (!payload || !payload.sub) {
       return null;
     }
+
+    const [provider, id] = payload.sub.split(':');
+    if (!provider || !id) {
+      return null;
+    }
+
+    return { id, provider, roles: payload.roles };
   }
 
   // Check if token is expired
   private isTokenExpired(token: string): boolean {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1])) as UserToken;
-      const currentTime = Math.floor(Date.now() / 1000);
-      // Add 10 second buffer to prevent edge cases
-      return payload.exp <= currentTime + 10;
-    } catch (error) {
-      console.error('[Auth] Failed to check token expiration:', error);
-      return true;
-    }
+    return isJwtExpired(token, 10);
   }
 
   // Public getters
@@ -155,7 +155,10 @@ export class AuthService {
     if (!token || !local) return null;
 
     try {
-      const res = await api.get('/users', {
+      const res = await api.get<{
+        userName?: string;
+        profileUrl?: string;
+      }>('/users', {
         headers: { Authorization: `Bearer ${token}` }
       });
       return {

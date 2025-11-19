@@ -104,7 +104,7 @@ const CourseMap = ({
     courses.length === 0 ? [] : activeCourseId ? coursePointList : [];
 
   const activeCourse =
-    courses.find((c) => c.uuid === activeCourseId) ?? courses[0];
+    courses.find((c) => c.uuid === activeCourseId) ?? courses[0] ?? null;
   const activeColor: RUNDDY_COLOR = activeCourse
     ? SHAPE_TYPE_COLOR[activeCourse.shapeType]
     : runddyColor['blue'];
@@ -322,7 +322,10 @@ const CourseMap = ({
               lng: c.lng,
               kind: 'start'
             };
-            const endPoint = coursePointList[coursePointList.length - 1];
+            const endPoint =
+              coursePointList.length > 0
+                ? coursePointList[coursePointList.length - 1]
+                : null;
             if (c.uuid === activeCourseId && endPoint?.lat && endPoint?.lng) {
               const end: MarkerInput = {
                 id: `${c.uuid}__end`,

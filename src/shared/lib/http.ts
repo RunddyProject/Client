@@ -23,7 +23,7 @@ export class ApiError extends Error {
 }
 
 // Fetch wrapper that automatically adds JWT token to headers
-export async function apiRequest<T = any>(
+export async function apiRequest<T = unknown>(
   endpoint: string,
   options: ApiRequestOptions = {}
 ): Promise<T> {
@@ -82,31 +82,49 @@ export async function apiRequest<T = any>(
   if (!raw) {
     return null as T;
   }
-  return JSON.parse(raw) as T;
+
+  try {
+    return JSON.parse(raw) as T;
+  } catch (error) {
+    console.error('Failed to parse JSON response:', error);
+    throw new ApiError(
+      500,
+      'Invalid JSON Response',
+      `Failed to parse response: ${raw.substring(0, 100)}`
+    );
+  }
 }
 
 // Convenience methods
 export const api = {
-  get: <T = any>(endpoint: string, options?: ApiRequestOptions) =>
+  get: <T = unknown>(endpoint: string, options?: ApiRequestOptions) =>
     apiRequest<T>(endpoint, { ...options, method: 'GET' }),
 
-  post: <T = any>(endpoint: string, data?: any, options?: ApiRequestOptions) =>
+  post: <T = unknown>(
+    endpoint: string,
+    data?: unknown,
+    options?: ApiRequestOptions
+  ) =>
     apiRequest<T>(endpoint, {
       ...options,
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined
     }),
 
-  put: <T = any>(endpoint: string, data?: any, options?: ApiRequestOptions) =>
+  put: <T = unknown>(
+    endpoint: string,
+    data?: unknown,
+    options?: ApiRequestOptions
+  ) =>
     apiRequest<T>(endpoint, {
       ...options,
       method: 'PUT',
       body: data ? JSON.stringify(data) : undefined
     }),
 
-  delete: <T = any>(
+  delete: <T = unknown>(
     endpoint: string,
-    data?: any,
+    data?: unknown,
     options?: ApiRequestOptions
   ) =>
     apiRequest<T>(endpoint, {
@@ -115,7 +133,11 @@ export const api = {
       body: data ? JSON.stringify(data) : undefined
     }),
 
-  patch: <T = any>(endpoint: string, data?: any, options?: ApiRequestOptions) =>
+  patch: <T = unknown>(
+    endpoint: string,
+    data?: unknown,
+    options?: ApiRequestOptions
+  ) =>
     apiRequest<T>(endpoint, {
       ...options,
       method: 'PATCH',
