@@ -383,8 +383,54 @@ const CourseMap = ({
           <CourseFilter className='bg-w-100 shadow-runddy' />
         </div>
 
-        {/* Middle flex area - Course Cards at bottom */}
-        <div className='flex flex-col justify-end'>
+        {/* Middle flexible area - empty space */}
+        <div />
+
+        {/* Bottom area - Controls and Course Cards */}
+        <div className='flex flex-col'>
+          {/* Bottom Controls - buttons */}
+          <div className='space-y-2 px-5 pb-5'>
+            <div className='flex items-end justify-between'>
+              <div className='flex flex-col gap-2'>
+                {/* <Button
+                  size='icon'
+                  variant='secondary'
+                  className='rounded-full w-9.5 h-9.5 shadow-runddy bg-w-100'
+                  onClick={handleWeather}
+                >
+                  <Icon name='weather' size={24} />
+                </Button> */}
+                <Button
+                  size='icon'
+                  variant='secondary'
+                  disabled={isLocationLoading}
+                  className='shadow-runddy bg-w-100 pointer-events-auto h-9.5 w-9.5 rounded-full'
+                  onClick={handleSearchByCurrentLocation}
+                >
+                  <Icon
+                    name='my_location'
+                    size={24}
+                    color='currentColor'
+                    className='text-g-60'
+                  />
+                </Button>
+              </div>
+
+              <Button
+                className='shadow-runddy bg-w-100 pointer-events-auto gap-1 rounded-full px-3'
+                onClick={() => onViewModeChange('list')}
+              >
+                <Icon
+                  name='list'
+                  size={20}
+                  color='currentColor'
+                  className='text-g-60'
+                />
+                <span className='text-sec text-contents-r-14'>목록 보기</span>
+              </Button>
+            </div>
+          </div>
+
           {/* Course Cards */}
         {courses.length === 0 && (
           <div className='px-5 pb-5'>
@@ -433,49 +479,6 @@ const CourseMap = ({
             ))}
           </div>
         )}
-        </div>
-
-        {/* Bottom Controls */}
-        <div className='space-y-2 px-5 pb-5'>
-          <div className='flex items-end justify-between'>
-            <div className='flex flex-col gap-2'>
-              {/* <Button
-                size='icon'
-                variant='secondary'
-                className='rounded-full w-9.5 h-9.5 shadow-runddy bg-w-100'
-                onClick={handleWeather}
-              >
-                <Icon name='weather' size={24} />
-              </Button> */}
-              <Button
-                size='icon'
-                variant='secondary'
-                disabled={isLocationLoading}
-                className='shadow-runddy bg-w-100 pointer-events-auto h-9.5 w-9.5 rounded-full'
-                onClick={handleSearchByCurrentLocation}
-              >
-                <Icon
-                  name='my_location'
-                  size={24}
-                  color='currentColor'
-                  className='text-g-60'
-                />
-              </Button>
-            </div>
-
-            <Button
-              className='shadow-runddy bg-w-100 pointer-events-auto gap-1 rounded-full px-3'
-              onClick={() => onViewModeChange('list')}
-            >
-              <Icon
-                name='list'
-                size={20}
-                color='currentColor'
-                className='text-g-60'
-              />
-              <span className='text-sec text-contents-r-14'>목록 보기</span>
-            </Button>
-          </div>
         </div>
       </div>
     </div>
