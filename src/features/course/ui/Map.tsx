@@ -365,7 +365,7 @@ const CourseMap = ({
             <Icon
               name='refresh'
               size={20}
-              color='var(--g-20)'
+              color={!isFetching ? 'var(--g-20)' : 'var(--text-placeholder)'}
               secondary='var(--g-90)'
             />
             현재 위치에서 검색
