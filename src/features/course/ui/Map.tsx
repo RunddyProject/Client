@@ -375,7 +375,7 @@ const CourseMap = ({
 
       <div className='pointer-events-none absolute inset-x-0 top-[calc(env(safe-area-inset-top)+52px)] right-0 bottom-[env(safe-area-inset-bottom)] z-10 grid grid-rows-[auto_auto_1fr_auto]'>
         {/* Search */}
-        <div className='pointer-events-auto px-5 pt-[calc(env(safe-area-inset-top)+12px)]'>
+        <div className='pointer-events-auto px-5 pt-3'>
           <Search className='shadow-runddy' />
         </div>
 
