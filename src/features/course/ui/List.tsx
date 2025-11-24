@@ -18,14 +18,14 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
   });
 
   return (
-    <div className='flex h-full flex-col px-5 pt-[calc(env(safe-area-inset-top)+52px)]'>
+    <div className='flex h-dvh flex-col px-5 pt-[calc(env(safe-area-inset-top)+52px)]'>
       {/* Search bar */}
       <div className='pointer-events-auto pt-3'>
         <Search className='bg-g-10' />
       </div>
 
       {/* Filter */}
-      <div className='no-scrollbar mt-3 overflow-x-auto'>
+      <div className='no-scrollbar mt-3 mb-5.5 overflow-x-auto'>
         <CourseFilter />
       </div>
 
@@ -36,7 +36,7 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
             <CourseInfoCard
               key={course.uuid}
               course={course}
-              className='border-b-g-20 border-b py-5.5 last:border-0'
+              className='border-b-g-20 border-b py-5.5 first:pt-0 last:border-0'
             />
           ))
         ) : (
