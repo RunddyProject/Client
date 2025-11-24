@@ -16,6 +16,9 @@
   }
   body {
     color: var(--text-pri);
+    /* iOS scroll bounce 방지 */
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
