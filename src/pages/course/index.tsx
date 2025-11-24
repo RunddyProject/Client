@@ -7,7 +7,7 @@ function Course() {
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
 
   return (
-    <div className='flex h-screen flex-col'>
+    <div className='h-[100dvh] overflow-hidden'>
       {viewMode === 'map' ? (
         <CourseMap onViewModeChange={() => setViewMode('list')} />
       ) : (
