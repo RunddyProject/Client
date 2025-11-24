@@ -109,8 +109,8 @@ const Header = () => {
   return config.showHeader ? (
     <header
       className={cn(
-        'top-0 z-50 w-full',
-        isCoursePage ? 'absolute left-0' : 'bg-w-100 sticky'
+        'top-0 z-[101] w-full',
+        isCoursePage ? 'fixed left-0' : 'bg-w-100 sticky'
       )}
     >
       <div className='mx-auto flex h-13 max-w-lg items-center justify-between pr-2 pl-4'>

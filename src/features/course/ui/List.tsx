@@ -18,7 +18,7 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
   });
 
   return (
-    <div className='bg-background flex h-[100dvh] flex-col px-5 pt-[calc(env(safe-area-inset-top)+52px)]'>
+    <div className='flex h-full flex-col px-5 pt-[calc(env(safe-area-inset-top)+52px)]'>
       {/* Search bar */}
       <div className='pointer-events-auto pt-3'>
         <Search className='bg-g-10' />

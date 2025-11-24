@@ -305,7 +305,7 @@ const CourseMap = ({
   }, []);
 
   return (
-    <div className='relative h-[100dvh] overflow-hidden'>
+    <div className='fixed inset-0 overflow-y-hidden overscroll-none'>
       <NaverMap
         key='runddy-naver-map'
         className='absolute inset-0'
@@ -373,7 +373,7 @@ const CourseMap = ({
         </div>
       )}
 
-      <div className='pointer-events-none absolute inset-x-0 top-[calc(env(safe-area-inset-top)+52px)] bottom-[env(safe-area-inset-bottom)] z-10 grid grid-rows-[auto_auto_1fr_auto]'>
+      <div className='pointer-events-none absolute inset-x-0 top-[calc(env(safe-area-inset-top)+52px)] bottom-[env(safe-area-inset-bottom)] z-10 grid grid-rows-[auto_auto_1fr] overflow-hidden'>
         {/* Search */}
         <div className='pointer-events-auto px-5 pt-3'>
           <Search className='shadow-runddy' />
@@ -381,17 +381,16 @@ const CourseMap = ({
 
         {/* Filter */}
         <div className='no-scrollbar mt-3 overflow-x-auto px-5'>
-          <CourseFilter className='bg-w-100 shadow-runddy mb-3' />
+          <CourseFilter className='bg-w-100 shadow-runddy' />
         </div>
 
-        <div />
-
-        <div className='flex flex-col'>
-          {/* Bottom Controls */}
-          <div className='space-y-2 px-5 pb-5'>
-            <div className='flex items-end justify-between'>
-              <div className='flex flex-col gap-2'>
-                {/* <Button
+        {/* Bottom area - Controls and Course Cards */}
+        <div className='relative overflow-y-hidden'>
+          <div className='absolute inset-x-0 bottom-0'>
+            <div className='space-y-2 px-5 pb-5'>
+              <div className='flex items-end justify-between'>
+                <div className='flex flex-col gap-2'>
+                  {/* <Button
                   size='icon'
                   variant='secondary'
                   className='rounded-full w-9.5 h-9.5 shadow-runddy bg-w-100'
@@ -399,87 +398,88 @@ const CourseMap = ({
                 >
                   <Icon name='weather' size={24} />
                 </Button> */}
+                  <Button
+                    size='icon'
+                    variant='secondary'
+                    disabled={isLocationLoading}
+                    className='shadow-runddy bg-w-100 pointer-events-auto h-9.5 w-9.5 rounded-full'
+                    onClick={handleSearchByCurrentLocation}
+                  >
+                    <Icon
+                      name='my_location'
+                      size={24}
+                      color='currentColor'
+                      className='text-g-60'
+                    />
+                  </Button>
+                </div>
+
                 <Button
-                  size='icon'
-                  variant='secondary'
-                  disabled={isLocationLoading}
-                  className='shadow-runddy bg-w-100 pointer-events-auto h-9.5 w-9.5 rounded-full'
-                  onClick={handleSearchByCurrentLocation}
+                  className='shadow-runddy bg-w-100 pointer-events-auto gap-1 rounded-full px-3'
+                  onClick={() => onViewModeChange('list')}
                 >
                   <Icon
-                    name='my_location'
-                    size={24}
+                    name='list'
+                    size={20}
                     color='currentColor'
                     className='text-g-60'
                   />
+                  <span className='text-sec text-contents-r-14'>목록 보기</span>
                 </Button>
               </div>
-
-              <Button
-                className='shadow-runddy bg-w-100 pointer-events-auto gap-1 rounded-full px-3'
-                onClick={() => onViewModeChange('list')}
-              >
-                <Icon
-                  name='list'
-                  size={20}
-                  color='currentColor'
-                  className='text-g-60'
-                />
-                <span className='text-sec text-contents-r-14'>목록 보기</span>
-              </Button>
             </div>
-          </div>
 
-          {/* Course Cards */}
-          {courses.length === 0 && (
-            <div className='px-5 pb-5'>
-              <div className='bg-w-100 pointer-events-auto flex items-center gap-4 rounded-2xl px-5 py-4.5 shadow-xl'>
-                <Icon name='no_course' size={60} />
-                <div className='flex flex-col space-y-1'>
-                  <div className='text-title-b18'>
-                    조건에 맞는 코스가 없어요
-                  </div>
-                  <div className='text-ter text-contents-r14'>
-                    설정된 필터를 변경해 보세요
+            {/* Course Cards */}
+            {courses.length === 0 && (
+              <div className='px-5 pb-5'>
+                <div className='bg-w-100 pointer-events-auto flex items-center gap-4 rounded-2xl px-5 py-4.5 shadow-xl'>
+                  <Icon name='no_course' size={60} />
+                  <div className='flex flex-col space-y-1'>
+                    <div className='text-title-b18'>
+                      조건에 맞는 코스가 없어요
+                    </div>
+                    <div className='text-ter text-contents-r14'>
+                      설정된 필터를 변경해 보세요
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {courses.length === 1 && (
-            <div className='px-4 pb-5'>
-              <CourseInfoCard
-                course={courses[0]}
-                className='rounded-2xl px-5 py-4.5 shadow-xl'
-              />
-            </div>
-          )}
+            {courses.length === 1 && (
+              <div className='px-4 pb-5'>
+                <CourseInfoCard
+                  course={courses[0]}
+                  className='rounded-2xl px-5 py-4.5 shadow-xl'
+                />
+              </div>
+            )}
 
-          {courses.length > 1 && (
-            <div
-              ref={scrollerRef}
-              className='no-scrollbar pointer-events-auto flex touch-pan-x snap-x snap-mandatory [scroll-padding-right:16px] [scroll-padding-left:16px] gap-4 overflow-x-auto [overscroll-behavior-x:contain] px-4 pb-5'
-              onPointerDown={(e) => e.stopPropagation()}
-              onPointerMove={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
-              onTouchMove={(e) => e.stopPropagation()}
-              onWheel={(e) => e.stopPropagation()}
-            >
-              {courses.map((course) => (
-                <div
-                  key={course.uuid}
-                  data-uuid={course.uuid}
-                  className='w-[85%] max-w-[420px] shrink-0 snap-center'
-                >
-                  <CourseInfoCard
-                    course={course}
-                    className='rounded-2xl px-5 py-4.5 shadow-xl'
-                  />
-                </div>
-              ))}
-            </div>
-          )}
+            {courses.length > 1 && (
+              <div
+                ref={scrollerRef}
+                className='no-scrollbar pointer-events-auto flex touch-pan-x snap-x snap-mandatory [scroll-padding-right:16px] [scroll-padding-left:16px] gap-4 overflow-x-auto [overscroll-behavior-x:contain] px-4 pb-5'
+                onPointerDown={(e) => e.stopPropagation()}
+                onPointerMove={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+                onTouchMove={(e) => e.stopPropagation()}
+                onWheel={(e) => e.stopPropagation()}
+              >
+                {courses.map((course) => (
+                  <div
+                    key={course.uuid}
+                    data-uuid={course.uuid}
+                    className='w-[85%] max-w-[420px] shrink-0 snap-center'
+                  >
+                    <CourseInfoCard
+                      course={course}
+                      className='rounded-2xl px-5 py-4.5 shadow-xl'
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
