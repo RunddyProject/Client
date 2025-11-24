@@ -383,8 +383,9 @@ const CourseMap = ({
           <CourseFilter className='bg-w-100 shadow-runddy' />
         </div>
 
-        {/* Bottom area - Controls and Course Cards (flex-col justify-end to align to bottom) */}
-        <div className='flex flex-col justify-end'>
+        {/* Bottom area - Controls and Course Cards */}
+        <div className='relative overflow-hidden'>
+          <div className='absolute inset-x-0 bottom-0'>
           {/* Bottom Controls - buttons */}
           <div className='space-y-2 px-5 pb-5'>
             <div className='flex items-end justify-between'>
@@ -476,6 +477,7 @@ const CourseMap = ({
             ))}
           </div>
         )}
+          </div>
         </div>
       </div>
     </div>
