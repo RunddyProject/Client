@@ -20,6 +20,16 @@
     overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
   }
+  /* 스크롤바 숨기기 */
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
+  }
+  html,
+  body {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 /* Editor-only color preview */
