@@ -110,7 +110,7 @@ const Header = () => {
     <header
       className={cn(
         'top-0 z-50 w-full',
-        isCoursePage ? 'absolute left-0' : 'bg-w-100 sticky'
+        isCoursePage ? 'fixed left-0' : 'bg-w-100 sticky'
       )}
     >
       <div className='flex h-13 items-center justify-between pr-2 pl-4'>
