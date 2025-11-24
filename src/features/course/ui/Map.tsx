@@ -372,7 +372,7 @@ const CourseMap = ({
         </div>
       )}
 
-      <div className='pointer-events-none absolute inset-x-0 top-[calc(env(safe-area-inset-top)+52px)] bottom-[env(safe-area-inset-bottom)] z-10 grid grid-rows-[auto_auto_1fr_auto]'>
+      <div className='pointer-events-none absolute inset-x-0 top-[calc(env(safe-area-inset-top)+52px)] bottom-[env(safe-area-inset-bottom)] z-10 grid grid-rows-[auto_auto_1fr]'>
         {/* Search */}
         <div className='pointer-events-auto px-5 pt-3'>
           <Search className='shadow-runddy' />
@@ -383,11 +383,8 @@ const CourseMap = ({
           <CourseFilter className='bg-w-100 shadow-runddy' />
         </div>
 
-        {/* Middle flexible area - empty space */}
-        <div />
-
-        {/* Bottom area - Controls and Course Cards */}
-        <div className='flex flex-col'>
+        {/* Bottom area - Controls and Course Cards (flex-col justify-end to align to bottom) */}
+        <div className='flex flex-col justify-end'>
           {/* Bottom Controls - buttons */}
           <div className='space-y-2 px-5 pb-5'>
             <div className='flex items-end justify-between'>
