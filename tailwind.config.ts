@@ -40,7 +40,7 @@ export default {
       fontSize: twTypography,
 
       boxShadow: {
-        runddy: 'var(--runddy-map)'
+        runddy: 'var(--shadow-runddy)'
       },
       borderRadius: {
         DEFAULT: 'var(--radius)'
