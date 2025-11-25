@@ -23,12 +23,14 @@ interface LocationStore {
   activeCourseId: string | null;
   isLocationLoading: boolean;
   keywordCenter?: LatLng | null;
+  lastViewMode: 'map' | 'list';
   setUserLocation: (location: Location | null) => void;
   setLastSearchedArea: (center: Location, radius: number, zoom: number) => void;
   setCurrentMapView: (center: Location, zoom: number) => void;
   setActiveCourseId: (id: string | null) => void;
   setIsLocationLoading: (loading: boolean) => void;
   setKeywordCenter: (center: LatLng | null) => void;
+  setLastViewMode: (mode: 'map' | 'list') => void;
 }
 
 export const useLocationStore = create<LocationStore>()(
@@ -42,6 +44,7 @@ export const useLocationStore = create<LocationStore>()(
       currentMapZoom: null,
       activeCourseId: null,
       isLocationLoading: false,
+      lastViewMode: 'map' as 'map' | 'list',
       setUserLocation: (location) => set({ userLocation: location }),
       setLastSearchedArea: (center, radius, zoom) =>
         set({
@@ -53,7 +56,8 @@ export const useLocationStore = create<LocationStore>()(
         set({ currentMapCenter: center, currentMapZoom: zoom }),
       setActiveCourseId: (id) => set({ activeCourseId: id }),
       setIsLocationLoading: (loading) => set({ isLocationLoading: loading }),
-      setKeywordCenter: (center) => set({ keywordCenter: center })
+      setKeywordCenter: (center) => set({ keywordCenter: center }),
+      setLastViewMode: (mode) => set({ lastViewMode: mode })
     }),
     {
       name: 'user-location',
