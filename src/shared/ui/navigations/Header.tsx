@@ -46,6 +46,16 @@ const Header = () => {
 
   const { config } = useHeader();
 
+  const handleBack = () => {
+    const canGoBack = window.history.state && window.history.state.idx > 0;
+
+    if (canGoBack) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
+
   const handleDevTokenSubmit = async () => {
     if (!devToken.trim()) {
       toast('오류: 토큰을 입력해주세요');
@@ -136,7 +146,7 @@ const Header = () => {
                 variant='ghost'
                 size='icon'
                 className='h-8 w-8'
-                onClick={() => navigate(-1)}
+                onClick={handleBack}
               >
                 <Icon name='chevron_left' size={24} />
               </Button>
