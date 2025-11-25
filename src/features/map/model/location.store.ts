@@ -23,12 +23,16 @@ interface LocationStore {
   activeCourseId: string | null;
   isLocationLoading: boolean;
   keywordCenter?: LatLng | null;
+  lastViewMode: 'map' | 'list';
+  lastListScrollPosition: number;
   setUserLocation: (location: Location | null) => void;
   setLastSearchedArea: (center: Location, radius: number, zoom: number) => void;
   setCurrentMapView: (center: Location, zoom: number) => void;
   setActiveCourseId: (id: string | null) => void;
   setIsLocationLoading: (loading: boolean) => void;
   setKeywordCenter: (center: LatLng | null) => void;
+  setLastViewMode: (mode: 'map' | 'list') => void;
+  setLastListScrollPosition: (position: number) => void;
 }
 
 export const useLocationStore = create<LocationStore>()(
@@ -42,6 +46,8 @@ export const useLocationStore = create<LocationStore>()(
       currentMapZoom: null,
       activeCourseId: null,
       isLocationLoading: false,
+      lastViewMode: 'map' as 'map' | 'list',
+      lastListScrollPosition: 0,
       setUserLocation: (location) => set({ userLocation: location }),
       setLastSearchedArea: (center, radius, zoom) =>
         set({
@@ -53,7 +59,10 @@ export const useLocationStore = create<LocationStore>()(
         set({ currentMapCenter: center, currentMapZoom: zoom }),
       setActiveCourseId: (id) => set({ activeCourseId: id }),
       setIsLocationLoading: (loading) => set({ isLocationLoading: loading }),
-      setKeywordCenter: (center) => set({ keywordCenter: center })
+      setKeywordCenter: (center) => set({ keywordCenter: center }),
+      setLastViewMode: (mode) => set({ lastViewMode: mode }),
+      setLastListScrollPosition: (position) =>
+        set({ lastListScrollPosition: position })
     }),
     {
       name: 'user-location',
