@@ -26,6 +26,14 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  // Prevent body scroll
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   useEffect(() => {
     if (scrollContainerRef.current && lastListScrollPosition > 0) {
       scrollContainerRef.current.scrollTop = lastListScrollPosition;
