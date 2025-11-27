@@ -12,7 +12,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <HeaderProvider>
-        <div className='bg-w-100 mx-auto min-h-screen max-w-xl'>
+        <div className='bg-w-100 mx-auto min-h-screen max-w-lg'>
           <Toaster />
           <Header />
           <Outlet />
