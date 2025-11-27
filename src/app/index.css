@@ -77,3 +77,14 @@
   pointer-events: none !important;
   z-index: 9999 !important;
 }
+
+@layer components {
+  [data-slot='dialog-content'],
+  [data-slot='alert-dialog-content'] {
+    max-width: min(36rem, calc(100% - 2rem)) !important;
+  }
+
+  [data-slot='dropdown-menu-content'] {
+    max-width: 36rem;
+  }
+}
