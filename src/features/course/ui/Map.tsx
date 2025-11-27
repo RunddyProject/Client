@@ -305,7 +305,7 @@ const CourseMap = ({
   }, []);
 
   return (
-    <div className='absolute inset-0 overflow-y-hidden overscroll-none'>
+    <div className='absolute inset-0 overflow-hidden overscroll-none touch-pan-x'>
       <NaverMap
         key='runddy-naver-map'
         className='absolute inset-0'
