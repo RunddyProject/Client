@@ -217,8 +217,19 @@ const CourseDetail = () => {
 
       <div className='bg-g-10 h-3 w-full' />
 
-      <div className='px-5 py-10'>
+      <div className='space-y-8 px-5 py-10'>
         <Feedback feedbackType='COURSE' />
+        <p className='text-ter text-contents-r14'>
+          소개하고 싶은 코스가 있다면
+          <br />
+          <a
+            href='mailto:runddyofficial@gmail.com'
+            className='text-runddy-blue cursor-pointer underline hover:underline'
+          >
+            runddyofficial@gmail.com
+          </a>
+          로 GPX 파일을 전달해 주세요 :)
+        </p>
       </div>
     </>
   );

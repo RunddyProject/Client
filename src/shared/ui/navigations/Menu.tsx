@@ -59,8 +59,11 @@ const Menu = ({ titles }: MenuProps) => {
             </li>
           ))}
         </ul>
-        <div className='fixed bottom-8 w-full px-5'>
+        <div className='fixed bottom-8 w-full space-y-7 px-5'>
           <Feedback feedbackType='FEEDBACK' />
+          <div className='text-placeholder text-caption-r11 text-center'>
+            © 2025. Runddy All rights reserved.
+          </div>
         </div>
       </SheetContent>
     </Sheet>
