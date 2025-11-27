@@ -26,11 +26,13 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Prevent body scroll
+  // Prevent body scroll but allow pull-to-refresh on scroll container
   useEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = 'hidden';
+
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = originalStyle;
     };
   }, []);
 
@@ -61,7 +63,7 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className='no-scrollbar flex-1 overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+80px)]'
+        className='no-scrollbar flex-1 overflow-y-auto overscroll-contain pb-[calc(env(safe-area-inset-bottom)+80px)]'
       >
         {courses.length > 0 ? (
           courses.map((course) => (
