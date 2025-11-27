@@ -239,6 +239,17 @@ const CourseMap = ({
   const hasRestoredRef = useRef(false);
   const hasScrolledToActiveRef = useRef(false);
 
+  useEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = 'hidden';
+    document.body.style.overscrollBehavior = 'none';
+
+    return () => {
+      document.body.style.overflow = originalStyle;
+      document.body.style.overscrollBehavior = '';
+    };
+  }, []);
+
   const [initialCenter, setInitialCenter] = useState<{
     lat: number;
     lng: number;
@@ -305,7 +316,7 @@ const CourseMap = ({
   }, []);
 
   return (
-    <div className='absolute inset-0 overflow-y-hidden overscroll-none'>
+    <div className='absolute inset-0 overflow-hidden'>
       <NaverMap
         key='runddy-naver-map'
         className='absolute inset-0'
@@ -354,7 +365,6 @@ const CourseMap = ({
         onInit={handleMapInit}
         onMarkerClick={handleMarkerClick}
       />
-
       {showSearchButton && (
         <div className='fixed top-[178px] left-1/2 z-50 -translate-x-1/2 transform'>
           <Button
@@ -372,7 +382,6 @@ const CourseMap = ({
           </Button>
         </div>
       )}
-
       <div className='pointer-events-none absolute inset-x-0 top-[calc(env(safe-area-inset-top)+52px)] bottom-[env(safe-area-inset-bottom)] z-10 grid grid-rows-[auto_auto_1fr] overflow-hidden'>
         {/* Search */}
         <div className='pointer-events-auto px-5 pt-3'>
