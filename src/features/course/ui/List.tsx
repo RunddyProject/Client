@@ -40,7 +40,7 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
   return (
     <div className='flex h-dvh flex-col overflow-hidden px-5 pt-[calc(env(safe-area-inset-top)+52px)]'>
       {/* Search bar */}
-      <div className='pointer-events-auto touch-manipulation pt-3'>
+      <div className='pointer-events-auto touch-none pt-3'>
         <Search className='bg-g-10' />
       </div>
 
