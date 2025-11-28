@@ -38,22 +38,14 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
   };
 
   return (
-    <div
-      className='flex h-dvh flex-col overflow-hidden px-5 pt-[calc(env(safe-area-inset-top)+52px)]'
-      onTouchMove={(e) => {
-        // Only allow scrolling on the scroll container
-        if (!scrollContainerRef.current?.contains(e.target as Node)) {
-          e.preventDefault();
-        }
-      }}
-    >
+    <div className='flex h-dvh flex-col overflow-hidden px-5 pt-[calc(env(safe-area-inset-top)+52px)] touch-none'>
       {/* Search bar */}
       <div className='pointer-events-auto pt-3'>
         <Search className='bg-g-10' />
       </div>
 
       {/* Filter */}
-      <div className='no-scrollbar mt-3 mb-5.5 overflow-x-auto'>
+      <div className='no-scrollbar mt-3 mb-5.5 overflow-x-auto touch-pan-x'>
         <CourseFilter />
       </div>
 
@@ -61,7 +53,7 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className='no-scrollbar flex-1 overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+80px)]'
+        className='no-scrollbar flex-1 touch-pan-y overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+80px)]'
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {courses.length > 0 ? (

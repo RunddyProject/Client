@@ -305,15 +305,7 @@ const CourseMap = ({
   }, []);
 
   return (
-    <div
-      className='absolute inset-0 overflow-hidden'
-      onTouchMove={(e) => {
-        // Prevent all touch scrolling in map view
-        if (e.target === e.currentTarget || !(e.target as HTMLElement).closest('.pointer-events-auto')) {
-          e.preventDefault();
-        }
-      }}
-    >
+    <div className='absolute inset-0 overflow-hidden touch-none'>
       <NaverMap
         key='runddy-naver-map'
         className='absolute inset-0'
@@ -468,10 +460,6 @@ const CourseMap = ({
                 ref={scrollerRef}
                 className='no-scrollbar pointer-events-auto flex touch-pan-x snap-x snap-mandatory [scroll-padding-right:16px] [scroll-padding-left:16px] gap-4 overflow-x-auto [overscroll-behavior-x:contain] px-4 pb-5'
                 onPointerDown={(e) => e.stopPropagation()}
-                onPointerMove={(e) => e.stopPropagation()}
-                onTouchStart={(e) => e.stopPropagation()}
-                onTouchMove={(e) => e.stopPropagation()}
-                onWheel={(e) => e.stopPropagation()}
               >
                 {courses.map((course) => (
                   <div
