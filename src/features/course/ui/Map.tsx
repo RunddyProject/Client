@@ -239,18 +239,6 @@ const CourseMap = ({
   const hasRestoredRef = useRef(false);
   const hasScrolledToActiveRef = useRef(false);
 
-  // Prevent body scroll while allowing pull-to-refresh
-  useEffect(() => {
-    const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = 'hidden';
-    document.body.style.overscrollBehavior = 'none';
-
-    return () => {
-      document.body.style.overflow = originalStyle;
-      document.body.style.overscrollBehavior = '';
-    };
-  }, []);
-
   const [initialCenter, setInitialCenter] = useState<{
     lat: number;
     lng: number;
@@ -317,7 +305,15 @@ const CourseMap = ({
   }, []);
 
   return (
-    <div className='absolute inset-0 overflow-hidden'>
+    <div
+      className='absolute inset-0 overflow-hidden'
+      onTouchMove={(e) => {
+        // Prevent all touch scrolling in map view
+        if (e.target === e.currentTarget || !(e.target as HTMLElement).closest('.pointer-events-auto')) {
+          e.preventDefault();
+        }
+      }}
+    >
       <NaverMap
         key='runddy-naver-map'
         className='absolute inset-0'

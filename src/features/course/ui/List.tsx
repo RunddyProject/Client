@@ -26,16 +26,6 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Prevent body scroll but allow pull-to-refresh on scroll container
-  useEffect(() => {
-    const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = originalStyle;
-    };
-  }, []);
-
   useEffect(() => {
     if (scrollContainerRef.current && lastListScrollPosition > 0) {
       scrollContainerRef.current.scrollTop = lastListScrollPosition;
@@ -48,7 +38,15 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
   };
 
   return (
-    <div className='flex h-dvh flex-col overflow-hidden px-5 pt-[calc(env(safe-area-inset-top)+52px)]'>
+    <div
+      className='flex h-dvh flex-col overflow-hidden px-5 pt-[calc(env(safe-area-inset-top)+52px)]'
+      onTouchMove={(e) => {
+        // Only allow scrolling on the scroll container
+        if (!scrollContainerRef.current?.contains(e.target as Node)) {
+          e.preventDefault();
+        }
+      }}
+    >
       {/* Search bar */}
       <div className='pointer-events-auto pt-3'>
         <Search className='bg-g-10' />
@@ -63,7 +61,8 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className='no-scrollbar flex-1 overflow-y-auto overscroll-contain pb-[calc(env(safe-area-inset-bottom)+80px)]'
+        className='no-scrollbar flex-1 overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+80px)]'
+        style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {courses.length > 0 ? (
           courses.map((course) => (
