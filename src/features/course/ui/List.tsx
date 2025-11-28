@@ -38,14 +38,14 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
   };
 
   return (
-    <div className='flex h-dvh flex-col overflow-hidden px-5 pt-[calc(env(safe-area-inset-top)+52px)] touch-none'>
+    <div className='flex h-dvh flex-col overflow-hidden px-5 pt-[calc(env(safe-area-inset-top)+52px)]'>
       {/* Search bar */}
-      <div className='pointer-events-auto pt-3'>
+      <div className='pointer-events-auto touch-manipulation pt-3'>
         <Search className='bg-g-10' />
       </div>
 
       {/* Filter */}
-      <div className='no-scrollbar mt-3 mb-5.5 overflow-x-auto touch-pan-x'>
+      <div className='no-scrollbar mt-3 mb-5.5 touch-pan-x overflow-x-auto'>
         <CourseFilter />
       </div>
 

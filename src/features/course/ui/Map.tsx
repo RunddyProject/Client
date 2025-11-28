@@ -305,7 +305,7 @@ const CourseMap = ({
   }, []);
 
   return (
-    <div className='absolute inset-0 overflow-hidden touch-none'>
+    <div className='absolute inset-0 overflow-hidden'>
       <NaverMap
         key='runddy-naver-map'
         className='absolute inset-0'
@@ -373,19 +373,19 @@ const CourseMap = ({
         </div>
       )}
 
-      <div className='pointer-events-none absolute inset-x-0 top-[calc(env(safe-area-inset-top)+52px)] bottom-[env(safe-area-inset-bottom)] z-10 grid grid-rows-[auto_auto_1fr] overflow-hidden'>
+      <div className='pointer-events-none absolute inset-x-0 top-[calc(env(safe-area-inset-top)+52px)] bottom-[env(safe-area-inset-bottom)] z-10 grid grid-rows-[auto_auto_1fr] overflow-hidden touch-none'>
         {/* Search */}
-        <div className='pointer-events-auto px-5 pt-3'>
+        <div className='pointer-events-auto touch-manipulation px-5 pt-3'>
           <Search className='shadow-runddy' />
         </div>
 
         {/* Filter */}
-        <div className='no-scrollbar mt-3 overflow-x-auto px-5'>
+        <div className='no-scrollbar touch-pan-x mt-3 overflow-x-auto px-5'>
           <CourseFilter className='bg-w-100 shadow-runddy' />
         </div>
 
         {/* Bottom area - Controls and Course Cards */}
-        <div className='relative overflow-y-hidden'>
+        <div className='relative overflow-y-hidden touch-none'>
           <div className='absolute inset-x-0 bottom-0'>
             <div className='space-y-2 px-5 pb-5'>
               <div className='flex items-end justify-between'>
