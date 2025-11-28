@@ -239,17 +239,6 @@ const CourseMap = ({
   const hasRestoredRef = useRef(false);
   const hasScrolledToActiveRef = useRef(false);
 
-  useEffect(() => {
-    const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = 'hidden';
-    document.body.style.overscrollBehavior = 'none';
-
-    return () => {
-      document.body.style.overflow = originalStyle;
-      document.body.style.overscrollBehavior = '';
-    };
-  }, []);
-
   const [initialCenter, setInitialCenter] = useState<{
     lat: number;
     lng: number;
@@ -384,17 +373,17 @@ const CourseMap = ({
       )}
       <div className='pointer-events-none absolute inset-x-0 top-[calc(env(safe-area-inset-top)+52px)] bottom-[env(safe-area-inset-bottom)] z-10 grid grid-rows-[auto_auto_1fr] overflow-hidden'>
         {/* Search */}
-        <div className='pointer-events-auto px-5 pt-3'>
+        <div className='pointer-events-auto touch-none px-5 pt-3'>
           <Search className='shadow-runddy' />
         </div>
 
         {/* Filter */}
-        <div className='no-scrollbar mt-3 overflow-x-auto px-5'>
+        <div className='no-scrollbar pointer-events-auto mt-3 touch-pan-x overflow-x-auto px-5'>
           <CourseFilter className='bg-w-100 shadow-runddy' />
         </div>
 
         {/* Bottom area - Controls and Course Cards */}
-        <div className='relative overflow-y-hidden'>
+        <div className='relative touch-none overflow-y-hidden'>
           <div className='absolute inset-x-0 bottom-0'>
             <div className='space-y-2 px-5 pb-5'>
               <div className='flex items-end justify-between'>
@@ -469,10 +458,6 @@ const CourseMap = ({
                 ref={scrollerRef}
                 className='no-scrollbar pointer-events-auto flex touch-pan-x snap-x snap-mandatory [scroll-padding-right:16px] [scroll-padding-left:16px] gap-4 overflow-x-auto [overscroll-behavior-x:contain] px-4 pb-5'
                 onPointerDown={(e) => e.stopPropagation()}
-                onPointerMove={(e) => e.stopPropagation()}
-                onTouchStart={(e) => e.stopPropagation()}
-                onTouchMove={(e) => e.stopPropagation()}
-                onWheel={(e) => e.stopPropagation()}
               >
                 {courses.map((course) => (
                   <div

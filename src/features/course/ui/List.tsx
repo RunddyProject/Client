@@ -27,15 +27,6 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = originalStyle;
-    };
-  }, []);
-
-  useEffect(() => {
     if (scrollContainerRef.current && lastListScrollPosition > 0) {
       scrollContainerRef.current.scrollTop = lastListScrollPosition;
     }
@@ -49,12 +40,12 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
   return (
     <div className='flex h-dvh flex-col overflow-hidden px-5 pt-[calc(env(safe-area-inset-top)+52px)]'>
       {/* Search bar */}
-      <div className='pointer-events-auto pt-3'>
+      <div className='pointer-events-auto touch-none pt-3'>
         <Search className='bg-g-10' />
       </div>
 
       {/* Filter */}
-      <div className='no-scrollbar mt-3 mb-5.5 overflow-x-auto'>
+      <div className='no-scrollbar mt-3 mb-5.5 touch-pan-x overflow-x-auto'>
         <CourseFilter />
       </div>
 
@@ -62,7 +53,8 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className='no-scrollbar flex-1 overflow-y-auto overscroll-contain pb-[calc(env(safe-area-inset-bottom)+80px)]'
+        className='no-scrollbar flex-1 touch-pan-y overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+80px)]'
+        style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {courses.length > 0 ? (
           courses.map((course) => (
