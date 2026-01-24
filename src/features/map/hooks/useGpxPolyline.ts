@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, type RefObject } from 'react';
 
+import { useOptimizedPolylineCoordinates } from '@/features/course/hooks/useOptimizedPolylineCoordinates';
 import { runddyColor } from '@/shared/model/constants';
 
 import type { CoursePoint } from '@/features/course/model/types';
@@ -40,6 +41,12 @@ export function useGpxPolyline(
   const interactingRef = useRef(false);
   const lastFitAtRef = useRef(0);
 
+  // ✅ Polyline 좌표 메모이제이션 (성능 최적화 - Critical Fix)
+  const { path: optimizedPath } = useOptimizedPolylineCoordinates({
+    points,
+    shouldGenerate: !!points?.length
+  });
+
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -67,8 +74,8 @@ export function useGpxPolyline(
       polylineRef.current.setMap(map);
     }
 
-    const path = points.map((p) => new naver.maps.LatLng(p.lat, p.lng));
-    polylineRef.current.setPath(path);
+    // ✅ 메모이제이션된 path 사용 (성능 최적화)
+    polylineRef.current.setPath(optimizedPath);
     (polylineRef.current as any).setOptions?.({ strokeColor });
 
     if (fit === 'never') return;
@@ -138,11 +145,12 @@ export function useGpxPolyline(
       clearTimer();
       listeners.forEach((l) => naver.maps.Event.removeListener(l));
     };
+    // ✅ 의존성 배열 최적화: points 제거, optimizedPath 사용
   }, [
     mapRef,
     polylineRef,
     pathSig,
-    points,
+    optimizedPath,
     color,
     fit,
     trackKey,

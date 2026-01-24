@@ -6,6 +6,7 @@ import {
   type RefObject
 } from 'react';
 
+import { useOptimizedMarkers } from '@/features/course/hooks/useOptimizedMarkers';
 import { useCoursePoint } from '@/features/course/hooks/useCoursePoint';
 import { useCourses } from '@/features/course/hooks/useCourses';
 import {
@@ -53,12 +54,13 @@ const CourseMap = ({
     useLocationStore.getState().setCurrentMapView
   );
 
+  // ✅ 의존성 배열 추가 (성능 최적화 - Critical Fix)
   useEffect(() => {
     setLastSearchedAreaRef.current =
       useLocationStore.getState().setLastSearchedArea;
     setCurrentMapViewRef.current =
       useLocationStore.getState().setCurrentMapView;
-  });
+  }, []); // 빈 배열: 마운트 시 1회만 실행
 
   const [activeCourseId, setActiveCourseId] = useState<string | null>(() => {
     return useLocationStore.getState().activeCourseId;
@@ -108,6 +110,14 @@ const CourseMap = ({
   const activeColor: RUNDDY_COLOR = activeCourse
     ? SHAPE_TYPE_COLOR[activeCourse.shapeType]
     : runddyColor['blue'];
+
+  // ✅ 마커 배열 메모이제이션 (성능 최적화)
+  const markers = useOptimizedMarkers({
+    courses,
+    activeCourseId,
+    coursePointList,
+    userLocation
+  });
 
   const scrollerRef = useRef<HTMLDivElement>(null);
   const scrollToCenter = useScrollItemToCenter(
@@ -314,40 +324,7 @@ const CourseMap = ({
         zoom={initialZoom}
         points={displayPoints}
         color={activeColor}
-        markers={[
-          ...courses.flatMap((c) => {
-            const start: MarkerInput = {
-              id: c.uuid,
-              lat: c.lat,
-              lng: c.lng,
-              kind: 'start'
-            };
-            const endPoint =
-              coursePointList.length > 0
-                ? coursePointList[coursePointList.length - 1]
-                : null;
-            if (c.uuid === activeCourseId && endPoint?.lat && endPoint?.lng) {
-              const end: MarkerInput = {
-                id: `${c.uuid}__end`,
-                lat: endPoint.lat,
-                lng: endPoint.lng,
-                kind: 'end'
-              };
-              return [start, end];
-            }
-            return [start];
-          }),
-          ...(userLocation
-            ? [
-                {
-                  id: 'user_current_location',
-                  lat: userLocation.lat,
-                  lng: userLocation.lng,
-                  kind: 'current_location' as const
-                }
-              ]
-            : [])
-        ]}
+        markers={markers}
         focusKey={activeCourseId ?? undefined}
         fitEnabled={false}
         panEnabled={false}
