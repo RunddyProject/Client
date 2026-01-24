@@ -27,7 +27,6 @@ import { runddyColor } from '@/shared/model/constants';
 import { Button } from '@/shared/ui/primitives/button';
 
 import type { Course } from '@/features/course/model/types';
-import type { MarkerInput } from '@/features/map/model/types';
 import type { RUNDDY_COLOR } from '@/shared/model/types';
 
 const CourseMap = ({

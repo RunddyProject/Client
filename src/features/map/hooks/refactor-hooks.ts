@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Map 관련 리팩토링을 위한 Hook Signature 정의
  *

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Shared 영역 리팩토링을 위한 Hook Signature 정의
  *

@@ -43,7 +43,7 @@ export function useGpxPolyline(
 
   // ✅ Polyline 좌표 메모이제이션 (성능 최적화 - Critical Fix)
   const { path: optimizedPath } = useOptimizedPolylineCoordinates({
-    points,
+    points: points ?? [],
     shouldGenerate: !!points?.length
   });
 
@@ -112,7 +112,7 @@ export function useGpxPolyline(
       if (now - lastFitAtRef.current < 300) return; // avoid rapid consecutive fits
       lastFitAtRef.current = now;
 
-      const b = boundsFromPath(path);
+      const b = boundsFromPath(optimizedPath);
       requestAnimationFrame(() => {
         map.fitBounds(b, {
           top: padding,
@@ -136,7 +136,7 @@ export function useGpxPolyline(
       }
     } else if (fit === 'auto') {
       // Refit only when the path is out of the padded viewport
-      if (!isPathWithinPadding(path, map, padding)) {
+      if (!isPathWithinPadding(optimizedPath, map, padding)) {
         scheduleFit();
       }
     }
