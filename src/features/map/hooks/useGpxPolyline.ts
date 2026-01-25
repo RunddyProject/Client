@@ -41,7 +41,7 @@ export function useGpxPolyline(
   const interactingRef = useRef(false);
   const lastFitAtRef = useRef(0);
 
-  // ✅ Polyline 좌표 메모이제이션 (성능 최적화 - Critical Fix)
+  // ✅ Performance optimization - Critical Fix: Memoized polyline coordinates
   const { path: optimizedPath } = useOptimizedPolylineCoordinates({
     points: points ?? [],
     shouldGenerate: !!points?.length
@@ -74,7 +74,7 @@ export function useGpxPolyline(
       polylineRef.current.setMap(map);
     }
 
-    // ✅ 메모이제이션된 path 사용 (성능 최적화)
+    // ✅ Performance optimization: Use memoized path
     polylineRef.current.setPath(optimizedPath);
     (polylineRef.current as any).setOptions?.({ strokeColor });
 
@@ -145,7 +145,7 @@ export function useGpxPolyline(
       clearTimer();
       listeners.forEach((l) => naver.maps.Event.removeListener(l));
     };
-    // ✅ 의존성 배열 최적화: points 제거, optimizedPath 사용
+    // ✅ Optimized dependency array: removed points, using optimizedPath
   }, [
     mapRef,
     polylineRef,

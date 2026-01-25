@@ -53,13 +53,13 @@ const CourseMap = ({
     useLocationStore.getState().setCurrentMapView
   );
 
-  // ✅ 의존성 배열 추가 (성능 최적화 - Critical Fix)
+  // ✅ Performance optimization - Critical Fix: Added dependency array
   useEffect(() => {
     setLastSearchedAreaRef.current =
       useLocationStore.getState().setLastSearchedArea;
     setCurrentMapViewRef.current =
       useLocationStore.getState().setCurrentMapView;
-  }, []); // 빈 배열: 마운트 시 1회만 실행
+  }, []); // Empty array: runs once on mount only
 
   const [activeCourseId, setActiveCourseId] = useState<string | null>(() => {
     return useLocationStore.getState().activeCourseId;
@@ -110,7 +110,7 @@ const CourseMap = ({
     ? SHAPE_TYPE_COLOR[activeCourse.shapeType]
     : runddyColor['blue'];
 
-  // ✅ 마커 배열 메모이제이션 (성능 최적화)
+  // ✅ Performance optimization: Memoized marker array generation
   const markers = useOptimizedMarkers({
     courses,
     activeCourseId,

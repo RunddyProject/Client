@@ -36,7 +36,7 @@ const CourseInfoCard = ({
   const navigate = useNavigate();
   const { toggle, isSaving } = useToggleBookmark();
 
-  // ✅ SVG 새니타이제이션 메모이제이션 (성능 최적화)
+  // ✅ Performance optimization: Memoized SVG sanitization
   const sanitizedSvg = useSanitizedSvg(course.svg);
 
   const handleClick = () => {
