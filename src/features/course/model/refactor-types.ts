@@ -47,7 +47,7 @@ export interface CourseMapContainerData {
   handlers: CourseMapHandlers;
 
   // 스크롤 관련
-  scrollerRef: RefObject<HTMLDivElement>;
+  scrollerRef: RefObject<HTMLDivElement | null>;
   scrollToCenter: (id: string) => void;
 
   // 마커 데이터
@@ -91,7 +91,7 @@ export interface CourseMapViewProps {
   isLocationLoading: boolean;
 
   // 스크롤
-  scrollerRef: RefObject<HTMLDivElement>;
+  scrollerRef: RefObject<HTMLDivElement | null>;
 
   // 이벤트 핸들러
   handlers: CourseMapHandlers;
@@ -158,7 +158,7 @@ export interface CourseChangeDetection {
  * 스크롤-지도 양방향 동기화 옵션
  */
 export interface MapScrollSyncOptions {
-  scrollerRef: RefObject<HTMLDivElement>;
+  scrollerRef: RefObject<HTMLDivElement | null>;
   courses: Course[];
   activeCourseId: string | null;
   scrollToCenter: (id: string) => void;
