@@ -4,6 +4,12 @@
  * This component is purely responsible for rendering the UI.
  * All business logic is handled by useCourseMapContainer hook.
  *
+ * Performance Optimization:
+ * - Wrapped with React.memo for shallow prop comparison
+ * - Receives FLAT props (not nested objects) from Container
+ * - This ensures memo works correctly - object identity doesn't change
+ *   when individual values don't change
+ *
  * Features:
  * - NaverMap with markers and polyline
  * - Search button (when map is moved)
@@ -11,6 +17,8 @@
  * - Course card scroller
  * - Control buttons (location, list view)
  */
+
+import { memo } from 'react';
 
 import CourseFilter from '@/features/course/ui/Filter';
 import CourseInfoCard from '@/features/course/ui/InfoCard';
@@ -22,35 +30,42 @@ import { Button } from '@/shared/ui/primitives/button';
 import type { CourseMapViewProps } from '@/features/course/model/refactor-types';
 
 /**
- * CourseMapView - Pure presentational component
+ * CourseMapView - Pure presentational component with React.memo
  *
- * Receives all data and handlers from CourseMapContainer via props.
- * No business logic, only UI rendering.
+ * Receives FLAT props (spread from grouped data in Container).
+ * This ensures React.memo's shallow comparison works correctly.
  *
- * @param props - View props from CourseMapContainerData
+ * @param props - Flat view props from CourseMapContainer
  *
  * @example
  * ```tsx
+ * // In CourseMapContainer:
  * <CourseMapView
- *   courses={courses}
- *   markers={markers}
+ *   {...data}       // courses, activeCourseId, markers, etc.
+ *   {...status}     // isFetching, isLocationLoading, showSearchButton
+ *   {...mapConfig}  // initialCenter, initialZoom
+ *   scrollerRef={refs.scrollerRef}
  *   handlers={handlers}
- *   // ... other props
  * />
  * ```
  */
-export function CourseMapView({
+export const CourseMapView = memo(function CourseMapView({
+  // Data (spread from data group)
   courses,
   activeCourseId,
-  markers,
   displayPoints,
+  markers,
   activeColor,
-  initialCenter,
-  initialZoom,
-  showSearchButton,
+  // Status (spread from status group)
   isFetching,
   isLocationLoading,
+  showSearchButton,
+  // Map config (spread from mapConfig group)
+  initialCenter,
+  initialZoom,
+  // Refs
   scrollerRef,
+  // Handlers
   handlers
 }: CourseMapViewProps) {
   return (
@@ -143,27 +158,24 @@ export function CourseMapView({
             </div>
 
             {/* Course Cards */}
-            <CourseCardsSection
-              courses={courses}
-              scrollerRef={scrollerRef}
-            />
+            <CourseCardsSection courses={courses} scrollerRef={scrollerRef} />
           </div>
         </div>
       </div>
     </div>
   );
-}
+});
 
 /**
  * CourseCardsSection - Renders the course cards based on count
+ *
+ * Separated into its own component for clarity, but not memoized
+ * since it's only rendered within CourseMapView.
  */
 function CourseCardsSection({
   courses,
   scrollerRef
-}: {
-  courses: CourseMapViewProps['courses'];
-  scrollerRef: CourseMapViewProps['scrollerRef'];
-}) {
+}: Pick<CourseMapViewProps, 'courses' | 'scrollerRef'>) {
   // Empty state
   if (courses.length === 0) {
     return (

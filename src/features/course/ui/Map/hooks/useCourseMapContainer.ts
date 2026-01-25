@@ -1,34 +1,28 @@
 /**
  * useCourseMapContainer - Facade hook for CourseMap business logic
  *
- * This hook integrates all the business logic needed for the CourseMap component,
- * following the Container/View pattern. It combines:
- * - Course data fetching
- * - Active course selection
- * - Map viewport management
- * - Scroll synchronization
- * - Marker generation
+ * This hook integrates all business logic needed for the CourseMap component,
+ * following the Container/View pattern with grouped returns for better DX.
  *
- * The View component (CourseMapView) receives all data and handlers from this hook,
- * keeping it purely presentational.
+ * Return Structure (Grouped by Domain):
+ * - data: Business data and derived states
+ * - status: Loading and UI states
+ * - mapConfig: Initial map settings
+ * - refs: DOM and instance references
+ * - handlers: Memoized event handlers
+ *
+ * The Container component spreads these groups into flat props for the View,
+ * ensuring React.memo shallow comparison works correctly.
  */
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type RefObject
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { useOptimizedMarkers } from '@/features/course/hooks/useOptimizedMarkers';
 import { useCoursePoint } from '@/features/course/hooks/useCoursePoint';
 import { useCourses } from '@/features/course/hooks/useCourses';
-import { useMapScrollSync } from '@/features/course/hooks/useMapScrollSync';
+import { useOptimizedMarkers } from '@/features/course/hooks/useOptimizedMarkers';
 import {
-  SHAPE_TYPE_COLOR,
-  DEFAULT_ZOOM
+  DEFAULT_ZOOM,
+  SHAPE_TYPE_COLOR
 } from '@/features/course/model/constants';
 import { useGeolocation } from '@/features/map/hooks/useGeolocation';
 import { useMapViewport } from '@/features/map/hooks/useMapViewport';
@@ -37,29 +31,41 @@ import { useCenteredActiveByScroll } from '@/shared/hooks/useCenteredActiveByScr
 import { useScrollItemToCenter } from '@/shared/hooks/useScrollItemToCenter';
 import { runddyColor } from '@/shared/model/constants';
 
+import { useMapScrollSync } from './useMapScrollSync';
+
 import type {
   CourseMapContainerData,
   CourseMapHandlers,
   CourseMapProps
 } from '@/features/course/model/refactor-types';
-import type { Course, CoursePoint } from '@/features/course/model/types';
-import type { MarkerInput } from '@/features/map/model/types';
-import type { RUNDDY_COLOR } from '@/shared/model/types';
+import type { RefObject } from 'react';
 
 /**
  * useCourseMapContainer - Facade hook for CourseMap
  *
  * Extracts all business logic from CourseMap component for better testability
- * and separation of concerns.
+ * and separation of concerns. Returns grouped data for DX while enabling
+ * flat prop spreading for performance.
  *
  * @param props - CourseMap component props
- * @returns All data, state, and handlers needed by CourseMapView
+ * @returns Grouped data, status, config, refs, and handlers
  *
  * @example
  * ```tsx
  * function CourseMapContainer({ onViewModeChange }: CourseMapProps) {
- *   const containerData = useCourseMapContainer({ onViewModeChange });
- *   return <CourseMapView {...containerData} />;
+ *   const { data, status, mapConfig, refs, handlers } = useCourseMapContainer({
+ *     onViewModeChange
+ *   });
+ *
+ *   return (
+ *     <CourseMapView
+ *       {...data}
+ *       {...status}
+ *       {...mapConfig}
+ *       scrollerRef={refs.scrollerRef}
+ *       handlers={handlers}
+ *     />
+ *   );
  * }
  * ```
  */
@@ -74,7 +80,7 @@ export function useCourseMapContainer(
   const mapRef = useRef<naver.maps.Map | null>(null);
 
   // ============================================================================
-  // Location Store State
+  // Location Store State (using selectors for minimal re-renders)
   // ============================================================================
   const lastSearchedCenter = useLocationStore(
     (state) => state.lastSearchedCenter
@@ -86,7 +92,7 @@ export function useCourseMapContainer(
   const keywordCenter = useLocationStore((state) => state.keywordCenter);
   const userLocation = useLocationStore((state) => state.userLocation);
 
-  // Store action refs (stable references)
+  // Store action refs (stable references to avoid re-renders)
   const setLastSearchedAreaRef = useRef(
     useLocationStore.getState().setLastSearchedArea
   );
@@ -160,23 +166,31 @@ export function useCourseMapContainer(
   );
 
   // Display points (empty when no courses or no active course)
-  const displayPoints: CoursePoint[] =
-    courses.length === 0 ? [] : activeCourseId ? coursePointList : [];
+  const displayPoints = useMemo(
+    () => (courses.length === 0 ? [] : activeCourseId ? coursePointList : []),
+    [courses.length, activeCourseId, coursePointList]
+  );
 
   // ============================================================================
-  // Active Course & Color
+  // Active Course & Color (Derived State)
   // ============================================================================
-  const activeCourse =
-    courses.find((c) => c.uuid === activeCourseId) ?? courses[0] ?? null;
+  const activeCourse = useMemo(
+    () => courses.find((c) => c.uuid === activeCourseId) ?? courses[0] ?? null,
+    [courses, activeCourseId]
+  );
 
-  const activeColor: RUNDDY_COLOR = activeCourse
-    ? SHAPE_TYPE_COLOR[activeCourse.shapeType]
-    : runddyColor['blue'];
+  const activeColor = useMemo(
+    () =>
+      activeCourse
+        ? SHAPE_TYPE_COLOR[activeCourse.shapeType]
+        : runddyColor['blue'],
+    [activeCourse]
+  );
 
   // ============================================================================
   // Optimized Markers
   // ============================================================================
-  const markers: MarkerInput[] = useOptimizedMarkers({
+  const markers = useOptimizedMarkers({
     courses,
     activeCourseId,
     coursePointList,
@@ -192,18 +206,11 @@ export function useCourseMapContainer(
     'uuid'
   );
 
-  // Scroll change callback (updates active course)
-  const handleScrollChange = useCallback((uuid: Course['uuid']) => {
-    setActiveCourseId(uuid);
-  }, []);
-
   // Map-Scroll synchronization hook
   const { triggerScrollToCourse, handleUserScroll } = useMapScrollSync({
-    scrollerRef,
     courses,
     activeCourseId,
     scrollToCenter,
-    onScrollChange: handleScrollChange,
     setActiveCourseId
   });
 
@@ -217,11 +224,13 @@ export function useCourseMapContainer(
   // ============================================================================
   // Search Area Changed Detection
   // ============================================================================
-  const hasCenterChanged =
-    Math.abs(viewport.center.lat - lastSearchedCenter.lat) > 0.0001 ||
-    Math.abs(viewport.center.lng - lastSearchedCenter.lng) > 0.0001;
+  const showSearchButton = useMemo(() => {
+    const hasCenterChanged =
+      Math.abs(viewport.center.lat - lastSearchedCenter.lat) > 0.0001 ||
+      Math.abs(viewport.center.lng - lastSearchedCenter.lng) > 0.0001;
 
-  const showSearchButton = movedByUser && hasCenterChanged;
+    return movedByUser && hasCenterChanged;
+  }, [viewport.center, lastSearchedCenter, movedByUser]);
 
   // ============================================================================
   // Map Initialization State
@@ -282,7 +291,7 @@ export function useCourseMapContainer(
    * Handle marker click on map
    */
   const handleMarkerClick = useCallback(
-    (uuid: Course['uuid']) => {
+    (uuid: string) => {
       triggerScrollToCourse(uuid);
     },
     [triggerScrollToCourse]
@@ -372,37 +381,38 @@ export function useCourseMapContainer(
   );
 
   // ============================================================================
-  // Return Container Data
+  // Return Grouped Data for DX
   // ============================================================================
   return {
-    // Course data
-    courses,
-    activeCourse,
-    activeCourseId,
-    coursePointList,
-    isFetching,
+    // Group 1: Business data and derived states
+    data: {
+      courses,
+      activeCourseId,
+      displayPoints,
+      markers,
+      activeColor
+    },
 
-    // Map state
-    mapRef,
-    viewport,
-    initialCenter,
-    initialZoom,
+    // Group 2: Loading and UI states
+    status: {
+      isFetching,
+      isLocationLoading,
+      showSearchButton
+    },
 
-    // UI state
-    showSearchButton,
-    isLocationLoading,
+    // Group 3: Initial map settings
+    mapConfig: {
+      initialCenter,
+      initialZoom
+    },
 
-    // Handlers
-    handlers,
+    // Group 4: DOM and instance references
+    refs: {
+      scrollerRef
+    },
 
-    // Scroll
-    scrollerRef,
-    scrollToCenter,
-
-    // Markers & Polyline
-    markers,
-    displayPoints,
-    activeColor
+    // Group 5: Memoized event handlers
+    handlers
   };
 }
 

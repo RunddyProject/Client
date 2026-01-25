@@ -4,6 +4,11 @@
  * This index file provides the public API for the CourseMap feature.
  * It maintains backward compatibility with existing imports.
  *
+ * Architecture:
+ * - CourseMapContainer: Business logic (uses hooks, spreads data)
+ * - CourseMapView: Pure presentation (memoized, flat props)
+ * - Hooks: Business logic extraction (useCourseMapContainer, useMapScrollSync)
+ *
  * Usage:
  * ```tsx
  * // Recommended: Named import
@@ -14,9 +19,13 @@
  *
  * // Access individual components if needed
  * import { CourseMapContainer, CourseMapView } from '@/features/course/ui/Map';
+ *
+ * // Access hooks directly
+ * import { useCourseMapContainer, useMapScrollSync } from '@/features/course/ui/Map/hooks';
  * ```
  */
 
+// Components
 export { CourseMapContainer } from './CourseMapContainer';
 export { CourseMapView } from './CourseMapView';
 

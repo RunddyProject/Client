@@ -3,25 +3,24 @@
  *
  * This component follows the Container/View pattern:
  * - Container (this file): Manages business logic via useCourseMapContainer hook
- * - View (CourseMapView): Pure presentational component
+ * - View (CourseMapView): Pure presentational component with React.memo
  *
- * Benefits:
- * - Clear separation of concerns
- * - Easier testing (logic can be tested via hook)
- * - Better maintainability
- * - Reduced component complexity
+ * Data Flow:
+ * 1. useCourseMapContainer returns GROUPED data (for DX)
+ * 2. Container SPREADS groups into FLAT props (for React.memo performance)
+ * 3. View receives FLAT props (shallow comparison works correctly)
  */
 
-import { useCourseMapContainer } from '@/features/course/hooks/useCourseMapContainer';
-import { CourseMapView } from '@/features/course/ui/Map/CourseMapView';
+import { useCourseMapContainer } from './hooks/useCourseMapContainer';
+import { CourseMapView } from './CourseMapView';
 
 import type { CourseMapProps } from '@/features/course/model/refactor-types';
 
 /**
  * CourseMapContainer - Main entry point for the Course Map feature
  *
- * All business logic is handled by useCourseMapContainer hook.
- * This component simply connects the hook to the view.
+ * Receives grouped data from the hook and spreads it into flat props
+ * for the View component, ensuring React.memo optimization works.
  *
  * @param props - Component props
  * @param props.onViewModeChange - Callback when user switches to list view
@@ -32,40 +31,18 @@ import type { CourseMapProps } from '@/features/course/model/refactor-types';
  * ```
  */
 export function CourseMapContainer({ onViewModeChange }: CourseMapProps) {
-  // Get all data and handlers from the facade hook
-  const {
-    courses,
-    activeCourse,
-    activeCourseId,
-    isFetching,
-    mapRef,
-    initialCenter,
-    initialZoom,
-    showSearchButton,
-    isLocationLoading,
-    markers,
-    displayPoints,
-    activeColor,
-    scrollerRef,
-    handlers
-  } = useCourseMapContainer({ onViewModeChange });
+  // Get grouped data from the facade hook
+  const { data, status, mapConfig, refs, handlers } = useCourseMapContainer({
+    onViewModeChange
+  });
 
-  // Render the view with all data
+  // Spread groups into flat props for React.memo optimization
   return (
     <CourseMapView
-      courses={courses}
-      activeCourse={activeCourse}
-      activeCourseId={activeCourseId}
-      markers={markers}
-      displayPoints={displayPoints}
-      activeColor={activeColor}
-      mapRef={mapRef}
-      initialCenter={initialCenter}
-      initialZoom={initialZoom}
-      showSearchButton={showSearchButton}
-      isFetching={isFetching}
-      isLocationLoading={isLocationLoading}
-      scrollerRef={scrollerRef}
+      {...data}
+      {...status}
+      {...mapConfig}
+      scrollerRef={refs.scrollerRef}
       handlers={handlers}
     />
   );

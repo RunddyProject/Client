@@ -1,96 +1,118 @@
 /**
  * useMapScrollSync - Map-Scroll bidirectional synchronization hook
  *
- * This hook extracts the complex scroll synchronization logic from Map.tsx
- * to separate concerns and improve maintainability.
- *
- * Features:
+ * Handles the complex synchronization between map markers and course cards:
  * - Map marker click → scroll card to center
  * - User scroll → update active course
  * - Course list change → auto-scroll to appropriate course
- * - Distinguish programmatic scroll from user scroll
+ * - Distinguishes programmatic scroll from user scroll (loop prevention)
  */
 
 import { useCallback, useEffect, useRef } from 'react';
 
-import type {
-  MapScrollSyncOptions,
-  ScrollSyncActions,
-  ScrollSyncState
-} from '@/features/course/model/refactor-types';
+import type { Course } from '@/features/course/model/types';
 
 /**
- * Hook return type combining state and actions
+ * Options for the scroll sync hook
  */
-export type UseMapScrollSyncReturn = ScrollSyncState & ScrollSyncActions;
-
-/**
- * Extended options including setActiveCourseId for complete synchronization
- */
-export interface MapScrollSyncOptionsExtended extends MapScrollSyncOptions {
+export interface UseMapScrollSyncOptions {
+  /** Current course list */
+  courses: Course[];
+  /** Currently active course ID */
+  activeCourseId: string | null;
+  /** Function to scroll a course card to center */
+  scrollToCenter: (id: string) => void;
+  /** Callback when active course should change */
   setActiveCourseId: (id: string | null) => void;
 }
 
 /**
- * useMapScrollSync - Map-Scroll bidirectional synchronization hook
+ * Return type for the scroll sync hook
+ */
+export interface UseMapScrollSyncReturn {
+  /**
+   * Trigger programmatic scroll to a course card.
+   * Used when marker is clicked on the map.
+   */
+  triggerScrollToCourse: (courseId: string) => void;
+
+  /**
+   * Handle user-initiated scroll.
+   * Only updates active course if scroll was not programmatic.
+   */
+  handleUserScroll: (courseId: string) => void;
+
+  /**
+   * Check if current scroll is programmatic (for external use)
+   */
+  isProgrammaticScroll: () => boolean;
+}
+
+/**
+ * useMapScrollSync - Bidirectional map-scroll synchronization
  *
- * Handles:
- * 1. Marker click → scroll to course card
- * 2. User scroll → update active course ID
- * 3. Course list change → auto-scroll adjustment
+ * This hook manages the complex state required to synchronize:
+ * 1. Map marker clicks with card scrolling
+ * 2. User scrolling with active course updates
+ * 3. Course list changes with automatic scroll adjustments
  *
- * @param options - Scroll sync options including refs and callbacks
- * @returns Scroll sync state and action handlers
+ * The key challenge is preventing infinite loops when programmatic
+ * scrolling triggers scroll events that would normally update state.
+ *
+ * @param options - Configuration options
+ * @returns Scroll sync actions and state checkers
  *
  * @example
  * ```ts
- * const {
- *   triggerScrollToCourse,
- *   handleUserScroll,
- *   isProgrammaticScroll
- * } = useMapScrollSync({
- *   scrollerRef,
+ * const { triggerScrollToCourse, handleUserScroll } = useMapScrollSync({
  *   courses,
  *   activeCourseId,
  *   scrollToCenter,
- *   onScrollChange,
  *   setActiveCourseId
  * });
  *
  * // On marker click
- * triggerScrollToCourse('course-uuid');
+ * const handleMarkerClick = (uuid: string) => {
+ *   triggerScrollToCourse(uuid);
+ * };
  *
  * // On user scroll (from useCenteredActiveByScroll)
- * handleUserScroll('course-uuid');
+ * useCenteredActiveByScroll({
+ *   container: scrollerRef,
+ *   itemAttr: 'uuid',
+ *   onChange: handleUserScroll
+ * });
  * ```
  */
 export function useMapScrollSync(
-  options: MapScrollSyncOptionsExtended
+  options: UseMapScrollSyncOptions
 ): UseMapScrollSyncReturn {
-  const {
-    courses,
-    activeCourseId,
-    scrollToCenter,
-    onScrollChange,
-    setActiveCourseId
-  } = options;
+  const { courses, activeCourseId, scrollToCenter, setActiveCourseId } =
+    options;
 
   // Internal refs for tracking scroll state
+  // Using refs instead of state to avoid re-renders and race conditions
   const isProgrammaticScrollRef = useRef(false);
   const hasScrolledToActiveRef = useRef(false);
   const previousFirstCourseIdRef = useRef<string | null>(null);
 
   /**
-   * Trigger programmatic scroll to a course card
-   * Used when marker is clicked on the map
+   * Trigger programmatic scroll to a course card.
+   * Sets flag to prevent handleUserScroll from firing during animation.
    */
   const triggerScrollToCourse = useCallback(
     (courseId: string) => {
+      // Update active course first
       setActiveCourseId(courseId);
+
+      // Mark as programmatic scroll
       isProgrammaticScrollRef.current = true;
 
+      // Use RAF to ensure DOM is ready
       requestAnimationFrame(() => {
         scrollToCenter(courseId);
+
+        // Reset flag after scroll animation completes (~500ms)
         setTimeout(() => {
           isProgrammaticScrollRef.current = false;
         }, 500);
@@ -100,26 +122,28 @@ export function useMapScrollSync(
   );
 
   /**
-   * Handle user-initiated scroll
-   * Only updates active course if scroll was not programmatic
+   * Handle user-initiated scroll.
+   * Only updates active course if scroll was not programmatic.
+   * This prevents the loop: marker click → scroll → detect scroll → update state
    */
   const handleUserScroll = useCallback(
     (courseId: string) => {
+      // Skip if this scroll was triggered programmatically
       if (isProgrammaticScrollRef.current) {
         return;
       }
-      onScrollChange(courseId);
+
+      // User scrolled manually, update active course
+      setActiveCourseId(courseId);
     },
-    [onScrollChange]
+    [setActiveCourseId]
   );
 
   /**
-   * Reset scroll state (for external control)
+   * Check if current scroll is programmatic
    */
-  const resetScrollState = useCallback(() => {
-    isProgrammaticScrollRef.current = false;
-    hasScrolledToActiveRef.current = false;
-    previousFirstCourseIdRef.current = null;
+  const isProgrammaticScroll = useCallback(() => {
+    return isProgrammaticScrollRef.current;
   }, []);
 
   /**
@@ -140,7 +164,7 @@ export function useMapScrollSync(
 
     const currentFirstCourseId = courses[0]?.uuid;
 
-    // Scenario 1: Course list changed (search area changed)
+    // Scenario 1: Course list changed (e.g., search area changed)
     const coursesChanged =
       previousFirstCourseIdRef.current !== null &&
       previousFirstCourseIdRef.current !== currentFirstCourseId;
@@ -152,7 +176,7 @@ export function useMapScrollSync(
       hasScrolledToActiveRef.current = false;
       isProgrammaticScrollRef.current = true;
 
-      // Double requestAnimationFrame for layout stabilization
+      // Double RAF for layout stabilization
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           scrollToCenter(newId);
@@ -208,15 +232,9 @@ export function useMapScrollSync(
   }, [courses, activeCourseId, scrollToCenter, setActiveCourseId]);
 
   return {
-    // State (read-only snapshots)
-    isProgrammaticScroll: isProgrammaticScrollRef.current,
-    hasScrolledToActive: hasScrolledToActiveRef.current,
-    previousFirstCourseId: previousFirstCourseIdRef.current,
-
-    // Actions
     triggerScrollToCourse,
     handleUserScroll,
-    resetScrollState
+    isProgrammaticScroll
   };
 }
 

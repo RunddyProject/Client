@@ -23,37 +23,71 @@ export interface CourseMapProps {
 }
 
 /**
- * CourseMapContainer의 반환 타입 (비즈니스 로직)
+ * CourseMapContainerData - Grouped return type for better DX
+ *
+ * Groups related data by domain for readability while maintaining
+ * flat prop spreading for React.memo optimization in the View.
  */
 export interface CourseMapContainerData {
-  // 코스 데이터
-  courses: Course[];
-  activeCourse: Course | null;
-  activeCourseId: string | null;
-  coursePointList: CoursePoint[];
-  isFetching: boolean;
+  /**
+   * 1. Data Group - Business data and derived states
+   */
+  data: CourseMapDataGroup;
 
-  // 지도 상태
-  mapRef: RefObject<naver.maps.Map | null>;
-  viewport: MapViewportState;
+  /**
+   * 2. Status Group - Loading and UI states
+   */
+  status: CourseMapStatusGroup;
+
+  /**
+   * 3. Map Config - Initial map settings
+   */
+  mapConfig: CourseMapConfigGroup;
+
+  /**
+   * 4. Refs - DOM and instance references
+   */
+  refs: CourseMapRefsGroup;
+
+  /**
+   * 5. Handlers - Memoized event handlers
+   */
+  handlers: CourseMapHandlers;
+}
+
+/**
+ * Data group containing business data and derived states
+ */
+export interface CourseMapDataGroup {
+  courses: Course[];
+  activeCourseId: string | null;
+  displayPoints: CoursePoint[];
+  markers: MarkerInput[];
+  activeColor: RUNDDY_COLOR;
+}
+
+/**
+ * Status group containing loading and UI states
+ */
+export interface CourseMapStatusGroup {
+  isFetching: boolean;
+  isLocationLoading: boolean;
+  showSearchButton: boolean;
+}
+
+/**
+ * Map config group containing initial map settings
+ */
+export interface CourseMapConfigGroup {
   initialCenter: { lat: number; lng: number } | null;
   initialZoom: number | undefined;
+}
 
-  // UI 상태
-  showSearchButton: boolean;
-  isLocationLoading: boolean;
-
-  // 이벤트 핸들러
-  handlers: CourseMapHandlers;
-
-  // 스크롤 관련
+/**
+ * Refs group containing DOM and instance references
+ */
+export interface CourseMapRefsGroup {
   scrollerRef: RefObject<HTMLDivElement | null>;
-  scrollToCenter: (id: string) => void;
-
-  // 마커 데이터
-  markers: MarkerInput[];
-  displayPoints: CoursePoint[];
-  activeColor: RUNDDY_COLOR;
 }
 
 /**
@@ -69,31 +103,20 @@ export interface CourseMapHandlers {
 }
 
 /**
- * CourseMapView의 Props (순수 UI)
+ * CourseMapView Props - Flat structure for React.memo optimization
+ *
+ * All props are flat (not nested) to ensure shallow comparison works
+ * correctly with React.memo. The Container spreads grouped data into
+ * these flat props.
  */
-export interface CourseMapViewProps {
-  // 데이터
-  courses: Course[];
-  activeCourse: Course | null;
-  activeCourseId: string | null;
-  markers: MarkerInput[];
-  displayPoints: CoursePoint[];
-  activeColor: RUNDDY_COLOR;
-
-  // 지도 상태
-  mapRef: RefObject<naver.maps.Map | null>;
-  initialCenter: { lat: number; lng: number } | null;
-  initialZoom: number | undefined;
-
-  // UI 상태
-  showSearchButton: boolean;
-  isFetching: boolean;
-  isLocationLoading: boolean;
-
-  // 스크롤
+export interface CourseMapViewProps
+  extends CourseMapDataGroup,
+    CourseMapStatusGroup,
+    CourseMapConfigGroup {
+  // Refs (passed individually, not as group)
   scrollerRef: RefObject<HTMLDivElement | null>;
 
-  // 이벤트 핸들러
+  // Handlers (passed as group since they're memoized together)
   handlers: CourseMapHandlers;
 }
 
