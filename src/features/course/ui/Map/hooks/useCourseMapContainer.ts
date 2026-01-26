@@ -149,6 +149,13 @@ export function useCourseMapContainer(
     mapRef.current
   );
 
+  // CRITICAL: Store viewport in ref to avoid dependency in handlers
+  // This prevents handler recreation on every map movement
+  const viewportRef = useRef(viewport);
+  useEffect(() => {
+    viewportRef.current = viewport;
+  }, [viewport]);
+
   // ============================================================================
   // Course Data Fetching
   // ============================================================================
@@ -256,28 +263,31 @@ export function useCourseMapContainer(
 
   /**
    * Handle search at a given center position
+   * Uses viewportRef to avoid dependency on viewport state
    */
   const handleSearch = useCallback(
     (center: { lat: number; lng: number }) => {
       const zoom = mapRef.current?.getZoom?.() || DEFAULT_ZOOM;
+      const radius = viewportRef.current.radius;
 
-      setLastSearchedAreaRef.current(center, viewport.radius, zoom);
+      setLastSearchedAreaRef.current(center, radius, zoom);
       resetMovedByUser();
 
       if (mapRef.current) {
         mapRef.current.setCenter(new naver.maps.LatLng(center.lat, center.lng));
       }
     },
-    [viewport.radius, resetMovedByUser]
+    [resetMovedByUser]
   );
 
   /**
    * Search at current map center (or keyword center)
+   * Uses viewportRef to avoid dependency on viewport.center
    */
   const handleSearchHere = useCallback(() => {
-    const center = keywordCenter ?? viewport.center;
+    const center = keywordCenter ?? viewportRef.current.center;
     handleSearch(center);
-  }, [keywordCenter, viewport.center, handleSearch]);
+  }, [keywordCenter, handleSearch]);
 
   /**
    * Search at user's current GPS location
@@ -326,8 +336,9 @@ export function useCourseMapContainer(
     map.setZoom(lastSearchedZoom ?? DEFAULT_ZOOM);
 
     const zoom = map.getZoom();
-    setLastSearchedAreaRef.current(keywordCenter, viewport.radius, zoom);
-  }, [keywordCenter, lastSearchedZoom, viewport.radius]);
+    const radius = viewportRef.current.radius;
+    setLastSearchedAreaRef.current(keywordCenter, radius, zoom);
+  }, [keywordCenter, lastSearchedZoom]);
 
   // ============================================================================
   // Map View Persistence Effect (save on idle)
