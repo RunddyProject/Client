@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { memo, useState, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import { useCourseCount } from '@/features/course/hooks/useCourseCount';
@@ -122,7 +122,11 @@ const FilterChipsBar = ({
   );
 };
 
-const CourseFilter = ({ className }: { className?: string }) => {
+const CourseFilter = memo(function CourseFilter({
+  className
+}: {
+  className?: string;
+}) {
   const [open, setOpen] = useState(false);
   const [params] = useSearchParams();
   const navigate = useNavigate();
@@ -476,6 +480,6 @@ const CourseFilter = ({ className }: { className?: string }) => {
       </DialogPortal>
     </Dialog>
   );
-};
+});
 
 export default CourseFilter;
