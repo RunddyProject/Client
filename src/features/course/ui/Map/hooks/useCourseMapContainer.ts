@@ -381,37 +381,62 @@ export function useCourseMapContainer(
   );
 
   // ============================================================================
-  // Return Grouped Data for DX
+  // Memoized Group Objects for Stable References
   // ============================================================================
-  return {
-    // Group 1: Business data and derived states
-    data: {
+
+  /**
+   * CRITICAL: Each group must be memoized to prevent React.memo from failing.
+   * Without memoization, spreading new objects passes the same primitive values
+   * but array/object references (courses, markers) would still trigger re-renders.
+   */
+
+  // Group 1: Business data (memoized to keep array references stable)
+  const data = useMemo(
+    () => ({
       courses,
       activeCourseId,
       displayPoints,
       markers,
       activeColor
-    },
+    }),
+    [courses, activeCourseId, displayPoints, markers, activeColor]
+  );
 
-    // Group 2: Loading and UI states
-    status: {
+  // Group 2: Loading and UI states
+  const status = useMemo(
+    () => ({
       isFetching,
       isLocationLoading,
       showSearchButton
-    },
+    }),
+    [isFetching, isLocationLoading, showSearchButton]
+  );
 
-    // Group 3: Initial map settings
-    mapConfig: {
+  // Group 3: Initial map settings
+  const mapConfig = useMemo(
+    () => ({
       initialCenter,
       initialZoom
-    },
+    }),
+    [initialCenter, initialZoom]
+  );
 
-    // Group 4: DOM and instance references
-    refs: {
+  // Group 4: DOM references (refs are stable, but wrap for consistency)
+  const refs = useMemo(
+    () => ({
       scrollerRef
-    },
+    }),
+    [scrollerRef]
+  );
 
-    // Group 5: Memoized event handlers
+  // ============================================================================
+  // Return Memoized Groups
+  // ============================================================================
+  return {
+    data,
+    status,
+    mapConfig,
+    refs,
     handlers
   };
 }

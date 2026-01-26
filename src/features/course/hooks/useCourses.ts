@@ -3,7 +3,7 @@ import {
   useQuery,
   useQueryClient
 } from '@tanstack/react-query';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router';
 
 import { CoursesApi } from '@/features/course/api/course.api';
@@ -127,8 +127,12 @@ export function useCourses({
     placeholderData: keepPreviousData
   });
 
+  // Memoize courses to prevent new array reference when data is undefined
+  // CRITICAL: `?? []` creates a new array every render - use useMemo instead
+  const courses = useMemo(() => query.data ?? [], [query.data]);
+
   return {
-    courses: query.data ?? [],
+    courses,
     isLoading: query.isLoading,
     isFetching: query.isFetching,
     isError: query.isError,
