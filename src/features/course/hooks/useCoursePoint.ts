@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 import { CoursesApi } from '@/features/course/api/course.api';
 import {
@@ -21,8 +22,11 @@ export function useCoursePoint(uuid: Course['uuid']) {
     }
   });
 
+  // Memoize to prevent new array reference when data is undefined
+  const coursePointList = useMemo(() => query.data ?? [], [query.data]);
+
   return {
-    coursePointList: query.data ?? [],
+    coursePointList,
     isLoading: query.isLoading,
     isFetching: query.isFetching,
     isError: query.isError,

@@ -169,10 +169,9 @@ export const CourseMapView = memo(function CourseMapView({
 /**
  * CourseCardsSection - Renders the course cards based on count
  *
- * Separated into its own component for clarity, but not memoized
- * since it's only rendered within CourseMapView.
+ * Memoized to prevent re-renders when parent re-renders with unchanged courses.
  */
-function CourseCardsSection({
+const CourseCardsSection = memo(function CourseCardsSection({
   courses,
   scrollerRef
 }: Pick<CourseMapViewProps, 'courses' | 'scrollerRef'>) {
@@ -226,6 +225,6 @@ function CourseCardsSection({
       ))}
     </div>
   );
-}
+});
 
 export default CourseMapView;

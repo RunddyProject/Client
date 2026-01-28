@@ -149,6 +149,13 @@ export function useCourseMapContainer(
     mapRef.current
   );
 
+  // CRITICAL: Store viewport in ref to avoid dependency in handlers
+  // This prevents handler recreation on every map movement
+  const viewportRef = useRef(viewport);
+  useEffect(() => {
+    viewportRef.current = viewport;
+  }, [viewport]);
+
   // ============================================================================
   // Course Data Fetching
   // ============================================================================
@@ -256,28 +263,31 @@ export function useCourseMapContainer(
 
   /**
    * Handle search at a given center position
+   * Uses viewportRef to avoid dependency on viewport state
    */
   const handleSearch = useCallback(
     (center: { lat: number; lng: number }) => {
       const zoom = mapRef.current?.getZoom?.() || DEFAULT_ZOOM;
+      const radius = viewportRef.current.radius;
 
-      setLastSearchedAreaRef.current(center, viewport.radius, zoom);
+      setLastSearchedAreaRef.current(center, radius, zoom);
       resetMovedByUser();
 
       if (mapRef.current) {
         mapRef.current.setCenter(new naver.maps.LatLng(center.lat, center.lng));
       }
     },
-    [viewport.radius, resetMovedByUser]
+    [resetMovedByUser]
   );
 
   /**
    * Search at current map center (or keyword center)
+   * Uses viewportRef to avoid dependency on viewport.center
    */
   const handleSearchHere = useCallback(() => {
-    const center = keywordCenter ?? viewport.center;
+    const center = keywordCenter ?? viewportRef.current.center;
     handleSearch(center);
-  }, [keywordCenter, viewport.center, handleSearch]);
+  }, [keywordCenter, handleSearch]);
 
   /**
    * Search at user's current GPS location
@@ -326,8 +336,9 @@ export function useCourseMapContainer(
     map.setZoom(lastSearchedZoom ?? DEFAULT_ZOOM);
 
     const zoom = map.getZoom();
-    setLastSearchedAreaRef.current(keywordCenter, viewport.radius, zoom);
-  }, [keywordCenter, lastSearchedZoom, viewport.radius]);
+    const radius = viewportRef.current.radius;
+    setLastSearchedAreaRef.current(keywordCenter, radius, zoom);
+  }, [keywordCenter, lastSearchedZoom]);
 
   // ============================================================================
   // Map View Persistence Effect (save on idle)
@@ -381,37 +392,62 @@ export function useCourseMapContainer(
   );
 
   // ============================================================================
-  // Return Grouped Data for DX
+  // Memoized Group Objects for Stable References
   // ============================================================================
-  return {
-    // Group 1: Business data and derived states
-    data: {
+
+  /**
+   * CRITICAL: Each group must be memoized to prevent React.memo from failing.
+   * Without memoization, spreading new objects passes the same primitive values
+   * but array/object references (courses, markers) would still trigger re-renders.
+   */
+
+  // Group 1: Business data (memoized to keep array references stable)
+  const data = useMemo(
+    () => ({
       courses,
       activeCourseId,
       displayPoints,
       markers,
       activeColor
-    },
+    }),
+    [courses, activeCourseId, displayPoints, markers, activeColor]
+  );
 
-    // Group 2: Loading and UI states
-    status: {
+  // Group 2: Loading and UI states
+  const status = useMemo(
+    () => ({
       isFetching,
       isLocationLoading,
       showSearchButton
-    },
+    }),
+    [isFetching, isLocationLoading, showSearchButton]
+  );
 
-    // Group 3: Initial map settings
-    mapConfig: {
+  // Group 3: Initial map settings
+  const mapConfig = useMemo(
+    () => ({
       initialCenter,
       initialZoom
-    },
+    }),
+    [initialCenter, initialZoom]
+  );
 
-    // Group 4: DOM and instance references
-    refs: {
+  // Group 4: DOM references (refs are stable, but wrap for consistency)
+  const refs = useMemo(
+    () => ({
       scrollerRef
-    },
+    }),
+    [scrollerRef]
+  );
 
-    // Group 5: Memoized event handlers
+  // ============================================================================
+  // Return Memoized Groups
+  // ============================================================================
+  return {
+    data,
+    status,
+    mapConfig,
+    refs,
     handlers
   };
 }

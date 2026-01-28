@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import { Icon } from '@/shared/icons/icon';
@@ -15,7 +15,7 @@ interface SearchProps {
   className?: string;
 }
 
-const Search = ({ className }: SearchProps) => {
+const Search = memo(function Search({ className }: SearchProps) {
   const navigate = useNavigate();
   const [params] = useSearchParams();
 
@@ -88,6 +88,6 @@ const Search = ({ className }: SearchProps) => {
       </Dialog>
     </div>
   );
-};
+});
 
 export default Search;

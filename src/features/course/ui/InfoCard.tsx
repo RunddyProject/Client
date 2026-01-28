@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { useNavigate } from 'react-router';
 
 import { useSanitizedSvg } from '@/features/course/hooks/useSanitizedSvg';
@@ -28,11 +29,11 @@ const courseImageUrl = {
   ETC: ''
 };
 
-const CourseInfoCard = ({
+const CourseInfoCard = memo(function CourseInfoCard({
   course,
   onClick,
   className
-}: CourseInfoCardProps) => {
+}: CourseInfoCardProps) {
   const navigate = useNavigate();
   const { toggle, isSaving } = useToggleBookmark();
 
@@ -100,6 +101,6 @@ const CourseInfoCard = ({
       </div>
     </div>
   );
-};
+});
 
 export default CourseInfoCard;
