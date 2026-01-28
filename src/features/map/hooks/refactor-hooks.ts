@@ -6,11 +6,11 @@
  * 최적화 버전 및 개선된 인터페이스를 정의합니다.
  */
 
-import type { RefObject } from 'react';
 
 import type { CoursePoint } from '@/features/course/model/types';
 import type { LatLngBounds, MarkerInput, MarkerKind } from '@/features/map/model/types';
 import type { RUNDDY_COLOR } from '@/shared/model/types';
+import type { RefObject } from 'react';
 
 // ============================================================================
 // 1. Polyline 최적화 관련

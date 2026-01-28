@@ -5,7 +5,10 @@ import { useLocationStore } from '@/features/map/model/location.store';
 
 import type { CourseFilterPayload } from '@/features/course/model/types';
 
-export function useCourseCount(filters: CourseFilterPayload) {
+export function useCourseCount(
+  filters: CourseFilterPayload,
+  enabled: boolean = true
+) {
   const { lastSearchedCenter, lastSearchedRadius } = useLocationStore();
   const payload = {
     lat: String(lastSearchedCenter?.lat),
@@ -19,7 +22,7 @@ export function useCourseCount(filters: CourseFilterPayload) {
       const { count } = await CoursesApi.getFilteredCourseCount(payload);
       return count;
     },
-    enabled: !!filters,
+    enabled: enabled && !!filters,
     staleTime: 30_000,
     gcTime: 5 * 60_000
   });

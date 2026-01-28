@@ -41,7 +41,7 @@ export function useBulkSanitizedSvg(courses: Course[]): Map<string, string> {
       }
 
       // 새니타이제이션 로직
-      let cleaned = course.svg
+      const cleaned = course.svg
         .replace(scriptPattern, '')
         .replace(eventPattern, '');
 

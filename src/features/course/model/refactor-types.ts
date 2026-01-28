@@ -5,11 +5,11 @@
  * TypeScript Interface와 Hook Signature를 정의합니다.
  */
 
-import type { RefObject } from 'react';
 
 import type { Course, CoursePoint } from '@/features/course/model/types';
 import type { MarkerInput } from '@/features/map/model/types';
 import type { RUNDDY_COLOR } from '@/shared/model/types';
+import type { RefObject } from 'react';
 
 // ============================================================================
 // 1. CourseMap 컴포넌트 분리를 위한 타입 정의

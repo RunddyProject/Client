@@ -1,16 +1,20 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 
 import { useCourses } from '@/features/course/hooks/useCourses';
 import CourseFilter from '@/features/course/ui/Filter';
 import CourseInfoCard from '@/features/course/ui/InfoCard';
 import Search from '@/features/course/ui/Search';
 import { useLocationStore } from '@/features/map/model/location.store';
+import { useVirtualScroll } from '@/shared/hooks/useVirtualScroll';
 import { Icon } from '@/shared/icons/icon';
 import { Button } from '@/shared/ui/primitives/button';
 
 interface CourseListProps {
   onViewModeChange: (mode: 'map' | 'list') => void;
 }
+
+// Card height: 60px (image) + 22px (top padding) + 22px (bottom padding) + 1px (border)
+const ITEM_HEIGHT = 105;
 
 const CourseList = ({ onViewModeChange }: CourseListProps) => {
   const {
@@ -26,16 +30,40 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  // ✅ Performance optimization: Virtual scroll for large lists
+  const { visibleItems, totalSize, virtualizer } = useVirtualScroll(
+    scrollContainerRef,
+    {
+      itemCount: courses.length,
+      itemSize: ITEM_HEIGHT,
+      overscan: 3,
+      orientation: 'vertical'
+    }
+  );
+
+  // Restore scroll position on mount
   useEffect(() => {
     if (scrollContainerRef.current && lastListScrollPosition > 0) {
       scrollContainerRef.current.scrollTop = lastListScrollPosition;
     }
   }, [lastListScrollPosition]);
 
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const scrollTop = e.currentTarget.scrollTop;
-    setLastListScrollPosition(scrollTop);
-  };
+  // Save scroll position on scroll
+  const handleScroll = useCallback(() => {
+    if (scrollContainerRef.current) {
+      setLastListScrollPosition(scrollContainerRef.current.scrollTop);
+    }
+  }, [setLastListScrollPosition]);
+
+  // Measure items after render for dynamic sizing
+  const measureElement = useCallback(
+    (element: HTMLElement | null) => {
+      if (element) {
+        virtualizer.measureElement(element);
+      }
+    },
+    [virtualizer]
+  );
 
   return (
     <div className='flex h-dvh flex-col overflow-hidden px-5 pt-[calc(env(safe-area-inset-top)+52px)]'>
@@ -49,21 +77,42 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
         <CourseFilter />
       </div>
 
-      {/* Course List */}
+      {/* Course List - Virtualized */}
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className='no-scrollbar flex-1 touch-pan-y overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+80px)]'
+        className='no-scrollbar flex-1 touch-pan-y overflow-y-auto'
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {courses.length > 0 ? (
-          courses.map((course) => (
-            <CourseInfoCard
-              key={course.uuid}
-              course={course}
-              className='border-b-g-20 border-b py-5.5 first:pt-0 last:border-0'
-            />
-          ))
+          <div
+            className='relative w-full pb-[calc(env(safe-area-inset-bottom)+80px)]'
+            style={{ height: totalSize }}
+          >
+            {visibleItems.map((virtualItem) => {
+              const course = courses[virtualItem.index];
+              const isFirst = virtualItem.index === 0;
+              const isLast = virtualItem.index === courses.length - 1;
+
+              return (
+                <div
+                  key={course.uuid}
+                  ref={measureElement}
+                  data-index={virtualItem.index}
+                  className='absolute left-0 w-full'
+                  style={{
+                    top: virtualItem.start,
+                    height: `${virtualItem.size}px`
+                  }}
+                >
+                  <CourseInfoCard
+                    course={course}
+                    className={`border-b-g-20 h-full border-b py-5.5 ${isFirst ? 'pt-0' : ''} ${isLast ? 'border-0' : ''}`}
+                  />
+                </div>
+              );
+            })}
+          </div>
         ) : (
           <div className='flex flex-col items-center space-y-4 pt-[150px]'>
             <Icon name='empty_graphic' size={100} />

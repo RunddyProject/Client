@@ -11,8 +11,8 @@
  * 3. View receives FLAT props (shallow comparison works correctly)
  */
 
-import { useCourseMapContainer } from './hooks/useCourseMapContainer';
 import { CourseMapView } from './CourseMapView';
+import { useCourseMapContainer } from './hooks/useCourseMapContainer';
 
 import type { CourseMapProps } from '@/features/course/model/refactor-types';
 
