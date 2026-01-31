@@ -749,22 +749,22 @@ src/features/course/ui/List.tsx
 
 ### ✅ Critical
 
-- [ ] `useSanitizedSvg` 훅 구현 및 InfoCard 적용
-- [ ] `useOptimizedPolylineCoordinates` 훅 구현 및 useGpxPolyline 적용
-- [ ] Map.tsx:56 useEffect 의존성 배열 추가
+- [x] `useSanitizedSvg` 훅 구현 및 InfoCard 적용
+- [x] `useOptimizedPolylineCoordinates` 훅 구현 및 useGpxPolyline 적용
+- [x] Map.tsx:56 useEffect 의존성 배열 추가
 
 ### ✅ High Priority
 
-- [ ] `useOptimizedMarkers` 훅 구현 및 Map 적용
-- [ ] `useVirtualScroll` 훅 구현 및 List 적용
-- [ ] Filter 중복 API 호출 제거
+- [x] `useOptimizedMarkers` 훅 구현 및 Map 적용
+- [x] `useVirtualScroll` 훅 구현 및 List 적용 (TanStack Virtual)
+- [x] Filter 중복 API 호출 제거 (다이얼로그 open + draft 변경 시에만 호출)
 
 ### ✅ Medium Priority
 
-- [ ] `useMapScrollSync` 훅 구현
-- [ ] `useCourseMapContainer` 통합 훅 구현
-- [ ] Container/View 패턴으로 분리
-- [ ] 의존성 배열 최적화 (useGpxPolyline, useMarkers)
+- [x] `useMapScrollSync` 훅 구현
+- [x] `useCourseMapContainer` 통합 훅 구현
+- [x] Container/View 패턴으로 분리
+- [x] 의존성 배열 최적화 (useGpxPolyline, useMarkers)
 
 ---
 

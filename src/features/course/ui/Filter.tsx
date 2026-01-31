@@ -204,9 +204,11 @@ const CourseFilter = memo(function CourseFilter({
     userLocation: lastSearchedCenter,
     radius: lastSearchedRadius
   });
-  const { count } = useCourseCount(payload);
 
+  // ✅ Performance optimization: Only fetch count when dialog is open AND draft differs from applied
   const isFilterChanged = !deepEqual(draft, applied);
+  const { count } = useCourseCount(payload, open && isFilterChanged);
+
   const displayCount = isFilterChanged ? count : courses.length;
 
   const setDistanceRange = (range: [number, number]) => {

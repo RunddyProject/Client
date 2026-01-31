@@ -6,9 +6,7 @@
  * 구현부는 제외하고 타입 정의만 포함합니다.
  */
 
-import type { RefObject } from 'react';
 
-import type { Course, CoursePoint } from '@/features/course/model/types';
 import type {
   AppliedFilterInfo,
   CourseChangeDetection,
@@ -28,7 +26,9 @@ import type {
   VirtualScrollOptions,
   VirtualScrollRange
 } from '@/features/course/model/refactor-types';
+import type { Course, CoursePoint } from '@/features/course/model/types';
 import type { RUNDDY_COLOR } from '@/shared/model/types';
+import type { RefObject } from 'react';
 
 // ============================================================================
 // 1. 코스 선택 관련 훅
