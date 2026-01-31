@@ -72,6 +72,7 @@ function CourseInfoMap() {
         focusKey={course.uuid}
         color={activeColor}
         fitEnabled={!hasSavedState}
+        panEnabled={false}
         className='h-full w-full'
       />
     </div>
