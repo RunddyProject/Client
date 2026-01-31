@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
 import { useCourseDetail } from '@/features/course/hooks/useCourseDetail';
@@ -13,8 +12,6 @@ import type { RUNDDY_COLOR } from '@/shared/model/types';
 
 function CourseInfoMap() {
   const navigate = useNavigate();
-  const mapRef = useRef<naver.maps.Map | null>(null);
-  const idleListenerRef = useRef<naver.maps.MapEventListener | null>(null);
 
   const { uuid } = useParams<{ uuid: Course['uuid'] }>();
 
@@ -22,41 +19,6 @@ function CourseInfoMap() {
 
   // Get saved map state from info page transition
   const courseDetailMapState = useLocationStore((s) => s.courseDetailMapState);
-  const setCourseDetailMapState = useLocationStore(
-    (s) => s.setCourseDetailMapState
-  );
-
-  const handleMapInit = useCallback(
-    (map: naver.maps.Map) => {
-      mapRef.current = map;
-
-      // Register idle event listener to save map state after user interactions
-      idleListenerRef.current = naver.maps.Event.addListener(
-        map,
-        'idle',
-        () => {
-          if (!course) return;
-          const center = map.getCenter();
-          setCourseDetailMapState({
-            courseUuid: course.uuid,
-            center: { lat: center.y, lng: center.x },
-            zoom: map.getZoom()
-          });
-        }
-      );
-    },
-    [course, setCourseDetailMapState]
-  );
-
-  // Cleanup idle listener on unmount
-  useEffect(() => {
-    return () => {
-      if (idleListenerRef.current) {
-        naver.maps.Event.removeListener(idleListenerRef.current);
-        idleListenerRef.current = null;
-      }
-    };
-  }, []);
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -110,7 +72,6 @@ function CourseInfoMap() {
         focusKey={course.uuid}
         color={activeColor}
         fitEnabled={!hasSavedState}
-        onInit={handleMapInit}
         className='h-full w-full'
       />
     </div>

@@ -34,12 +34,10 @@ import type { RUNDDY_COLOR } from '@/shared/model/types';
 const CourseInfo = () => {
   const navigate = useNavigate();
   const { setConfig, resetConfig } = useHeader();
-  const courseDetailMapState = useLocationStore((s) => s.courseDetailMapState);
+  const mapRef = useRef<naver.maps.Map | null>(null);
   const setCourseDetailMapState = useLocationStore(
     (s) => s.setCourseDetailMapState
   );
-  const mapRef = useRef<naver.maps.Map | null>(null);
-  const idleListenerRef = useRef<naver.maps.MapEventListener | null>(null);
 
   const { uuid } = useParams<{
     uuid: Course['uuid'];
@@ -51,45 +49,27 @@ const CourseInfo = () => {
   const { courseReviewCount } = useCourseReview(uuid ?? '');
   const { toggle, isSaving } = useToggleBookmark();
 
-  // Check if we have saved state for this course
-  const hasSavedState = courseDetailMapState?.courseUuid === course?.uuid;
-
-  const handleMapInit = useCallback(
-    (map: naver.maps.Map) => {
-      mapRef.current = map;
-
-      // Register idle event listener to save map state after fitBounds
-      idleListenerRef.current = naver.maps.Event.addListener(
-        map,
-        'idle',
-        () => {
-          if (!course) return;
-          const center = map.getCenter();
-          setCourseDetailMapState({
-            courseUuid: course.uuid,
-            center: { lat: center.y, lng: center.x },
-            zoom: map.getZoom()
-          });
-        }
-      );
-    },
-    [course, setCourseDetailMapState]
-  );
-
-  // Cleanup idle listener on unmount
-  useEffect(() => {
-    return () => {
-      if (idleListenerRef.current) {
-        naver.maps.Event.removeListener(idleListenerRef.current);
-        idleListenerRef.current = null;
-      }
-    };
+  // Simple onInit - just save map reference, no dependencies
+  const handleMapInit = useCallback((map: naver.maps.Map) => {
+    mapRef.current = map;
   }, []);
 
+  // Save map state on click before navigating
   const handleMapClick = useCallback(() => {
     if (!course) return;
+
+    // Save current map state for seamless transition
+    if (mapRef.current) {
+      const center = mapRef.current.getCenter();
+      setCourseDetailMapState({
+        courseUuid: course.uuid,
+        center: { lat: center.y, lng: center.x },
+        zoom: mapRef.current.getZoom()
+      });
+    }
+
     navigate(generatePath('/course/:uuid/map', { uuid: course.uuid }));
-  }, [course, navigate]);
+  }, [course, navigate, setCourseDetailMapState]);
 
   useEffect(() => {
     if (!course) return;
@@ -138,20 +118,13 @@ const CourseInfo = () => {
     toggle({ courseUuid: uuid, isBookmarked: !course.isBookmarked });
   };
 
-  // Use saved state if available for this course
-  const center = hasSavedState
-    ? courseDetailMapState!.center
-    : { lat: course.lat, lng: course.lng };
-  const zoom = hasSavedState ? courseDetailMapState!.zoom : undefined;
-
   return (
     <div className='bg-background flex min-h-screen flex-col'>
       <div className='relative'>
         <div className='h-78 px-5 pt-3'>
           <NaverMap
             key={`course-info-${course.uuid}`}
-            center={center}
-            zoom={zoom}
+            center={{ lat: course.lat, lng: course.lng }}
             points={course.coursePointList}
             bounds={{
               minLat: course.minLat,
@@ -163,8 +136,7 @@ const CourseInfo = () => {
             markerSize={32}
             focusKey={course.uuid}
             color={activeColor}
-            fitEnabled={!hasSavedState}
-            panEnabled={false}
+            fitEnabled
             interactionsEnabled={false}
             onInit={handleMapInit}
             onOverlayClick={handleMapClick}
