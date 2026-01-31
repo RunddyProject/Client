@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import {
   generatePath,
   useNavigate,
@@ -12,7 +12,6 @@ import { useCourseReview } from '@/features/course/hooks/useCourseReview';
 import { SHAPE_TYPE_COLOR } from '@/features/course/model/constants';
 import CourseDetail from '@/features/course/ui/CourseDetail';
 import CourseReview from '@/features/course/ui/CourseReview';
-import { useLocationStore } from '@/features/map/model/location.store';
 import { NaverMap } from '@/features/map/ui/NaverMap';
 import { useToggleBookmark } from '@/features/user/hooks/useToggleBookmark';
 import { Icon } from '@/shared/icons/icon';
@@ -34,10 +33,6 @@ import type { RUNDDY_COLOR } from '@/shared/model/types';
 const CourseInfo = () => {
   const navigate = useNavigate();
   const { setConfig, resetConfig } = useHeader();
-  const mapRef = useRef<naver.maps.Map | null>(null);
-  const setCourseDetailMapState = useLocationStore(
-    (s) => s.setCourseDetailMapState
-  );
 
   const { uuid } = useParams<{
     uuid: Course['uuid'];
@@ -48,28 +43,6 @@ const CourseInfo = () => {
   const { courseDetail: course, isLoading } = useCourseDetail(uuid ?? '');
   const { courseReviewCount } = useCourseReview(uuid ?? '');
   const { toggle, isSaving } = useToggleBookmark();
-
-  // Simple onInit - just save map reference, no dependencies
-  const handleMapInit = useCallback((map: naver.maps.Map) => {
-    mapRef.current = map;
-  }, []);
-
-  // Save map state on click before navigating
-  const handleMapClick = useCallback(() => {
-    if (!course) return;
-
-    // Save current map state for seamless transition
-    if (mapRef.current) {
-      const center = mapRef.current.getCenter();
-      setCourseDetailMapState({
-        courseUuid: course.uuid,
-        center: { lat: center.y, lng: center.x },
-        zoom: mapRef.current.getZoom()
-      });
-    }
-
-    navigate(generatePath('/course/:uuid/map', { uuid: course.uuid }));
-  }, [course, navigate, setCourseDetailMapState]);
 
   useEffect(() => {
     if (!course) return;
@@ -138,8 +111,9 @@ const CourseInfo = () => {
             color={activeColor}
             fitEnabled
             interactionsEnabled={false}
-            onInit={handleMapInit}
-            onOverlayClick={handleMapClick}
+            onOverlayClick={() =>
+              navigate(generatePath('/course/:uuid/map', { uuid: course.uuid }))
+            }
             className='h-full w-full rounded-xl'
           />
         </div>
