@@ -15,6 +15,7 @@ interface Location {
 }
 
 interface CourseMapState {
+  courseUuid: string;
   center: Location;
   zoom: number;
 }
