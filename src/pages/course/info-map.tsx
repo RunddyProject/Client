@@ -2,8 +2,8 @@ import { useNavigate, useParams } from 'react-router';
 
 import { useCourseDetail } from '@/features/course/hooks/useCourseDetail';
 import { SHAPE_TYPE_COLOR } from '@/features/course/model/constants';
+import { useLocationStore } from '@/features/map/model/location.store';
 import { NaverMap } from '@/features/map/ui/NaverMap';
-import { runddyColor } from '@/shared/model/constants';
 import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
 
 import type { Course } from '@/features/course/model/types';
@@ -17,6 +17,9 @@ function CourseInfoMap() {
 
   const { courseDetail: course, isLoading } = useCourseDetail(uuid ?? '');
 
+  // Get saved map state from info page transition
+  const courseDetailMapState = useLocationStore((s) => s.courseDetailMapState);
+
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -28,7 +31,7 @@ function CourseInfoMap() {
 
   const activeColor: RUNDDY_COLOR = course
     ? SHAPE_TYPE_COLOR[course.shapeType]
-    : runddyColor['blue'];
+    : 'blue';
 
   const startPoint = course.coursePointList[0];
   const startMarker: MarkerInput = {
@@ -45,11 +48,19 @@ function CourseInfoMap() {
     kind: 'end'
   };
 
+  // Use saved state if available for this course (seamless transition from info page)
+  const hasSavedState = courseDetailMapState?.courseUuid === course.uuid;
+  const center = hasSavedState
+    ? courseDetailMapState.center
+    : { lat: course.lat, lng: course.lng };
+  const zoom = hasSavedState ? courseDetailMapState.zoom : undefined;
+
   return (
     <div className='relative h-[100dvh]'>
       <NaverMap
         key={`course-info-map-${course.uuid}`}
-        center={{ lat: course.lat, lng: course.lng }}
+        center={center}
+        zoom={zoom}
         points={course.coursePointList}
         bounds={{
           minLat: course.minLat,
@@ -60,7 +71,8 @@ function CourseInfoMap() {
         markers={[startMarker, endMarker]}
         focusKey={course.uuid}
         color={activeColor}
-        fitEnabled
+        fitEnabled={!hasSavedState}
+        panEnabled={false}
         className='h-full w-full'
       />
     </div>

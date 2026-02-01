@@ -6,9 +6,9 @@ import {
   type RefObject
 } from 'react';
 
-import { useOptimizedMarkers } from '@/features/course/hooks/useOptimizedMarkers';
 import { useCoursePoint } from '@/features/course/hooks/useCoursePoint';
 import { useCourses } from '@/features/course/hooks/useCourses';
+import { useOptimizedMarkers } from '@/features/course/hooks/useOptimizedMarkers';
 import {
   SHAPE_TYPE_COLOR,
   DEFAULT_ZOOM
