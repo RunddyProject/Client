@@ -3,15 +3,15 @@ import { useMemo } from 'react';
 import type { Course } from '@/features/course/model/types';
 
 /**
- * 여러 SVG를 일괄 새니타이제이션 (리스트용)
+ * Bulk SVG sanitization for lists
  *
  * @description
- * - 코스 리스트의 모든 SVG를 한 번에 새니타이즈
- * - Map 기반 캐싱으로 중복 계산 방지
- * - 코스 배열이 변경될 때만 재계산
+ * - Sanitizes all SVGs in course list at once
+ * - Map-based caching prevents duplicate calculations
+ * - Recalculates only when course array changes
  *
- * @param courses - 코스 배열
- * @returns 코스 UUID를 키로 하는 새니타이즈된 SVG Map
+ * @param courses - Array of courses
+ * @returns Map of sanitized SVGs keyed by course UUID
  *
  * @example
  * ```ts
@@ -40,7 +40,7 @@ export function useBulkSanitizedSvg(courses: Course[]): Map<string, string> {
         continue;
       }
 
-      // 새니타이제이션 로직
+      // Sanitization logic
       let cleaned = course.svg
         .replace(scriptPattern, '')
         .replace(eventPattern, '');

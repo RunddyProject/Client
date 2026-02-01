@@ -53,7 +53,7 @@ const CourseMap = ({
     useLocationStore.getState().setCurrentMapView
   );
 
-  // ✅ Performance optimization - Critical Fix: Added dependency array
+  // Performance optimization - Critical Fix: Added dependency array
   useEffect(() => {
     setLastSearchedAreaRef.current =
       useLocationStore.getState().setLastSearchedArea;
@@ -110,7 +110,7 @@ const CourseMap = ({
     ? SHAPE_TYPE_COLOR[activeCourse.shapeType]
     : runddyColor['blue'];
 
-  // ✅ Performance optimization: Memoized marker array generation
+  // Performance optimization: Memoized marker array generation
   const markers = useOptimizedMarkers({
     courses,
     activeCourseId,

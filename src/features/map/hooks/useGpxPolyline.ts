@@ -41,7 +41,7 @@ export function useGpxPolyline(
   const interactingRef = useRef(false);
   const lastFitAtRef = useRef(0);
 
-  // ✅ Performance optimization - Critical Fix: Memoized polyline coordinates
+  // Performance optimization - Critical Fix: Memoized polyline coordinates
   const { path: optimizedPath } = useOptimizedPolylineCoordinates({
     points: points ?? [],
     shouldGenerate: !!points?.length
@@ -74,7 +74,7 @@ export function useGpxPolyline(
       polylineRef.current.setMap(map);
     }
 
-    // ✅ Performance optimization: Use memoized path
+    // Performance optimization: Use memoized path
     polylineRef.current.setPath(optimizedPath);
     (polylineRef.current as any).setOptions?.({ strokeColor });
 
@@ -145,7 +145,7 @@ export function useGpxPolyline(
       clearTimer();
       listeners.forEach((l) => naver.maps.Event.removeListener(l));
     };
-    // ✅ Optimized dependency array: removed points, using optimizedPath
+    // Optimized dependency array: removed points, using optimizedPath
   }, [
     mapRef,
     polylineRef,

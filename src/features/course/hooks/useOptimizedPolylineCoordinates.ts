@@ -3,15 +3,15 @@ import { useMemo } from 'react';
 import type { PolylineCoordinatesOptions, PolylineCoordinates } from '@/features/course/model/refactor-types';
 
 /**
- * Polyline 좌표 배열 메모이제이션 훅
+ * Polyline coordinate array memoization hook
  *
  * @description
- * - CoursePoint[] → naver.maps.LatLng[] 변환
- * - useMemo로 points 배열 변경 시에만 재생성
- * - 500개+ 포인트 코스에서 성능 개선 효과 큼
+ * - CoursePoint[] → naver.maps.LatLng[] conversion
+ * - Regenerates only when points array changes using useMemo
+ * - Significant performance improvement for courses with 500+ points
  *
- * @param options - Polyline 좌표 옵션
- * @returns Polyline 좌표 배열 및 메타 정보
+ * @param options - Polyline coordinate options
+ * @returns Polyline coordinate array and metadata
  *
  * @example
  * ```ts
@@ -27,7 +27,7 @@ export function useOptimizedPolylineCoordinates({
   points,
   shouldGenerate
 }: PolylineCoordinatesOptions): PolylineCoordinates {
-  // 1. Polyline 경로 생성 (메모이제이션)
+  // 1. Generate Polyline path (memoized)
   const path = useMemo(() => {
     if (!shouldGenerate || !points?.length) {
       return [];
@@ -36,7 +36,7 @@ export function useOptimizedPolylineCoordinates({
     return points.map((p) => new naver.maps.LatLng(p.lat, p.lng));
   }, [points, shouldGenerate]);
 
-  // 2. 경계 정보 계산 (메모이제이션)
+  // 2. Calculate bounds (memoized)
   const bounds = useMemo(() => {
     if (!points?.length) {
       return null;

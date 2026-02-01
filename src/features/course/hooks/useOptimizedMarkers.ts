@@ -4,16 +4,16 @@ import type { MarkerGenerationOptions } from '@/features/course/model/refactor-t
 import type { MarkerInput } from '@/features/map/model/types';
 
 /**
- * 마커 배열 메모이제이션 훅
+ * Marker array memoization hook
  *
  * @description
- * - 코스 시작점/종료점 마커 생성
- * - 사용자 현재 위치 마커 포함
- * - useMemo로 불필요한 재생성 방지
- * - 의존성: courses, activeCourseId, coursePointList, userLocation
+ * - Generates course start/end point markers
+ * - Includes user current location marker
+ * - Prevents unnecessary regeneration with useMemo
+ * - Dependencies: courses, activeCourseId, coursePointList, userLocation
  *
- * @param options - 마커 생성 옵션
- * @returns 생성된 마커 배열
+ * @param options - Marker generation options
+ * @returns Generated marker array
  *
  * @example
  * ```ts
