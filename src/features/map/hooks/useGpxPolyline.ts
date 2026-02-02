@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, type RefObject } from 'react';
 
+import { useOptimizedPolylineCoordinates } from '@/features/course/hooks/useOptimizedPolylineCoordinates';
 import { runddyColor } from '@/shared/model/constants';
 
 import type { CoursePoint } from '@/features/course/model/types';
@@ -40,6 +41,12 @@ export function useGpxPolyline(
   const interactingRef = useRef(false);
   const lastFitAtRef = useRef(0);
 
+  // Performance optimization - Critical Fix: Memoized polyline coordinates
+  const { path: optimizedPath } = useOptimizedPolylineCoordinates({
+    points: points ?? [],
+    shouldGenerate: !!points?.length
+  });
+
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -67,8 +74,8 @@ export function useGpxPolyline(
       polylineRef.current.setMap(map);
     }
 
-    const path = points.map((p) => new naver.maps.LatLng(p.lat, p.lng));
-    polylineRef.current.setPath(path);
+    // Performance optimization: Use memoized path
+    polylineRef.current.setPath(optimizedPath);
     (polylineRef.current as any).setOptions?.({ strokeColor });
 
     if (fit === 'never') return;
@@ -105,7 +112,7 @@ export function useGpxPolyline(
       if (now - lastFitAtRef.current < 300) return; // avoid rapid consecutive fits
       lastFitAtRef.current = now;
 
-      const b = boundsFromPath(path);
+      const b = boundsFromPath(optimizedPath);
       requestAnimationFrame(() => {
         map.fitBounds(b, {
           top: padding,
@@ -129,7 +136,7 @@ export function useGpxPolyline(
       }
     } else if (fit === 'auto') {
       // Refit only when the path is out of the padded viewport
-      if (!isPathWithinPadding(path, map, padding)) {
+      if (!isPathWithinPadding(optimizedPath, map, padding)) {
         scheduleFit();
       }
     }
@@ -138,11 +145,12 @@ export function useGpxPolyline(
       clearTimer();
       listeners.forEach((l) => naver.maps.Event.removeListener(l));
     };
+    // Optimized dependency array: removed points, using optimizedPath
   }, [
     mapRef,
     polylineRef,
     pathSig,
-    points,
+    optimizedPath,
     color,
     fit,
     trackKey,

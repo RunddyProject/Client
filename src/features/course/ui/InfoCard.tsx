@@ -1,5 +1,7 @@
+import { memo } from 'react';
 import { useNavigate } from 'react-router';
 
+import { useSanitizedSvg } from '@/features/course/hooks/useSanitizedSvg';
 import { GRADE_TO_NAME } from '@/features/course/model/constants';
 import { useToggleBookmark } from '@/features/user/hooks/useToggleBookmark';
 import CourseArtImageUrl from '@/shared/assets/course_art.png';
@@ -27,13 +29,16 @@ const courseImageUrl = {
   ETC: ''
 };
 
-const CourseInfoCard = ({
+const CourseInfoCard = memo(function CourseInfoCard({
   course,
   onClick,
   className
-}: CourseInfoCardProps) => {
+}: CourseInfoCardProps) {
   const navigate = useNavigate();
   const { toggle, isSaving } = useToggleBookmark();
+
+  // Performance optimization: Memoized SVG sanitization
+  const sanitizedSvg = useSanitizedSvg(course.svg);
 
   const handleClick = () => {
     navigate(`/course/${course.uuid}`);
@@ -42,31 +47,6 @@ const CourseInfoCard = ({
   const handleClickBookmark = (e: React.MouseEvent) => {
     e.stopPropagation();
     toggle({ courseUuid: course.uuid, isBookmarked: !course.isBookmarked });
-  };
-
-  const sanitizeSvg = (svg: string): string => {
-    if (!svg) return '';
-
-    const allowedTags = [
-      'svg',
-      'path',
-      'circle',
-      'rect',
-      'line',
-      'polyline',
-      'polygon',
-      'g'
-    ];
-    const tagPattern = new RegExp(`<(${allowedTags.join('|')})([^>]*)>`, 'gi');
-    const scriptPattern = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
-    const eventPattern = /\s+on\w+\s*=/gi;
-
-    const cleaned = svg.replace(scriptPattern, '').replace(eventPattern, '');
-
-    const matches = cleaned.match(tagPattern);
-    if (!matches) return '';
-
-    return cleaned;
   };
 
   return (
@@ -87,7 +67,7 @@ const CourseInfoCard = ({
           />
           <div
             className='absolute inset-0'
-            dangerouslySetInnerHTML={{ __html: sanitizeSvg(course.svg) }}
+            dangerouslySetInnerHTML={{ __html: sanitizedSvg }}
           />
         </div>
       ) : (
@@ -121,6 +101,6 @@ const CourseInfoCard = ({
       </div>
     </div>
   );
-};
+});
 
 export default CourseInfoCard;

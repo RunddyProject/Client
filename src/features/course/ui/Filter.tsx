@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { memo, useState, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import { useCourseCount } from '@/features/course/hooks/useCourseCount';
@@ -122,7 +122,11 @@ const FilterChipsBar = ({
   );
 };
 
-const CourseFilter = ({ className }: { className?: string }) => {
+const CourseFilter = memo(function CourseFilter({
+  className
+}: {
+  className?: string;
+}) {
   const [open, setOpen] = useState(false);
   const [params] = useSearchParams();
   const navigate = useNavigate();
@@ -200,9 +204,11 @@ const CourseFilter = ({ className }: { className?: string }) => {
     userLocation: lastSearchedCenter,
     radius: lastSearchedRadius
   });
-  const { count } = useCourseCount(payload);
 
+  // ✅ Performance optimization: Only fetch count when dialog is open AND draft differs from applied
   const isFilterChanged = !deepEqual(draft, applied);
+  const { count } = useCourseCount(payload, open && isFilterChanged);
+
   const displayCount = isFilterChanged ? count : courses.length;
 
   const setDistanceRange = (range: [number, number]) => {
@@ -476,6 +482,6 @@ const CourseFilter = ({ className }: { className?: string }) => {
       </DialogPortal>
     </Dialog>
   );
-};
+});
 
 export default CourseFilter;

@@ -230,7 +230,6 @@ export class AuthService {
   setAccessTokenManually(token: string): void {
     if (import.meta.env.DEV) {
       this.writeToken(token);
-      console.log('[Auth] Manually set token');
     }
   }
 }

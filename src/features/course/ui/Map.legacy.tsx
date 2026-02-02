@@ -8,6 +8,7 @@ import {
 
 import { useCoursePoint } from '@/features/course/hooks/useCoursePoint';
 import { useCourses } from '@/features/course/hooks/useCourses';
+import { useOptimizedMarkers } from '@/features/course/hooks/useOptimizedMarkers';
 import {
   SHAPE_TYPE_COLOR,
   DEFAULT_ZOOM
@@ -26,7 +27,6 @@ import { runddyColor } from '@/shared/model/constants';
 import { Button } from '@/shared/ui/primitives/button';
 
 import type { Course } from '@/features/course/model/types';
-import type { MarkerInput } from '@/features/map/model/types';
 import type { RUNDDY_COLOR } from '@/shared/model/types';
 
 const CourseMap = ({
@@ -53,12 +53,13 @@ const CourseMap = ({
     useLocationStore.getState().setCurrentMapView
   );
 
+  // Performance optimization - Critical Fix: Added dependency array
   useEffect(() => {
     setLastSearchedAreaRef.current =
       useLocationStore.getState().setLastSearchedArea;
     setCurrentMapViewRef.current =
       useLocationStore.getState().setCurrentMapView;
-  });
+  }, []); // Empty array: runs once on mount only
 
   const [activeCourseId, setActiveCourseId] = useState<string | null>(() => {
     return useLocationStore.getState().activeCourseId;
@@ -108,6 +109,14 @@ const CourseMap = ({
   const activeColor: RUNDDY_COLOR = activeCourse
     ? SHAPE_TYPE_COLOR[activeCourse.shapeType]
     : runddyColor['blue'];
+
+  // Performance optimization: Memoized marker array generation
+  const markers = useOptimizedMarkers({
+    courses,
+    activeCourseId,
+    coursePointList,
+    userLocation
+  });
 
   const scrollerRef = useRef<HTMLDivElement>(null);
   const scrollToCenter = useScrollItemToCenter(
@@ -314,40 +323,7 @@ const CourseMap = ({
         zoom={initialZoom}
         points={displayPoints}
         color={activeColor}
-        markers={[
-          ...courses.flatMap((c) => {
-            const start: MarkerInput = {
-              id: c.uuid,
-              lat: c.lat,
-              lng: c.lng,
-              kind: 'start'
-            };
-            const endPoint =
-              coursePointList.length > 0
-                ? coursePointList[coursePointList.length - 1]
-                : null;
-            if (c.uuid === activeCourseId && endPoint?.lat && endPoint?.lng) {
-              const end: MarkerInput = {
-                id: `${c.uuid}__end`,
-                lat: endPoint.lat,
-                lng: endPoint.lng,
-                kind: 'end'
-              };
-              return [start, end];
-            }
-            return [start];
-          }),
-          ...(userLocation
-            ? [
-                {
-                  id: 'user_current_location',
-                  lat: userLocation.lat,
-                  lng: userLocation.lng,
-                  kind: 'current_location' as const
-                }
-              ]
-            : [])
-        ]}
+        markers={markers}
         focusKey={activeCourseId ?? undefined}
         fitEnabled={false}
         panEnabled={false}
