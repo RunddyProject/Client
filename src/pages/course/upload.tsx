@@ -99,27 +99,17 @@ function CourseUpload() {
   // Show method selection if no GPX data
   if (!gpxData) {
     return (
-      <div className='flex h-dvh flex-col items-center justify-center px-5'>
-        <div className='text-center'>
-          <h2 className='text-title-b18 text-pri mb-2'>코스 등록하기</h2>
-          <p className='text-contents-r15 text-sec mb-6'>
-            GPX 파일을 업로드하여 코스를 등록하세요
-          </p>
-          <button
-            type='button'
-            onClick={() => setShowMethodSheet(true)}
-            className='text-runddy-blue text-contents-m15 underline'
-          >
-            업로드 방식 선택하기
-          </button>
-        </div>
-
-        <UploadMethodSheet
-          open={showMethodSheet}
-          onOpenChange={setShowMethodSheet}
-          onSelectMethod={handleSelectMethod}
-        />
-      </div>
+      <UploadMethodSheet
+        open={showMethodSheet}
+        onOpenChange={(open) => {
+          setShowMethodSheet(open);
+          // Navigate back if sheet is closed without selecting
+          if (!open) {
+            navigate(-1);
+          }
+        }}
+        onSelectMethod={handleSelectMethod}
+      />
     );
   }
 

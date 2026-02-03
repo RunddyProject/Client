@@ -2,12 +2,13 @@ import { useRef } from 'react';
 import { toast } from 'sonner';
 
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle
-} from '@/shared/ui/primitives/sheet';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle
+} from '@/shared/ui/primitives/dialog';
 
 import { UPLOAD_METHOD_LABELS } from '../model/constants';
 
@@ -46,51 +47,55 @@ export function UploadMethodSheet({
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side='bottom' className='rounded-t-3xl px-5 pb-10 pt-3'>
-        {/* Handle bar */}
-        <div className='mb-4 flex justify-center'>
-          <div className='bg-g-30 h-1 w-10 rounded-full' />
-        </div>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogPortal>
+        <DialogOverlay className='fixed inset-0 z-50 bg-black/50' />
+        <DialogContent
+          className='bg-w-100 fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-md rounded-2xl p-5 pt-3 outline-none'
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
+          {/* Handle bar */}
+          <div className='mb-4 flex justify-center'>
+            <div className='bg-g-30 h-1 w-10 rounded-full' />
+          </div>
 
-        <SheetHeader className='mb-4'>
-          <SheetTitle className='text-title-b18 text-pri text-left'>
+          <DialogTitle className='text-title-b18 text-pri mb-4 text-left'>
             GPX 업로드 방식을 선택해 주세요
-          </SheetTitle>
-          <SheetDescription className='sr-only'>
+          </DialogTitle>
+          <DialogDescription className='sr-only'>
             직접 업로드하거나 Strava에서 가져올 수 있습니다
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
 
-        <div>
-          <button
-            type='button'
-            onClick={handleDirectUpload}
-            className='text-contents-r16 text-pri hover:bg-g-10 active:bg-g-20 w-full py-4 text-left transition-colors'
-          >
-            {UPLOAD_METHOD_LABELS.direct}
-          </button>
+          <div>
+            <button
+              type='button'
+              onClick={handleDirectUpload}
+              className='text-contents-r15 text-pri w-full py-3 text-left transition-colors'
+            >
+              {UPLOAD_METHOD_LABELS.direct}
+            </button>
 
-          <div className='bg-g-20 h-px' />
+            <div className='bg-g-20 h-px' />
 
-          <button
-            type='button'
-            onClick={handleStravaImport}
-            className='text-contents-r16 text-pri hover:bg-g-10 active:bg-g-20 w-full py-4 text-left transition-colors'
-          >
-            {UPLOAD_METHOD_LABELS.strava}
-          </button>
-        </div>
+            <button
+              type='button'
+              onClick={handleStravaImport}
+              className='text-contents-r15 text-pri w-full py-3 text-left transition-colors'
+            >
+              {UPLOAD_METHOD_LABELS.strava}
+            </button>
+          </div>
 
-        <input
-          ref={fileInputRef}
-          type='file'
-          accept='.gpx'
-          onChange={handleFileChange}
-          className='hidden'
-          aria-label='GPX 파일 선택'
-        />
-      </SheetContent>
-    </Sheet>
+          <input
+            ref={fileInputRef}
+            type='file'
+            accept='.gpx'
+            onChange={handleFileChange}
+            className='hidden'
+            aria-label='GPX 파일 선택'
+          />
+        </DialogContent>
+      </DialogPortal>
+    </Dialog>
   );
 }
