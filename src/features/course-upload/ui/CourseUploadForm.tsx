@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { ElevationChart } from '@/features/course/ui/ElevationChart';
 import { NaverMap } from '@/features/map/ui/NaverMap';
 import { runddyColor } from '@/shared/model/constants';
+import { SelectButton } from '@/shared/ui/composites/select-button';
 import { Button } from '@/shared/ui/primitives/button';
 import { Input } from '@/shared/ui/primitives/input';
 import { Label } from '@/shared/ui/primitives/label';
@@ -160,25 +161,20 @@ export function CourseUploadForm({
           <Label className='text-contents-b15 text-pri mb-3'>
             이 코스는 마라톤 코스인가요?<span className='text-state-error'>*</span>
           </Label>
-          <ToggleGroup
-            type='single'
-            value={
-              formData.isMarathon === true
-                ? 'yes'
-                : formData.isMarathon === false
-                  ? 'no'
-                  : ''
-            }
-            onValueChange={handleMarathonChange}
-            className='flex gap-3'
-          >
-            <ToggleGroupItem value='yes' className='flex-1'>
+          <div className='flex gap-3'>
+            <SelectButton
+              selected={formData.isMarathon === true}
+              onClick={() => handleMarathonChange('yes')}
+            >
               네
-            </ToggleGroupItem>
-            <ToggleGroupItem value='no' className='flex-1'>
+            </SelectButton>
+            <SelectButton
+              selected={formData.isMarathon === false}
+              onClick={() => handleMarathonChange('no')}
+            >
               아니요
-            </ToggleGroupItem>
-          </ToggleGroup>
+            </SelectButton>
+          </div>
         </div>
 
         {/* Non-marathon specific fields */}

@@ -47,8 +47,13 @@ export function UploadMethodSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side='bottom' className='rounded-t-3xl px-5 pb-10 pt-6'>
-        <SheetHeader className='mb-6'>
+      <SheetContent side='bottom' className='rounded-t-3xl px-5 pb-10 pt-3'>
+        {/* Handle bar */}
+        <div className='mb-4 flex justify-center'>
+          <div className='bg-g-30 h-1 w-10 rounded-full' />
+        </div>
+
+        <SheetHeader className='mb-4'>
           <SheetTitle className='text-title-b18 text-pri text-left'>
             GPX 업로드 방식을 선택해 주세요
           </SheetTitle>
@@ -57,23 +62,23 @@ export function UploadMethodSheet({
           </SheetDescription>
         </SheetHeader>
 
-        <div className='space-y-3'>
+        <div>
           <button
             type='button'
             onClick={handleDirectUpload}
-            className='text-contents-m16 text-pri hover:bg-g-10 active:bg-g-20 flex w-full items-center justify-between rounded-xl border border-transparent bg-white px-4 py-4 text-left transition-colors'
+            className='text-contents-r16 text-pri hover:bg-g-10 active:bg-g-20 w-full py-4 text-left transition-colors'
           >
-            <span>{UPLOAD_METHOD_LABELS.direct}</span>
+            {UPLOAD_METHOD_LABELS.direct}
           </button>
 
-          <div className='bg-g-30 h-px' />
+          <div className='bg-g-20 h-px' />
 
           <button
             type='button'
             onClick={handleStravaImport}
-            className='text-contents-m16 text-pri hover:bg-g-10 active:bg-g-20 flex w-full items-center justify-between rounded-xl border border-transparent bg-white px-4 py-4 text-left transition-colors'
+            className='text-contents-r16 text-pri hover:bg-g-10 active:bg-g-20 w-full py-4 text-left transition-colors'
           >
-            <span>{UPLOAD_METHOD_LABELS.strava}</span>
+            {UPLOAD_METHOD_LABELS.strava}
           </button>
         </div>
 
