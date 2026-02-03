@@ -28,6 +28,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 
 const menuTitles: Record<string, string> = {
   '/': '런디코스',
+  '/course/upload': '코스 등록',
   '/me': '마이페이지'
 };
 
