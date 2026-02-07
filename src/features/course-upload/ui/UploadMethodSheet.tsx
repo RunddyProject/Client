@@ -51,7 +51,7 @@ export function UploadMethodSheet({
       <DialogPortal>
         <DialogOverlay className='fixed inset-0 z-50 bg-black/50' />
         <DialogContent
-          className='bg-w-100 fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-md rounded-2xl p-5 pt-3 outline-none'
+          className='bg-w-100 fixed bottom-4 left-1/2 z-50 w-[calc(100%-32px)] max-w-md -translate-x-1/2 rounded-2xl p-5 pt-3 outline-none'
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           {/* Handle bar */}
