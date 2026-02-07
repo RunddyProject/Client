@@ -1,14 +1,6 @@
+import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { useRef } from 'react';
 import { toast } from 'sonner';
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogOverlay,
-  DialogPortal,
-  DialogTitle
-} from '@/shared/ui/primitives/dialog';
 
 import { UPLOAD_METHOD_LABELS } from '../model/constants';
 
@@ -47,10 +39,10 @@ export function UploadMethodSheet({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogPortal>
-        <DialogOverlay className='fixed inset-0 z-50 bg-black/50' />
-        <DialogContent
+    <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className='fixed inset-0 z-50 bg-black/50' />
+        <DialogPrimitive.Content
           className='bg-w-100 fixed bottom-4 left-1/2 z-50 w-[calc(100%-32px)] max-w-md -translate-x-1/2 rounded-2xl p-5 pt-3 outline-none'
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
@@ -59,12 +51,12 @@ export function UploadMethodSheet({
             <div className='bg-g-30 h-1 w-10 rounded-full' />
           </div>
 
-          <DialogTitle className='text-title-b18 text-pri mb-4 text-left'>
+          <DialogPrimitive.Title className='text-title-b18 text-pri mb-4 text-left'>
             GPX 업로드 방식을 선택해 주세요
-          </DialogTitle>
-          <DialogDescription className='sr-only'>
+          </DialogPrimitive.Title>
+          <DialogPrimitive.Description className='sr-only'>
             직접 업로드하거나 Strava에서 가져올 수 있습니다
-          </DialogDescription>
+          </DialogPrimitive.Description>
 
           <div>
             <button
@@ -94,8 +86,8 @@ export function UploadMethodSheet({
             className='hidden'
             aria-label='GPX 파일 선택'
           />
-        </DialogContent>
-      </DialogPortal>
-    </Dialog>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 }
