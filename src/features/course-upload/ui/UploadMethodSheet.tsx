@@ -1,6 +1,7 @@
-import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { useRef } from 'react';
 import { toast } from 'sonner';
+
+import { DialogPrimitive } from '@/shared/ui/primitives/dialog';
 
 import { UPLOAD_METHOD_LABELS } from '../model/constants';
 
@@ -26,8 +27,9 @@ export function UploadMethodSheet({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Only call onSelectMethod - parent will handle sheet visibility
+      // based on gpxData being set after processing
       onSelectMethod('direct', file);
-      onOpenChange(false);
     }
     // Reset input
     e.target.value = '';
