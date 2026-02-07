@@ -41,52 +41,58 @@ export function UploadMethodSheet({
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className='fixed inset-0 z-50 bg-black/50' />
-        <DialogPrimitive.Content
-          className='bg-w-100 fixed bottom-4 left-1/2 z-50 w-[calc(100%-32px)] max-w-md -translate-x-1/2 rounded-2xl p-5 pt-3 outline-none'
-          onOpenAutoFocus={(e) => e.preventDefault()}
-        >
-          {/* Handle bar */}
-          <div className='mb-4 flex justify-center'>
-            <div className='bg-g-30 h-1 w-10 rounded-full' />
-          </div>
+        {/* Container constrained to max-w-xl */}
+        <div className='fixed inset-0 z-50 mx-auto flex max-w-xl items-end justify-center'>
+          {/* Overlay - only covers the max-w-xl area */}
+          <DialogPrimitive.Overlay className='absolute inset-0 bg-black/50' />
 
-          <DialogPrimitive.Title className='text-title-b18 text-pri mb-4 text-left'>
-            GPX 업로드 방식을 선택해 주세요
-          </DialogPrimitive.Title>
-          <DialogPrimitive.Description className='sr-only'>
-            직접 업로드하거나 Strava에서 가져올 수 있습니다
-          </DialogPrimitive.Description>
+          {/* Content - bottom sheet with margins */}
+          <DialogPrimitive.Content
+            className='bg-w-100 relative z-10 mx-4 mb-4 w-full rounded-2xl p-5 pt-3 outline-none'
+            onOpenAutoFocus={(e) => e.preventDefault()}
+          >
+            {/* Handle bar */}
+            <div className='mb-4 flex justify-center'>
+              <div className='bg-g-30 h-1 w-10 rounded-full' />
+            </div>
 
-          <div>
-            <button
-              type='button'
-              onClick={handleDirectUpload}
-              className='text-contents-r15 text-pri w-full py-3 text-left transition-colors'
-            >
-              {UPLOAD_METHOD_LABELS.direct}
-            </button>
+            <DialogPrimitive.Title className='text-title-b18 text-pri mb-4 text-left'>
+              GPX 업로드 방식을 선택해 주세요
+            </DialogPrimitive.Title>
+            <DialogPrimitive.Description className='sr-only'>
+              직접 업로드하거나 Strava에서 가져올 수 있습니다
+            </DialogPrimitive.Description>
 
-            <div className='bg-g-20 h-px' />
+            <div>
+              <button
+                type='button'
+                onClick={handleDirectUpload}
+                className='text-contents-r15 text-pri w-full py-3 text-left transition-colors'
+              >
+                {UPLOAD_METHOD_LABELS.direct}
+              </button>
 
-            <button
-              type='button'
-              onClick={handleStravaImport}
-              className='text-contents-r15 text-pri w-full py-3 text-left transition-colors'
-            >
-              {UPLOAD_METHOD_LABELS.strava}
-            </button>
-          </div>
+              <div className='bg-g-20 h-px' />
 
-          <input
-            ref={fileInputRef}
-            type='file'
-            accept='.gpx'
-            onChange={handleFileChange}
-            className='hidden'
-            aria-label='GPX 파일 선택'
-          />
-        </DialogPrimitive.Content>
+              <button
+                type='button'
+                onClick={handleStravaImport}
+                className='text-contents-r15 text-pri w-full py-3 text-left transition-colors'
+              >
+                {UPLOAD_METHOD_LABELS.strava}
+              </button>
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type='file'
+              accept='.gpx'
+              onChange={handleFileChange}
+              className='hidden'
+              aria-label='GPX 파일 선택'
+            />
+          </DialogPrimitive.Content>
+        </div>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
   );
