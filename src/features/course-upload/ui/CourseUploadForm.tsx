@@ -57,6 +57,8 @@ export function CourseUploadForm({
   );
 
   // Create markers for start and end points
+  // Use 'upload' as focusKey so markers get colored
+  const FOCUS_KEY = 'upload';
   const markers: MarkerInput[] = useMemo(() => {
     if (!gpxData.points.length) return [];
 
@@ -64,8 +66,8 @@ export function CourseUploadForm({
     const end = gpxData.points[gpxData.points.length - 1];
 
     return [
-      { id: 'start', lat: start.lat, lng: start.lng, kind: 'start' },
-      { id: 'end', lat: end.lat, lng: end.lng, kind: 'end' }
+      { id: FOCUS_KEY, lat: start.lat, lng: start.lng, kind: 'start' },
+      { id: `${FOCUS_KEY}__end`, lat: end.lat, lng: end.lng, kind: 'end' }
     ];
   }, [gpxData.points]);
 
@@ -133,7 +135,9 @@ export function CourseUploadForm({
           className='h-full w-full'
           points={coursePoints}
           markers={markers}
+          markerSize={32}
           bounds={bounds}
+          focusKey={FOCUS_KEY}
           fitEnabled
           interactionsEnabled={false}
           color='blue'
