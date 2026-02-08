@@ -29,10 +29,13 @@ export async function apiRequest<T = unknown>(
 ): Promise<T> {
   const { headers = {}, responseType = 'json', ...restOptions } = options;
 
+  const isFormData = restOptions.body instanceof FormData;
+
   const config: RequestInit = {
     ...restOptions,
     headers: {
-      'Content-Type': 'application/json',
+      // Don't set Content-Type for FormData - browser will set it with boundary
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...headers
     },
     credentials: 'include' // Include cookies for refresh token
@@ -142,6 +145,17 @@ export const api = {
       ...options,
       method: 'PATCH',
       body: data ? JSON.stringify(data) : undefined
+    }),
+
+  postForm: <T = unknown>(endpoint: string, formData: FormData, options?: ApiRequestOptions) =>
+    apiRequest<T>(endpoint, {
+      ...options,
+      method: 'POST',
+      body: formData,
+      headers: {
+        ...options?.headers
+        // Don't set Content-Type - browser will set it with boundary for multipart/form-data
+      }
     }),
 
   getBlob: (endpoint: string, options?: ApiRequestOptions) =>

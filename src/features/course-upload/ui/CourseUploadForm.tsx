@@ -11,29 +11,26 @@ import { ToggleGroup, ToggleGroupItem } from '@/shared/ui/primitives/toggle-grou
 
 import { ENV_TYPE_OPTIONS, SHAPE_TYPE_OPTIONS } from '../model/constants';
 
-import type {
-  CourseUploadFormData,
-  ElevationChartDataPoint,
-  GpxUploadData
-} from '../model/types';
+import type { ElevationChartData } from '@/features/course/lib/elevation';
 import type { CoursePoint } from '@/features/course/model/types';
 import type { LatLngBounds, MarkerInput } from '@/features/map/model/types';
+import type { CoursePreviewData, CourseUploadFormData } from '../model/types';
 
 interface CourseUploadFormProps {
-  gpxData: GpxUploadData;
+  previewData: CoursePreviewData;
   formData: CourseUploadFormData;
   onFormDataChange: (data: CourseUploadFormData) => void;
   startAddress: string;
   endAddress: string;
   isLoadingAddresses: boolean;
-  elevationChartData: ElevationChartDataPoint[];
+  elevationChartData: ElevationChartData;
   isFormValid: boolean;
   isUploading: boolean;
   onSubmit: () => void;
 }
 
 export function CourseUploadForm({
-  gpxData,
+  previewData,
   formData,
   onFormDataChange,
   startAddress,
@@ -44,53 +41,40 @@ export function CourseUploadForm({
   isUploading,
   onSubmit
 }: CourseUploadFormProps) {
-  // Convert GPX points to course points for the map
-  const coursePoints: CoursePoint[] = useMemo(
-    () =>
-      gpxData.points.map((p) => ({
-        pointSeq: p.pointSeq,
-        lat: p.lat,
-        lng: p.lng,
-        ele: p.ele
-      })),
-    [gpxData.points]
-  );
+  // Course points for the map
+  const coursePoints: CoursePoint[] = previewData.coursePointList;
 
   // Create markers for start and end points
   // Use 'upload' as focusKey so markers get colored
   const FOCUS_KEY = 'upload';
   const markers: MarkerInput[] = useMemo(() => {
-    if (!gpxData.points.length) return [];
+    if (!coursePoints.length) return [];
 
-    const start = gpxData.points[0];
-    const end = gpxData.points[gpxData.points.length - 1];
+    const start = coursePoints[0];
+    const end = coursePoints[coursePoints.length - 1];
 
     return [
       { id: FOCUS_KEY, lat: start.lat, lng: start.lng, kind: 'start' },
       { id: `${FOCUS_KEY}__end`, lat: end.lat, lng: end.lng, kind: 'end' }
     ];
-  }, [gpxData.points]);
+  }, [coursePoints]);
 
   // Map bounds
-  const bounds: LatLngBounds = useMemo(
-    () => ({
-      minLat: gpxData.bounds.minLat,
-      maxLat: gpxData.bounds.maxLat,
-      minLng: gpxData.bounds.minLng,
-      maxLng: gpxData.bounds.maxLng
-    }),
-    [gpxData.bounds]
-  );
+  const bounds: LatLngBounds = useMemo(() => {
+    if (!coursePoints.length) {
+      return { minLat: 0, maxLat: 0, minLng: 0, maxLng: 0 };
+    }
 
-  // Calculate elevation chart min/max
-  const { minEle, maxEle } = useMemo(() => {
-    if (!elevationChartData.length) return { minEle: 0, maxEle: 0 };
-    const elevations = elevationChartData.map((d) => d.ele);
+    const lats = coursePoints.map((p) => p.lat);
+    const lngs = coursePoints.map((p) => p.lng);
+
     return {
-      minEle: Math.min(...elevations),
-      maxEle: Math.max(...elevations)
+      minLat: Math.min(...lats),
+      maxLat: Math.max(...lats),
+      minLng: Math.min(...lngs),
+      maxLng: Math.max(...lngs)
     };
-  }, [elevationChartData]);
+  }, [coursePoints]);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onFormDataChange({ ...formData, name: e.target.value });
@@ -254,7 +238,7 @@ export function CourseUploadForm({
             <div className='mb-8'>
               <Label className='text-contents-b15 text-pri mb-3'>코스 길이</Label>
               <div className='bg-g-10 text-sec text-contents-r15 flex h-14 items-center justify-between rounded-xl px-4'>
-                <span>{(gpxData.stats.totalDistance / 1000).toFixed(1)}</span>
+                <span>{(previewData.totalDistance / 1000).toFixed(1)}</span>
                 <span className='text-ter'>km</span>
               </div>
             </div>
@@ -264,15 +248,15 @@ export function CourseUploadForm({
               <div className='mb-3 flex items-center justify-between'>
                 <Label className='text-contents-b15 text-pri'>고도</Label>
                 <div className='text-contents-r13 text-sec flex gap-3'>
-                  <span>상승 {gpxData.stats.elevationGain.toFixed()}m</span>
-                  <span>하강 {gpxData.stats.elevationLoss.toFixed()}m</span>
+                  <span>상승 {elevationChartData.elevationGain}m</span>
+                  <span>하강 {elevationChartData.elevationLoss}m</span>
                 </div>
               </div>
               <div className='bg-g-10 rounded-xl p-4'>
                 <ElevationChart
-                  series={elevationChartData}
-                  minEle={minEle}
-                  maxEle={maxEle}
+                  series={elevationChartData.series}
+                  minEle={elevationChartData.minEle}
+                  maxEle={elevationChartData.maxEle}
                   height={160}
                   color={runddyColor.blue}
                 />

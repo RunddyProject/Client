@@ -4,10 +4,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { CourseUploadApi } from '../api/course-upload.api';
 
 import type {
+  CoursePreviewData,
   CourseUploadFormData,
-  CourseUploadPayload,
-  CourseUploadResponse,
-  GpxUploadData
+  CourseUploadRequest,
+  CourseUploadResponse
 } from '../model/types';
 
 interface UseCourseUploadReturn {
@@ -29,11 +29,12 @@ const initialFormData: CourseUploadFormData = {
   name: '',
   isMarathon: null,
   envType: null,
-  shapeType: null,
-  runningPace: undefined
+  shapeType: null
 };
 
-export function useCourseUpload(gpxData: GpxUploadData | null): UseCourseUploadReturn {
+export function useCourseUpload(
+  previewData: CoursePreviewData | null
+): UseCourseUploadReturn {
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState<CourseUploadFormData>(initialFormData);
@@ -41,9 +42,9 @@ export function useCourseUpload(gpxData: GpxUploadData | null): UseCourseUploadR
   const [endAddress, setEndAddress] = useState<string>('');
   const [isLoadingAddresses, setIsLoadingAddresses] = useState(false);
 
-  // Fetch addresses when GPX data is loaded
+  // Fetch addresses when preview data is loaded
   useEffect(() => {
-    if (!gpxData?.points.length) {
+    if (!previewData?.coursePointList.length) {
       setStartAddress('');
       setEndAddress('');
       return;
@@ -52,8 +53,9 @@ export function useCourseUpload(gpxData: GpxUploadData | null): UseCourseUploadR
     const fetchAddresses = async () => {
       setIsLoadingAddresses(true);
 
-      const startPoint = gpxData.points[0];
-      const endPoint = gpxData.points[gpxData.points.length - 1];
+      const startPoint = previewData.coursePointList[0];
+      const endPoint =
+        previewData.coursePointList[previewData.coursePointList.length - 1];
 
       try {
         const [start, end] = await Promise.all([
@@ -73,11 +75,11 @@ export function useCourseUpload(gpxData: GpxUploadData | null): UseCourseUploadR
     };
 
     fetchAddresses();
-  }, [gpxData]);
+  }, [previewData]);
 
   // Validate form
   const isFormValid = useCallback(() => {
-    if (!gpxData) return false;
+    if (!previewData) return false;
     if (!formData.name.trim()) return false;
     if (formData.isMarathon === null) return false;
 
@@ -88,33 +90,26 @@ export function useCourseUpload(gpxData: GpxUploadData | null): UseCourseUploadR
     }
 
     return true;
-  }, [formData, gpxData]);
+  }, [formData, previewData]);
 
   // Upload mutation
   const mutation = useMutation({
     mutationFn: async (): Promise<CourseUploadResponse> => {
-      if (!gpxData) {
+      if (!previewData) {
         throw new Error('GPX 파일을 먼저 업로드해주세요.');
       }
 
-      const payload: CourseUploadPayload = {
-        name: formData.name.trim(),
+      const request: CourseUploadRequest = {
+        file: previewData.file,
+        courseName: formData.name.trim(),
         isMarathon: formData.isMarathon!,
-        envType: formData.envType ?? undefined,
-        shapeType: formData.shapeType ?? undefined,
-        runningPace: formData.runningPace,
-        gpxFile: gpxData.file,
+        courseEnvType: formData.envType ?? undefined,
+        courseShapeType: formData.shapeType ?? undefined,
         startAddress,
-        endAddress,
-        totalDistance: gpxData.stats.totalDistance,
-        elevationGain: gpxData.stats.elevationGain,
-        elevationLoss: gpxData.stats.elevationLoss,
-        grade: gpxData.stats.grade,
-        points: gpxData.points,
-        bounds: gpxData.bounds
+        endAddress
       };
 
-      return CourseUploadApi.uploadCourse(payload);
+      return CourseUploadApi.uploadCourse(request);
     },
     onSuccess: () => {
       // Invalidate courses query to refresh the list

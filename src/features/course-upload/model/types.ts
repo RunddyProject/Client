@@ -1,73 +1,62 @@
-import type { EnvType, GradeType, ShapeType } from '@/features/course/model/types';
-import type GPXParser from 'gpxparser';
+import type { CoursePoint } from '@/features/course/model/types';
 
 export type UploadMethod = 'direct' | 'strava';
 
-export interface GpxUploadData {
+// API Response for POST /course/preview
+export interface CoursePreviewResponse {
+  totalDistance: number;
+  svg: string;
+  coursePointList: CoursePoint[];
+}
+
+// Data structure for the upload form
+export interface CoursePreviewData {
   file: File;
-  gpxParser: GPXParser;
-  stats: GpxStats;
-  points: GpxPoint[];
-  bounds: GpxBounds;
-}
-
-export interface GpxPoint {
-  lat: number;
-  lng: number;
-  ele: number;
-  pointSeq: number;
-}
-
-export interface GpxBounds {
-  minLat: number;
-  maxLat: number;
-  minLng: number;
-  maxLng: number;
-}
-
-export interface GpxStats {
-  totalDistance: number; // meters
-  elevationGain: number; // meters
-  elevationLoss: number; // meters
-  minElevation: number;
-  maxElevation: number;
-  duration: number; // seconds
-  avgPace: string;
-  grade: GradeType;
+  totalDistance: number;
+  svg: string;
+  coursePointList: CoursePoint[];
 }
 
 export interface CourseUploadFormData {
   name: string;
   isMarathon: boolean | null;
-  envType: EnvType | null;
-  shapeType: ShapeType | null;
-  runningPace?: string;
+  envType: CourseEnvType | null;
+  shapeType: CourseShapeType | null;
 }
 
-export interface CourseUploadPayload {
-  name: string;
+// API Request for POST /course/user/upload
+export interface CourseUploadRequest {
+  file: File;
+  courseName: string;
   isMarathon: boolean;
-  envType?: EnvType;
-  shapeType?: ShapeType;
-  runningPace?: string;
-  gpxFile: File;
+  courseEnvType?: CourseEnvType;
+  courseShapeType?: CourseShapeType;
   startAddress: string;
   endAddress: string;
-  totalDistance: number;
-  elevationGain: number;
-  elevationLoss: number;
-  grade: GradeType;
-  points: GpxPoint[];
-  bounds: GpxBounds;
 }
 
+// API Response for POST /course/user/upload
 export interface CourseUploadResponse {
   uuid: string;
   name: string;
   success: boolean;
 }
 
-export interface ElevationChartDataPoint {
-  dKm: number;
-  ele: number;
-}
+// Enum types matching API
+export type CourseEnvType =
+  | 'PARK'
+  | 'TRAIL'
+  | 'TRACK'
+  | 'URBAN'
+  | 'BEACH'
+  | 'MOUNTAIN'
+  | 'RIVER'
+  | 'FOREST'
+  | 'ETC';
+
+export type CourseShapeType =
+  | 'LOOP'
+  | 'OUT_AND_BACK'
+  | 'LINEAR'
+  | 'ART'
+  | 'ETC';

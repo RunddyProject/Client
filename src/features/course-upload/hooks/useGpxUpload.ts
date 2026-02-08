@@ -1,32 +1,36 @@
-import GPXParser from 'gpxparser';
 import { useCallback, useState } from 'react';
 
-import { calculateGPXStats } from '@/shared/lib/gpx';
-import { getDistance } from '@/shared/lib/map';
+import { buildElevationChartData } from '@/features/course/lib/elevation';
 
-import type {
-  ElevationChartDataPoint,
-  GpxBounds,
-  GpxPoint,
-  GpxStats,
-  GpxUploadData
-} from '../model/types';
-import type { GradeType } from '@/features/course/model/types';
+import { CourseUploadApi } from '../api/course-upload.api';
+
+import type { ElevationChartData } from '@/features/course/lib/elevation';
+import type { CoursePreviewData } from '../model/types';
 
 interface UseGpxUploadReturn {
-  gpxData: GpxUploadData | null;
+  previewData: CoursePreviewData | null;
   isLoading: boolean;
   error: string | null;
   processFile: (file: File) => Promise<void>;
   reset: () => void;
-  elevationChartData: ElevationChartDataPoint[];
+  elevationChartData: ElevationChartData;
 }
 
+const EMPTY_ELEVATION_DATA: ElevationChartData = {
+  series: [],
+  totalDistanceKm: 0,
+  elevationGain: 0,
+  elevationLoss: 0,
+  minEle: 0,
+  maxEle: 0
+};
+
 export function useGpxUpload(): UseGpxUploadReturn {
-  const [gpxData, setGpxData] = useState<GpxUploadData | null>(null);
+  const [previewData, setPreviewData] = useState<CoursePreviewData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [elevationChartData, setElevationChartData] = useState<ElevationChartDataPoint[]>([]);
+  const [elevationChartData, setElevationChartData] =
+    useState<ElevationChartData>(EMPTY_ELEVATION_DATA);
 
   const processFile = useCallback(async (file: File) => {
     setIsLoading(true);
@@ -38,107 +42,42 @@ export function useGpxUpload(): UseGpxUploadReturn {
         throw new Error('GPX 파일만 업로드할 수 있습니다.');
       }
 
-      // Read file content
-      const text = await file.text();
+      // Call preview API
+      const response = await CourseUploadApi.previewCourse(file);
 
-      // Parse GPX
-      const gpxParser = new GPXParser();
-      gpxParser.parse(text);
-
-      if (!gpxParser.tracks?.[0]?.points?.length) {
+      if (!response.coursePointList?.length) {
         throw new Error('유효한 트랙 데이터가 없습니다.');
       }
 
-      const rawPoints = gpxParser.tracks[0].points;
-
-      // Extract points with sequence
-      const points: GpxPoint[] = rawPoints.map((point, index) => ({
-        lat: point.lat,
-        lng: point.lon,
-        ele: point.ele || 0,
-        pointSeq: index
-      }));
-
-      // Calculate bounds
-      const bounds: GpxBounds = {
-        minLat: Math.min(...points.map((p) => p.lat)),
-        maxLat: Math.max(...points.map((p) => p.lat)),
-        minLng: Math.min(...points.map((p) => p.lng)),
-        maxLng: Math.max(...points.map((p) => p.lng))
-      };
-
-      // Calculate stats using existing utility
-      const rawStats = calculateGPXStats(gpxParser);
-
-      if (!rawStats) {
-        throw new Error('GPX 통계 계산에 실패했습니다.');
-      }
-
-      // Calculate elevation loss
-      let elevationLoss = 0;
-      for (let i = 1; i < rawPoints.length; i++) {
-        const prevEle = rawPoints[i - 1].ele || 0;
-        const currEle = rawPoints[i].ele || 0;
-        const diff = currEle - prevEle;
-        if (diff < 0) {
-          elevationLoss += Math.abs(diff);
-        }
-      }
-
-      const stats: GpxStats = {
-        totalDistance: rawStats.distance,
-        elevationGain: rawStats.elevationGain,
-        elevationLoss: Math.round(elevationLoss),
-        minElevation: rawStats.minElevation,
-        maxElevation: rawStats.maxElevation,
-        duration: rawStats.duration,
-        avgPace: rawStats.avgPace,
-        grade: Math.min(rawStats.grade, 3) as GradeType // Clamp to 1-3
-      };
-
-      // Build elevation chart data
-      const chartData: ElevationChartDataPoint[] = [];
-      let cumulativeDistance = 0;
-
-      for (let i = 0; i < rawPoints.length; i++) {
-        if (i > 0) {
-          const prev = rawPoints[i - 1];
-          const curr = rawPoints[i];
-          cumulativeDistance += getDistance(prev.lat, prev.lon, curr.lat, curr.lon);
-        }
-
-        chartData.push({
-          dKm: cumulativeDistance / 1000,
-          ele: rawPoints[i].ele || 0
-        });
-      }
+      // Build elevation chart data using the utility
+      const chartData = buildElevationChartData(response.coursePointList);
 
       setElevationChartData(chartData);
-      setGpxData({
+      setPreviewData({
         file,
-        gpxParser,
-        stats,
-        points,
-        bounds
+        totalDistance: response.totalDistance,
+        svg: response.svg,
+        coursePointList: response.coursePointList
       });
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'GPX 파일 처리에 실패했습니다.';
+      const message =
+        err instanceof Error ? err.message : 'GPX 파일 처리에 실패했습니다.';
       setError(message);
-      setGpxData(null);
-      setElevationChartData([]);
+      setPreviewData(null);
+      setElevationChartData(EMPTY_ELEVATION_DATA);
     } finally {
       setIsLoading(false);
     }
   }, []);
 
   const reset = useCallback(() => {
-    setGpxData(null);
+    setPreviewData(null);
     setError(null);
-    setElevationChartData([]);
+    setElevationChartData(EMPTY_ELEVATION_DATA);
   }, []);
 
   return {
-    gpxData,
+    previewData,
     isLoading,
     error,
     processFile,

@@ -18,7 +18,7 @@ function CourseUpload() {
   const [showSuccess, setShowSuccess] = useState(false);
 
   const {
-    gpxData,
+    previewData,
     isLoading: isGpxLoading,
     error: gpxError,
     processFile,
@@ -36,7 +36,7 @@ function CourseUpload() {
     isUploading,
     uploadError,
     uploadResult
-  } = useCourseUpload(gpxData);
+  } = useCourseUpload(previewData);
 
   // Show error toasts
   useEffect(() => {
@@ -96,8 +96,8 @@ function CourseUpload() {
     );
   }
 
-  // Show method selection if no GPX data
-  if (!gpxData) {
+  // Show method selection if no preview data
+  if (!previewData) {
     return (
       <UploadMethodSheet
         open={showMethodSheet}
@@ -116,7 +116,7 @@ function CourseUpload() {
   return (
     <>
       <CourseUploadForm
-        gpxData={gpxData}
+        previewData={previewData}
         formData={formData}
         onFormDataChange={setFormData}
         startAddress={startAddress}
