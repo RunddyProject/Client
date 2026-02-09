@@ -16,11 +16,7 @@ export async function reverseGeocode(
 
     window.naver.maps.Service.reverseGeocode(
       {
-        coords: new window.naver.maps.LatLng(lat, lng),
-        orders: [
-          window.naver.maps.Service.OrderType.ROAD_ADDR,
-          window.naver.maps.Service.OrderType.ADDR
-        ].join(',')
+        coords: new window.naver.maps.LatLng(lat, lng)
       },
       (status, response) => {
         if (status !== window.naver.maps.Service.Status.OK) {
@@ -28,15 +24,15 @@ export async function reverseGeocode(
           return;
         }
 
-        const result = response?.v2?.address;
-        if (!result) {
+        // response.v2.address contains jibunAddress and roadAddress
+        const address = response?.v2?.address;
+        if (!address) {
           resolve(null);
           return;
         }
 
         // Prefer road address, fallback to jibun address
-        const address = result.roadAddress || result.jibunAddress || '';
-        resolve(address || null);
+        resolve(address.roadAddress || address.jibunAddress || null);
       }
     );
   });
