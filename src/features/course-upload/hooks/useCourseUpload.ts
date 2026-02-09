@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 
+import { reverseGeocode } from '@/features/map/lib/geocode';
+
 import { CourseUploadApi } from '../api/course-upload.api';
 
 import type {
@@ -59,12 +61,12 @@ export function useCourseUpload(
 
       try {
         const [start, end] = await Promise.all([
-          CourseUploadApi.reverseGeocode(startPoint.lat, startPoint.lng),
-          CourseUploadApi.reverseGeocode(endPoint.lat, endPoint.lng)
+          reverseGeocode(startPoint.lat, startPoint.lng),
+          reverseGeocode(endPoint.lat, endPoint.lng)
         ]);
 
-        setStartAddress(start);
-        setEndAddress(end);
+        setStartAddress(start || '주소를 불러올 수 없습니다');
+        setEndAddress(end || '주소를 불러올 수 없습니다');
       } catch (error) {
         console.error('Failed to fetch addresses:', error);
         setStartAddress('주소를 불러올 수 없습니다');

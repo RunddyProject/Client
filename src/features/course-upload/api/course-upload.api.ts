@@ -37,16 +37,5 @@ export const CourseUploadApi = {
     formData.append('endAddress', request.endAddress);
 
     return api.postForm<CourseUploadResponse>('/course/user/upload', formData);
-  },
-
-  /**
-   * Reverse geocode coordinates to address
-   * GET /geocode/reverse?lat={lat}&lng={lng}
-   */
-  reverseGeocode: async (lat: number, lng: number): Promise<string> => {
-    const response = await api.get<{ address: string }>(
-      `/geocode/reverse?lat=${lat}&lng=${lng}`
-    );
-    return response.address;
   }
 };
