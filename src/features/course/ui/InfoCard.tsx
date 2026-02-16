@@ -25,8 +25,7 @@ const courseImageUrl = {
   LINEAR: CourseLinearImageUrl,
   LOOP: CourseLoopImageUrl,
   OUT_AND_BACK: CourseOutandbackImageUrl,
-  ART: CourseArtImageUrl,
-  ETC: ''
+  ART: CourseArtImageUrl
 };
 
 const CourseInfoCard = memo(function CourseInfoCard({

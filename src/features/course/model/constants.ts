@@ -25,7 +25,6 @@ export const ENV_TYPE_TO_NAME: Record<EnvType, EnvTypeName> = {
   BEACH: '해변',
   MOUNTAIN: '산',
   FOREST: '숲'
-  // ETC: '기타'
 } as const;
 
 export const ENV_NAME_TO_TYPE: Record<EnvTypeName, EnvType> = {
@@ -36,7 +35,6 @@ export const ENV_NAME_TO_TYPE: Record<EnvTypeName, EnvType> = {
   해변: 'BEACH',
   산: 'MOUNTAIN',
   숲: 'FOREST'
-  // 기타: 'ETC'
 } as const;
 
 export const SHAPE_TYPE_TO_NAME: Record<ShapeType, ShapeTypeName> = {
@@ -44,7 +42,6 @@ export const SHAPE_TYPE_TO_NAME: Record<ShapeType, ShapeTypeName> = {
   LINEAR: '직선',
   OUT_AND_BACK: '왕복',
   ART: '아트'
-  // ETC: '기타'
 } as const;
 
 export const SHAPE_NAME_TO_TYPE: Record<ShapeTypeName, ShapeType> = {
@@ -52,7 +49,6 @@ export const SHAPE_NAME_TO_TYPE: Record<ShapeTypeName, ShapeType> = {
   직선: 'LINEAR',
   왕복: 'OUT_AND_BACK',
   아트: 'ART'
-  // 기타: 'ETC'
 } as const;
 
 export const SHAPE_TYPE_COLOR: Record<ShapeType, RUNDDY_COLOR> = {
@@ -75,10 +71,10 @@ export const shapeTypeNames = Object.keys(
 ) as ShapeTypeName[];
 
 export const safeEnvTypeName = (t: EnvType | string): EnvTypeName =>
-  (ENV_TYPE_TO_NAME as Record<string, EnvTypeName>)[t] ?? '기타';
+  (ENV_TYPE_TO_NAME as Record<string, EnvTypeName>)[t] ?? '공원';
 
 export const safeShapeTypeName = (t: ShapeType | string): ShapeTypeName =>
-  (SHAPE_TYPE_TO_NAME as Record<string, ShapeTypeName>)[t] ?? '기타';
+  (SHAPE_TYPE_TO_NAME as Record<string, ShapeTypeName>)[t] ?? '순환';
 
 export const CATEGORY_LABEL_MAP: Record<CategoryCode, string> = {
   COURSE_GOOD: '코스 자체가 좋아요',

@@ -51,12 +51,10 @@ export type CourseEnvType =
   | 'BEACH'
   | 'MOUNTAIN'
   | 'RIVER'
-  | 'FOREST'
-  | 'ETC';
+  | 'FOREST';
 
 export type CourseShapeType =
   | 'LOOP'
   | 'OUT_AND_BACK'
   | 'LINEAR'
-  | 'ART'
-  | 'ETC';
+  | 'ART';
