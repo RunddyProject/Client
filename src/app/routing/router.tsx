@@ -6,6 +6,7 @@ import Course from '@/pages/course/index';
 import CourseInfo from '@/pages/course/info';
 import CourseInfoLayout from '@/pages/course/info-layout';
 import CourseInfoMap from '@/pages/course/info-map';
+import CourseUpload from '@/pages/course/upload';
 import Error from '@/pages/error';
 import Login from '@/pages/login/index';
 import LoginSuccess from '@/pages/login/success';
@@ -35,6 +36,15 @@ export const router = createBrowserRouter([
         path: 'course',
         children: [
           { index: true, element: <Course /> },
+          {
+            path: 'upload',
+            element: (
+              <ProtectedRoute>
+                <CourseUpload />
+              </ProtectedRoute>
+            ),
+            handle: { header: { title: '코스 등록하기', rightButton: null } }
+          },
           {
             path: ':uuid',
             element: <CourseInfoLayout />,
