@@ -24,7 +24,8 @@ export function useCourseCount(
     },
     enabled: enabled && !!filters,
     staleTime: 30_000,
-    gcTime: 5 * 60_000
+    gcTime: 5 * 60_000,
+    placeholderData: (prev) => prev ?? 0
   });
 
   return {
