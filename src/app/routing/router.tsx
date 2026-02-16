@@ -13,6 +13,9 @@ import LoginSuccess from '@/pages/login/success';
 import MeDelete from '@/pages/me/delete';
 import MeEdit from '@/pages/me/edit';
 import Me from '@/pages/me/index';
+import MyCourseDetail from '@/pages/my-courses/detail';
+import MyCourseEdit from '@/pages/my-courses/edit';
+import MyCourses from '@/pages/my-courses/index';
 import NotFound from '@/pages/not-found';
 import { ShareButton } from '@/shared/ui/actions/ShareButton';
 
@@ -78,6 +81,50 @@ export const router = createBrowserRouter([
             handle: { header: { showHeader: false } }
           },
           { path: 'success', element: <LoginSuccess /> }
+        ]
+      },
+      {
+        path: 'my-courses',
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedRoute>
+                <MyCourses />
+              </ProtectedRoute>
+            ),
+            handle: {
+              header: { title: '내 코스', rightButton: null } satisfies HeaderMeta
+            }
+          },
+          {
+            path: ':uuid',
+            element: (
+              <ProtectedRoute>
+                <MyCourseDetail />
+              </ProtectedRoute>
+            ),
+            handle: {
+              header: {
+                title: '내 코스',
+                rightButton: null
+              } satisfies HeaderMeta
+            }
+          },
+          {
+            path: ':uuid/edit',
+            element: (
+              <ProtectedRoute>
+                <MyCourseEdit />
+              </ProtectedRoute>
+            ),
+            handle: {
+              header: {
+                title: '코스 수정하기',
+                rightButton: null
+              } satisfies HeaderMeta
+            }
+          }
         ]
       },
       {

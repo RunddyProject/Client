@@ -72,15 +72,15 @@ function CourseUpload() {
 
   const handleSuccessClose = useCallback(() => {
     setShowSuccess(false);
-    navigate(-1);
+    navigate('/my-courses');
   }, [navigate]);
 
   const handleViewCourse = useCallback(() => {
     setShowSuccess(false);
     if (uploadResult?.uuid) {
-      navigate(`/course/${uploadResult.uuid}`);
+      navigate(`/my-courses/${uploadResult.uuid}`);
     } else {
-      navigate('/');
+      navigate('/my-courses');
     }
   }, [navigate, uploadResult]);
 

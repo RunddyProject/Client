@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { CourseUploadApi } from '@/features/course-upload/api/course-upload.api';
 import { reverseGeocode } from '@/features/map/lib/geocode';
+import { MY_COURSE_QUERY_KEYS } from '@/features/my-course/model/constants';
 
 import type {
   CoursePreviewData,
@@ -116,6 +117,16 @@ export function useCourseUpload(
     onSuccess: () => {
       // Invalidate courses query to refresh the list
       queryClient.invalidateQueries({ queryKey: ['courses'] });
+      // Invalidate my-course queries
+      queryClient.invalidateQueries({
+        queryKey: [...MY_COURSE_QUERY_KEYS.all]
+      });
+      queryClient.invalidateQueries({
+        queryKey: [...MY_COURSE_QUERY_KEYS.summary]
+      });
+      queryClient.invalidateQueries({
+        queryKey: [...MY_COURSE_QUERY_KEYS.gpx]
+      });
     }
   });
 

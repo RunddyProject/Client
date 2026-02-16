@@ -1,0 +1,172 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { generatePath, useNavigate, useParams, useSearchParams } from 'react-router';
+
+import { useHeader } from '@/app/providers/HeaderContext';
+import { useCourseDetail } from '@/features/course/hooks/useCourseDetail';
+import { useCourseReview } from '@/features/course/hooks/useCourseReview';
+import { SHAPE_TYPE_COLOR } from '@/features/course/model/constants';
+import CourseDetail from '@/features/course/ui/CourseDetail';
+import CourseReview from '@/features/course/ui/CourseReview';
+import { useLocationStore } from '@/features/map/model/location.store';
+import { NaverMap } from '@/features/map/ui/NaverMap';
+import { useDeleteCourse } from '@/features/my-course/hooks/useDeleteCourse';
+import { CourseActionMenu } from '@/features/my-course/ui/CourseActionMenu';
+import { DeleteConfirmDialog } from '@/features/my-course/ui/DeleteConfirmDialog';
+import { runddyColor } from '@/shared/model/constants';
+import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
+} from '@/shared/ui/primitives/tabs';
+
+import type { Course } from '@/features/course/model/types';
+import type { MarkerInput } from '@/features/map/model/types';
+import type { RUNDDY_COLOR } from '@/shared/model/types';
+
+function MyCourseDetail() {
+  const navigate = useNavigate();
+  const { setConfig, resetConfig } = useHeader();
+  const mapRef = useRef<naver.maps.Map | null>(null);
+  const setCourseDetailMapState = useLocationStore(
+    (s) => s.setCourseDetailMapState
+  );
+
+  const { uuid } = useParams<{ uuid: Course['uuid'] }>();
+  const [params] = useSearchParams();
+  const tab = params.get('tab') ?? 'detail';
+
+  const { courseDetail: course, isLoading } = useCourseDetail(uuid ?? '');
+  const { courseReviewCount } = useCourseReview(uuid ?? '');
+  const { deleteCourse, isDeleting } = useDeleteCourse();
+
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const handleMapInit = useCallback((map: naver.maps.Map) => {
+    mapRef.current = map;
+  }, []);
+
+  const handleMapClick = useCallback(() => {
+    if (!course) return;
+    if (mapRef.current) {
+      const center = mapRef.current.getCenter();
+      setCourseDetailMapState({
+        courseUuid: course.uuid,
+        center: { lat: center.y, lng: center.x },
+        zoom: mapRef.current.getZoom()
+      });
+    }
+    navigate(generatePath('/course/:uuid/map', { uuid: course.uuid }));
+  }, [course, navigate, setCourseDetailMapState]);
+
+  const handleDelete = useCallback(() => {
+    setShowDeleteDialog(true);
+  }, []);
+
+  const handleConfirmDelete = useCallback(() => {
+    if (!uuid) return;
+    deleteCourse(uuid);
+  }, [uuid, deleteCourse]);
+
+  // Dynamic header with action menu
+  useEffect(() => {
+    if (!uuid) return;
+    setConfig({
+      rightButton: <CourseActionMenu uuid={uuid} onDelete={handleDelete} />
+    });
+    return () => resetConfig();
+  }, [uuid, setConfig, resetConfig, handleDelete]);
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!course) {
+    navigate('/my-courses', { replace: true });
+    return null;
+  }
+
+  const activeColor: RUNDDY_COLOR = SHAPE_TYPE_COLOR[course.shapeType] ?? 'blue';
+
+  const startPoint = course.coursePointList[0];
+  const startMarker: MarkerInput = {
+    id: course.uuid,
+    lat: startPoint?.lat,
+    lng: startPoint?.lng,
+    kind: 'start'
+  };
+  const endPoint = course.coursePointList[course.coursePointList.length - 1];
+  const endMarker: MarkerInput = {
+    id: `${course.uuid}__end`,
+    lat: endPoint?.lat,
+    lng: endPoint?.lng,
+    kind: 'end'
+  };
+
+  return (
+    <div className='bg-background flex min-h-screen flex-col'>
+      <div className='relative'>
+        <div className='h-78 px-5 pt-3'>
+          <NaverMap
+            key={`my-course-detail-${course.uuid}`}
+            center={{ lat: course.lat, lng: course.lng }}
+            points={course.coursePointList}
+            bounds={{
+              minLat: course.minLat,
+              maxLat: course.maxLat,
+              minLng: course.minLng,
+              maxLng: course.maxLng
+            }}
+            markers={[startMarker, endMarker]}
+            markerSize={32}
+            focusKey={course.uuid}
+            color={activeColor}
+            fitEnabled
+            interactionsEnabled={false}
+            onInit={handleMapInit}
+            onOverlayClick={handleMapClick}
+            className='h-full w-full rounded-xl'
+          />
+        </div>
+      </div>
+
+      <div className='space-y-1 px-5 pt-6 pb-7.5'>
+        <div className='text-title-b18 truncate'>{course.name}</div>
+        <div
+          className='text-[32px] font-bold'
+          style={{ color: runddyColor[activeColor] as unknown as string }}
+        >
+          {(course.totalDistance / 1000).toFixed(1)}km
+        </div>
+      </div>
+
+      <Tabs defaultValue={tab}>
+        <TabsList className='border-g-20 grid w-full grid-cols-2 border-b-[1.2px] px-5'>
+          <TabsTrigger value='detail'>
+            <span>상세정보</span>
+          </TabsTrigger>
+          <TabsTrigger value='review'>
+            <span>리뷰</span>
+            <span className='text-contents-r15 ml-1'>{courseReviewCount}</span>
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value='detail' className='mt-6'>
+          <CourseDetail />
+        </TabsContent>
+        <TabsContent value='review' className='mt-2'>
+          <CourseReview />
+        </TabsContent>
+      </Tabs>
+
+      <DeleteConfirmDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
+      />
+    </div>
+  );
+}
+
+export default MyCourseDetail;
