@@ -8,8 +8,8 @@ import {
 } from '@/features/course-upload/model/constants';
 import { useEditCourse } from '@/features/my-course/hooks/useEditCourse';
 import { deepEqual } from '@/shared/lib/utils';
-import { SelectButton } from '@/shared/ui/composites/select-button';
 import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
+import { SelectButton } from '@/shared/ui/composites/select-button';
 import { Button } from '@/shared/ui/primitives/button';
 import { Input } from '@/shared/ui/primitives/input';
 import { Label } from '@/shared/ui/primitives/label';
@@ -38,7 +38,7 @@ function MyCourseEdit() {
     if (!course) return null;
     return {
       name: course.name,
-      isMarathon: (course as any).isMarathon ?? false,
+      isMarathon: course.isMarathon ?? false,
       envType: course.envType ?? null,
       shapeType: course.shapeType ?? null
     };

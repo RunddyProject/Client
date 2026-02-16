@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import { useOptimizedPolylineCoordinates } from '@/features/course/hooks/useOptimizedPolylineCoordinates';
 import { SHAPE_TYPE_COLOR } from '@/features/course/model/constants';
-import { MyCourseEmpty } from '@/features/my-course/ui/MyCourseEmpty';
 import { useNaverMap } from '@/features/map/hooks/useNaverMap';
+import { MyCourseEmpty } from '@/features/my-course/ui/MyCourseEmpty';
 import { runddyColor } from '@/shared/model/constants';
 import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
 
