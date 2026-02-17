@@ -35,8 +35,7 @@ import { useMapScrollSync } from './useMapScrollSync';
 
 import type {
   CourseMapContainerData,
-  CourseMapHandlers,
-  CourseMapProps
+  CourseMapHandlers
 } from '@/features/course/model/refactor-types';
 import type { RefObject } from 'react';
 
@@ -69,10 +68,7 @@ import type { RefObject } from 'react';
  * }
  * ```
  */
-export function useCourseMapContainer(
-  props: CourseMapProps
-): CourseMapContainerData {
-  const { onViewModeChange } = props;
+export function useCourseMapContainer(): CourseMapContainerData {
 
   // ============================================================================
   // Map Reference
@@ -378,16 +374,14 @@ export function useCourseMapContainer(
       onMarkerClick: handleMarkerClick,
       onScrollChange: handleUserScroll,
       onSearchHere: handleSearchHere,
-      onSearchByCurrentLocation: handleSearchByCurrentLocation,
-      onViewModeChange
+      onSearchByCurrentLocation: handleSearchByCurrentLocation
     }),
     [
       handleMapInit,
       handleMarkerClick,
       handleUserScroll,
       handleSearchHere,
-      handleSearchByCurrentLocation,
-      onViewModeChange
+      handleSearchByCurrentLocation
     ]
   );
 

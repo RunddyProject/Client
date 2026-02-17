@@ -3,20 +3,16 @@ import { useRef, useEffect, useCallback } from 'react';
 import { useCourses } from '@/features/course/hooks/useCourses';
 import CourseFilter from '@/features/course/ui/Filter';
 import CourseInfoCard from '@/features/course/ui/InfoCard';
+import { RegisterCourseFAB } from '@/features/course/ui/RegisterCourseFAB';
 import Search from '@/features/course/ui/Search';
 import { useLocationStore } from '@/features/map/model/location.store';
 import { useVirtualScroll } from '@/shared/hooks/useVirtualScroll';
 import { Icon } from '@/shared/icons/icon';
-import { Button } from '@/shared/ui/primitives/button';
-
-interface CourseListProps {
-  onViewModeChange: (mode: 'map' | 'list') => void;
-}
 
 // Card height: 60px (image) + 22px (top padding) + 22px (bottom padding) + 1px (border)
 const ITEM_HEIGHT = 105;
 
-const CourseList = ({ onViewModeChange }: CourseListProps) => {
+const CourseList = () => {
   const {
     lastSearchedCenter,
     lastSearchedRadius,
@@ -30,7 +26,6 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // ✅ Performance optimization: Virtual scroll for large lists
   const { visibleItems, totalSize, virtualizer } = useVirtualScroll(
     scrollContainerRef,
     {
@@ -121,18 +116,11 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
         )}
       </div>
 
-      {/* Bottom Button */}
-      <div className='fixed bottom-[calc(env(safe-area-inset-bottom)+20px)] left-1/2 z-50 -translate-x-1/2 transform'>
-        <Button
-          className='shadow-runddy gap-1 rounded-full px-3 py-[9px]'
-          onClick={() => onViewModeChange('map')}
-        >
-          <Icon name='map' size={20} color='#E7E9F0' secondary='#272930' />
-          <span className='text-contents-r14'>지도 보기</span>
-        </Button>
+      {/* Register Course FAB */}
+      <div className='fixed right-5 bottom-[calc(env(safe-area-inset-bottom)+20px)] z-50'>
+        <RegisterCourseFAB />
       </div>
     </div>
-    // </div>
   );
 };
 
