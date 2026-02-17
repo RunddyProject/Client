@@ -14,11 +14,11 @@ import { useCourseReview } from '@/features/course/hooks/useCourseReview';
 import { SHAPE_TYPE_COLOR } from '@/features/course/model/constants';
 import CourseDetail from '@/features/course/ui/CourseDetail';
 import CourseReview from '@/features/course/ui/CourseReview';
+import { useLocationStore } from '@/features/map/model/location.store';
+import { NaverMap } from '@/features/map/ui/NaverMap';
 import { useDeleteUserCourse } from '@/features/my-course/hooks/useDeleteUserCourse';
 import { MyCourseDeleteDialog } from '@/features/my-course/ui/MyCourseDeleteDialog';
 import { MyCourseMoreMenu } from '@/features/my-course/ui/MyCourseMoreMenu';
-import { useLocationStore } from '@/features/map/model/location.store';
-import { NaverMap } from '@/features/map/ui/NaverMap';
 import { useToggleBookmark } from '@/features/user/hooks/useToggleBookmark';
 import { Icon } from '@/shared/icons/icon';
 import { runddyColor } from '@/shared/model/constants';
@@ -33,8 +33,8 @@ import {
 } from '@/shared/ui/primitives/tabs';
 
 import type { Course } from '@/features/course/model/types';
-import type { UserCoursesResponse } from '@/features/my-course/model/types';
 import type { MarkerInput } from '@/features/map/model/types';
+import type { UserCoursesResponse } from '@/features/my-course/model/types';
 import type { RUNDDY_COLOR } from '@/shared/model/types';
 
 /** Detect if the current course belongs to the logged-in user */

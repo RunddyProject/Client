@@ -3,9 +3,9 @@ import { useRef, useCallback } from 'react';
 import { RegisterCourseFAB } from '@/features/course/ui/RegisterCourseFAB';
 import { useVirtualScroll } from '@/shared/hooks/useVirtualScroll';
 
-import { useUserCourseSummary } from '../hooks/useUserCourseSummary';
 import { MyCourseInfoCard } from './MyCourseInfoCard';
 import { MyCourseSummary } from './MyCourseSummary';
+import { useUserCourseSummary } from '../hooks/useUserCourseSummary';
 
 import type { UserCourse } from '../model/types';
 

@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useRef, useState } from 'react';
 
 import { RegisterCourseFAB } from '@/features/course/ui/RegisterCourseFAB';
 import { useGeolocation } from '@/features/map/hooks/useGeolocation';
@@ -8,11 +8,11 @@ import { useScrollItemToCenter } from '@/shared/hooks/useScrollItemToCenter';
 import { Icon } from '@/shared/icons/icon';
 import { Button } from '@/shared/ui/primitives/button';
 
+import { MyCourseInfoCard } from './MyCourseInfoCard';
+import { MyCourseSummary } from './MyCourseSummary';
 import { useMultiPolyline } from '../hooks/useMultiPolyline';
 import { useUserCourseGpxList } from '../hooks/useUserCourseGpxList';
 import { useUserCourseSummary } from '../hooks/useUserCourseSummary';
-import { MyCourseInfoCard } from './MyCourseInfoCard';
-import { MyCourseSummary } from './MyCourseSummary';
 
 import type { UserCourse } from '../model/types';
 
@@ -22,24 +22,20 @@ interface MyCourseMapProps {
 
 export function MyCourseMap({ courses }: MyCourseMapProps) {
   const [mapInstance, setMapInstance] = useState<naver.maps.Map | null>(null);
-  const [activeCourseUuid, setActiveCourseUuid] = useState<string | null>(
+  const [, setActiveCourseUuid] = useState<string | null>(
     courses[0]?.uuid ?? null
   );
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const scrollerRefAsElement =
+    scrollerRef as React.RefObject<HTMLElement>;
 
   const { data: summary } = useUserCourseSummary();
   const { gpxList } = useUserCourseGpxList(true);
   const { getCurrentLocation, isLoading: isLocationLoading } =
     useGeolocation();
 
-  // Build gpx uuid → index map for card scrolling
-  const courseIndexMap = useMemo(
-    () => new Map(courses.map((c, i) => [c.uuid, i])),
-    [courses]
-  );
-
   // Scroll to card when polyline is clicked
-  const scrollToItem = useScrollItemToCenter(scrollerRef);
+  const scrollToItem = useScrollItemToCenter(scrollerRefAsElement);
   const handlePolylineClick = useCallback(
     (courseUuid: string) => {
       setActiveCourseUuid(courseUuid);
@@ -53,7 +49,7 @@ export function MyCourseMap({ courses }: MyCourseMapProps) {
 
   // Sync scroll → active course
   useCenteredActiveByScroll({
-    container: scrollerRef,
+    container: scrollerRefAsElement,
     itemAttr: 'uuid',
     onChange: setActiveCourseUuid
   });
@@ -128,7 +124,6 @@ export function MyCourseMap({ courses }: MyCourseMapProps) {
             <MyCourseCardsSection
               courses={courses}
               scrollerRef={scrollerRef}
-              activeCourseUuid={activeCourseUuid}
             />
           </div>
         </div>
@@ -139,12 +134,10 @@ export function MyCourseMap({ courses }: MyCourseMapProps) {
 
 const MyCourseCardsSection = memo(function MyCourseCardsSection({
   courses,
-  scrollerRef,
-  activeCourseUuid
+  scrollerRef
 }: {
   courses: UserCourse[];
   scrollerRef: React.RefObject<HTMLDivElement | null>;
-  activeCourseUuid: string | null;
 }) {
   if (courses.length === 0) return null;
 

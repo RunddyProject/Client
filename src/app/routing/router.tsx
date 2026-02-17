@@ -2,12 +2,12 @@ import { createBrowserRouter } from 'react-router';
 
 import App from '@/app/App';
 import ProtectedRoute from '@/app/routing/ProtectedRoute';
+import MyCourseEdit from '@/pages/course/edit';
 import Course from '@/pages/course/index';
 import CourseInfo from '@/pages/course/info';
 import CourseInfoLayout from '@/pages/course/info-layout';
 import CourseInfoMap from '@/pages/course/info-map';
 import MyCourses from '@/pages/course/my';
-import MyCourseEdit from '@/pages/course/edit';
 import CourseUpload from '@/pages/course/upload';
 import Error from '@/pages/error';
 import Login from '@/pages/login/index';

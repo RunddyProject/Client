@@ -27,6 +27,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 
 const menuTitles: Record<string, string> = {
   '/': '런디코스',
+  '/course/my': '내 코스',
   '/me': '마이페이지'
 };
 
@@ -41,8 +42,9 @@ const Header = () => {
 
   const path = normalizePath(location.pathname);
   const isCoursePage = path === '/' || path === '/course';
+  const homePages = ['/', '/me'];
   const isHomeHeader =
-    (!isCoursePage && Object.keys(menuTitles).includes(path)) || isCoursePage;
+    (!isCoursePage && homePages.includes(path)) || isCoursePage;
 
   const { config, viewMode, setViewMode } = useHeader();
 

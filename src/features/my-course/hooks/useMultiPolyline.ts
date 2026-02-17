@@ -59,7 +59,7 @@ export function useMultiPolyline(
           new naver.maps.LatLng(Math.min(...lats), Math.min(...lngs)),
           new naver.maps.LatLng(Math.max(...lats), Math.max(...lngs))
         );
-        map.fitBounds(bounds, { padding: 60 });
+        map.fitBounds(bounds, { top: 60, right: 60, bottom: 60, left: 60 });
         fitBoundsOnce.current = true;
       }
     }
