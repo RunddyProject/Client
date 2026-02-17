@@ -139,6 +139,7 @@ export interface UserCourseSummary {
 
 // ─── GET /course/user/gpx ────────────────────────
 export interface UserCourseGpxItem {
+  courseUuid: string;          // 코스 UUID (코스 목록과 매칭용)
   courseShapeType: ShapeType;
   coursePointList: CoursePoint[];
 }
@@ -151,8 +152,8 @@ export interface UserCourseGpxResponse {
 export interface EditUserCourseRequest {
   courseName: string;
   isMarathon: boolean;
-  courseEnvType: string;   // EnvType | 'ETC'
-  courseShapeType: string; // ShapeType | 'ETC'
+  courseEnvType: string | null;   // isMarathon=true이면 null
+  courseShapeType: string | null; // isMarathon=true이면 null
   startAddress: string;
   endAddress: string;
 }
@@ -415,7 +416,8 @@ NaverMap의 `onInit` 콜백으로 map 인스턴스를 받고, 별도의 커스�
 // features/my-course/hooks/useMultiPolyline.ts
 export function useMultiPolyline(
   map: naver.maps.Map | null,
-  gpxList: UserCourseGpxItem[]
+  gpxList: UserCourseGpxItem[],
+  onPolylineClick?: (courseUuid: string) => void
 ) {
   useEffect(() => {
     if (!map || gpxList.length === 0) return;
@@ -426,7 +428,7 @@ export function useMultiPolyline(
       );
       const color = runddyColor[SHAPE_TYPE_COLOR[gpx.courseShapeType]];
 
-      return new naver.maps.Polyline({
+      const polyline = new naver.maps.Polyline({
         map,
         path,
         strokeColor: color,
@@ -435,38 +437,57 @@ export function useMultiPolyline(
         strokeLineCap: 'round',
         strokeLineJoin: 'round',
       });
+
+      // courseUuid 기반 클릭 이벤트
+      if (onPolylineClick) {
+        naver.maps.Event.addListener(polyline, 'click', () => {
+          onPolylineClick(gpx.courseUuid);
+        });
+      }
+
+      return polyline;
     });
 
     // 전체 bounds 계산 후 fitBounds
-    const bounds = new naver.maps.LatLngBounds(
-      new naver.maps.LatLng(minLat, minLng),
-      new naver.maps.LatLng(maxLat, maxLng)
-    );
-    map.fitBounds(bounds, { padding: 60 });
+    const allPoints = gpxList.flatMap(g => g.coursePointList);
+    if (allPoints.length > 0) {
+      const lats = allPoints.map(p => p.lat);
+      const lngs = allPoints.map(p => p.lng);
+      const bounds = new naver.maps.LatLngBounds(
+        new naver.maps.LatLng(Math.min(...lats), Math.min(...lngs)),
+        new naver.maps.LatLng(Math.max(...lats), Math.max(...lngs))
+      );
+      map.fitBounds(bounds, { padding: 60 });
+    }
 
     return () => polylines.forEach(p => p.setMap(null));
-  }, [map, gpxList]);
+  }, [map, gpxList, onPolylineClick]);
 }
 ```
 
 **GPX 리스트와 코스 리스트 매칭**:
 
-`GET /course/user/gpx` 응답의 `userCourseGpxList`에는 uuid가 없다. 코스 카드와의 매칭이 필요하므로 다음 전략을 사용:
+`GET /course/user/gpx` 응답의 각 항목에 `courseUuid`가 포함되므로, 코스 목록과 명확하게 매칭할 수 있다.
 
-- **인덱스 기반 매칭**: 두 API의 배열 순서가 동일하다고 가정. 즉 `gpxList[i]`는 `courseList[i]`에 대응.
-- **검증**: 양쪽 배열의 length가 다르면 경고 로그를 남기고, 매칭할 수 없는 항목은 무시.
-- **카드 탭 시**: 해당 인덱스의 course.uuid로 `/course/${uuid}`에 navigate.
+```typescript
+// gpxList를 uuid 기반 Map으로 변환하여 O(1) 조회
+const gpxMap = useMemo(
+  () => new Map(gpxList.map(gpx => [gpx.courseUuid, gpx])),
+  [gpxList]
+);
+```
 
-> **개선 권장**: 백엔드에 `GET /course/user/gpx` 응답에 `courseUuid` 필드 추가를 요청하면 매칭이 명확해진다.
+> 배열 순서도 동일 보장(백엔드 확인 완료)되지만, uuid 기반 매칭이 더 안전하므로 이를 primary로 사용한다.
 
 **polyline 클릭 → 카드 포커스**:
 
-각 polyline에 click 이벤트를 달아 `activeCourseIndex`를 변경하고, 하단 카드 캐러셀을 해당 인덱스로 스크롤한다.
+각 polyline에 click 이벤트를 달아 `courseUuid` 기반으로 활성 코스를 변경하고, 하단 카드 캐러셀을 해당 코스로 스크롤한다.
 
 ```typescript
 naver.maps.Event.addListener(polyline, 'click', () => {
-  setActiveCourseIndex(index);
-  scrollerRef.current?.scrollTo(index);
+  setActiveCourseUuid(gpx.courseUuid);
+  const cardIndex = courses.findIndex(c => c.uuid === gpx.courseUuid);
+  if (cardIndex >= 0) scrollerRef.current?.scrollTo(cardIndex);
 });
 ```
 
@@ -853,7 +874,10 @@ function MyCourseEdit() {
       await editAsync({
         uuid,
         data: {
-          ...formData,
+          courseName: formData.courseName,
+          isMarathon: formData.isMarathon,
+          courseEnvType: formData.isMarathon ? null : formData.courseEnvType,
+          courseShapeType: formData.isMarathon ? null : formData.courseShapeType,
           startAddress: courseDetail.startAddress,  // 읽기 전용, 원본 전달
           endAddress: courseDetail.endAddress,        // 읽기 전용, 원본 전달
         },
@@ -1220,38 +1244,25 @@ onSuccess: (_, uuid) => {
 },
 ```
 
-**E-2. 수정 폼 마라톤 전환 시 envType/shapeType 처리**
+**E-2. 수정 폼 마라톤 전환 시 envType/shapeType 처리 (확정)**
 
-마라톤으로 전환 시 API에 courseEnvType/courseShapeType을 어떻게 보낼지:
+마라톤일 때 envType/shapeType은 `null`로 전송:
 
 ```typescript
 // handleSubmit에서
 const requestData: EditUserCourseRequest = {
   courseName: formData.courseName,
   isMarathon: formData.isMarathon,
-  courseEnvType: formData.isMarathon ? '' : formData.courseEnvType,
-  courseShapeType: formData.isMarathon ? '' : formData.courseShapeType,
+  courseEnvType: formData.isMarathon ? null : formData.courseEnvType,
+  courseShapeType: formData.isMarathon ? null : formData.courseShapeType,
   startAddress: courseDetail.startAddress,
   endAddress: courseDetail.endAddress,
 };
 ```
 
-> 백엔드 확인 필요: 마라톤 코스일 때 envType/shapeType을 빈 문자열로 보내도 되는지, null/undefined로 보내야 하는지.
+**E-3. GPX-코스 매칭 (해결됨)**
 
-**E-3. GPX-코스 매칭 안정성 (주의)**
-
-인덱스 기반 매칭은 양쪽 API의 정렬 순서가 동일할 때만 안전하다. 방어 코드 필수:
-
-```typescript
-// MyCourseMap 내부
-if (courses.length !== gpxList.length) {
-  console.warn(
-    `[MyCourseMap] courses(${courses.length}) and gpx(${gpxList.length}) count mismatch`
-  );
-}
-```
-
-> 중기적으로 백엔드에 `GET /course/user/gpx` 응답에 `courseUuid` 필드 추가를 요청 권장.
+`GET /course/user/gpx` 응답에 `courseUuid`가 추가되어 uuid 기반 매칭으로 해결. 배열 순서도 동일 보장(백엔드 확인 완료). 인덱스 기반 매칭 대신 `courseUuid` 기반 Map 조회를 사용한다.
 
 **E-4. 수정 폼 isMarathon 전환 시 UX 흐름**
 
@@ -1278,8 +1289,10 @@ if (courses.length !== gpxList.length) {
 | 엣지 케이스 | O | 빈 상태, 에러, 로딩, 네트워크 실패, 소유권 판별 fallback |
 | 기존 코드 영향도 | O | 수정 파일 5개로 최소화, 기존 기능 파괴 없음 |
 
-### 백엔드 확인 사항 (최종)
+### 백엔드 확인 사항 (모두 해결됨)
 
-1. `GET /course/user/gpx` 응답에 `courseUuid` 필드 추가 가능 여부
-2. `PATCH /course/{courseUuid}` - isMarathon=true일 때 courseEnvType/courseShapeType 처리 방식 (빈 문자열? null? 생략?)
-3. `GET /course/user`와 `GET /course/user/gpx`의 배열 순서가 항상 동일한지 보장 여부
+1. ~~`GET /course/user/gpx` 응답에 `courseUuid` 필드 추가 가능 여부~~ → **추가 완료**
+2. ~~`PATCH /course/{courseUuid}` - isMarathon=true일 때 courseEnvType/courseShapeType 처리 방식~~ → **null 전송 확정**
+3. ~~`GET /course/user`와 `GET /course/user/gpx`의 배열 순서가 항상 동일한지 보장 여부~~ → **동일 순서 보장 확인**
+
+> 모든 미결 사항이 해결되어 설계가 완전히 확정됨. 즉시 구현 착수 가능.
