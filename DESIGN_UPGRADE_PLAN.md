@@ -87,9 +87,9 @@ GradeType = 1 | 2 | 3  →  GRADE_TO_NAME: { 1: '초급', 2: '중급', 3: '고�
 | 타이틀 | `상세 필터` + X (변경 없음) |
 | 난이도 | `초급` / `중급` / `고급` (**변경 없음**) |
 | 러닝 장소 | `트랙` / `공원` / `강` / `산책로` / `도심` / `산` / `숲` / `해변` (8개, **RIVER(강) 추가**) |
-| 코스 모양 | `순환형` / `직선형` / `왕복형` / `예술형` (**라벨 변경**: 순환→순환형, 직선→직선형, 왕복→왕복형, 아트→예술형) |
+| 코스 모양 | `순환` / `직선` / `왕복` / `아트` |
 | 코스 길이 | `전체` 라벨 추가. 0~40km (변경 없음) |
-| 코스 고도 | **라벨 변경**: `코스 경사` → `코스 고도`. **범위 변경**: 0~1000m → 0~400m. `전체` 라벨 추가 |
+| 코스 고도 | `코스 경사` → `코스 고도`. 0~1000m. `전체` 라벨 추가 |
 | 하단 | `초기화` + `N개의 코스 보기` (변경 없음) |
 
 #### 마라톤 필터 (신규)
@@ -124,13 +124,10 @@ GradeType = 1 | 2 | 3  →  GRADE_TO_NAME: { 1: '초급', 2: '중급', 3: '고�
 | 파일 | 변경 내용 |
 |------|----------|
 | `model/types.ts` | `EnvType`에 `'RIVER'` 추가, `EnvTypeName`에 `'강'` 추가 |
-| `model/types.ts` | `ShapeTypeName`을 `'순환형' \| '직선형' \| '왕복형' \| '예술형'`으로 변경 |
 | `model/types.ts` | `CourseSearchParams`에 `isMarathon?: boolean` 추가 |
 | `model/types.ts` | `CourseFilterPayload`에 `isMarathon?: boolean` 추가 |
 | `model/constants.ts` | `ENV_TYPE_TO_NAME`에 `RIVER: '강'` 추가 |
 | `model/constants.ts` | `ENV_NAME_TO_TYPE`에 `강: 'RIVER'` 추가 |
-| `model/constants.ts` | `SHAPE_TYPE_TO_NAME` 라벨 변경: `순환→순환형, 직선→직선형, 왕복→왕복형, 아트→예술형` |
-| `model/constants.ts` | `SHAPE_NAME_TO_TYPE` 키 변경: `순환형→LOOP, 직선형→LINEAR, 왕복형→OUT_AND_BACK, 예술형→ART` |
 
 ### 3-2. API 변경
 
@@ -262,10 +259,6 @@ viewMode 전달 방법:
 
 5. envTypeNames 순서 변경 (피그마 기준):
    트랙, 공원, 강, 산책로, 도심, 산, 숲, 해변
-
-6. shapeTypeNames 라벨 변경:
-   순환형, 직선형, 왕복형, 예술형
-   (기존 "{name}코스" 렌더링 → "{name}" 직접 렌더링으로 변경)
 ```
 
 ### 4-6. 검색 변경 상세
@@ -293,11 +286,6 @@ EnvType 추가:
   | 'RIVER'
 EnvTypeName 추가:
   | '강'
-ShapeTypeName 변경:
-  '순환' → '순환형'
-  '직선' → '직선형'
-  '왕복' → '왕복형'
-  '아트' → '예술형'
 CourseSearchParams 추가:
   isMarathon?: boolean
 CourseFilterPayload 추가:
@@ -308,10 +296,6 @@ ENV_TYPE_TO_NAME 추가:
   RIVER: '강'
 ENV_NAME_TO_TYPE 추가:
   강: 'RIVER'
-SHAPE_TYPE_TO_NAME 변경:
-  LOOP: '순환형', LINEAR: '직선형', OUT_AND_BACK: '왕복형', ART: '예술형'
-SHAPE_NAME_TO_TYPE 변경:
-  순환형: 'LOOP', 직선형: 'LINEAR', 왕복형: 'OUT_AND_BACK', 예술형: 'ART'
 envTypeNames 순서:
   ['트랙', '공원', '강', '산책로', '도심', '산', '숲', '해변']
 ```
