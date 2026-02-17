@@ -95,6 +95,7 @@ export interface CourseDetail
   elevationGain: number;
   elevationLoss: number;
   recommendCount: number;
+  isMarathon: boolean;
 }
 
 export interface CoursePointResponse {

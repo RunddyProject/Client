@@ -6,6 +6,8 @@ import Course from '@/pages/course/index';
 import CourseInfo from '@/pages/course/info';
 import CourseInfoLayout from '@/pages/course/info-layout';
 import CourseInfoMap from '@/pages/course/info-map';
+import MyCourses from '@/pages/course/my';
+import MyCourseEdit from '@/pages/course/edit';
 import CourseUpload from '@/pages/course/upload';
 import Error from '@/pages/error';
 import Login from '@/pages/login/index';
@@ -37,6 +39,17 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Course /> },
           {
+            path: 'my',
+            element: (
+              <ProtectedRoute>
+                <MyCourses />
+              </ProtectedRoute>
+            ),
+            handle: {
+              header: { showBackButton: false, rightButton: null }
+            }
+          },
+          {
             path: 'upload',
             element: (
               <ProtectedRoute>
@@ -60,6 +73,17 @@ export const router = createBrowserRouter([
                 path: 'map',
                 element: <CourseInfoMap />,
                 handle: { header: { title: '상세보기', rightButton: null } }
+              },
+              {
+                path: 'edit',
+                element: (
+                  <ProtectedRoute>
+                    <MyCourseEdit />
+                  </ProtectedRoute>
+                ),
+                handle: {
+                  header: { title: '코스 수정하기', rightButton: null }
+                }
               }
             ]
           }

@@ -116,14 +116,14 @@ const Header = () => {
     );
   };
 
-  // Course page with view mode tabs
-  const hasTabs = isCoursePage && viewMode !== undefined && setViewMode;
+  // Any page with view mode tabs (course discovery, my courses, etc.)
+  const hasTabs = viewMode !== undefined && setViewMode;
 
   return config.showHeader ? (
     <header
       className={cn(
         'top-0 z-[101] w-full',
-        isCoursePage ? 'fixed left-0' : 'bg-w-100 sticky'
+        hasTabs ? 'fixed left-0' : 'bg-w-100 sticky'
       )}
     >
       <div className='mx-auto flex h-13 max-w-xl items-center justify-between pr-2 pl-4'>

@@ -1,0 +1,182 @@
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
+
+import { RegisterCourseFAB } from '@/features/course/ui/RegisterCourseFAB';
+import { useGeolocation } from '@/features/map/hooks/useGeolocation';
+import { NaverMap } from '@/features/map/ui/NaverMap';
+import { useCenteredActiveByScroll } from '@/shared/hooks/useCenteredActiveByScroll';
+import { useScrollItemToCenter } from '@/shared/hooks/useScrollItemToCenter';
+import { Icon } from '@/shared/icons/icon';
+import { Button } from '@/shared/ui/primitives/button';
+
+import { useMultiPolyline } from '../hooks/useMultiPolyline';
+import { useUserCourseGpxList } from '../hooks/useUserCourseGpxList';
+import { useUserCourseSummary } from '../hooks/useUserCourseSummary';
+import { MyCourseInfoCard } from './MyCourseInfoCard';
+import { MyCourseSummary } from './MyCourseSummary';
+
+import type { UserCourse } from '../model/types';
+
+interface MyCourseMapProps {
+  courses: UserCourse[];
+}
+
+export function MyCourseMap({ courses }: MyCourseMapProps) {
+  const [mapInstance, setMapInstance] = useState<naver.maps.Map | null>(null);
+  const [activeCourseUuid, setActiveCourseUuid] = useState<string | null>(
+    courses[0]?.uuid ?? null
+  );
+  const scrollerRef = useRef<HTMLDivElement>(null);
+
+  const { data: summary } = useUserCourseSummary();
+  const { gpxList } = useUserCourseGpxList(true);
+  const { getCurrentLocation, isLoading: isLocationLoading } =
+    useGeolocation();
+
+  // Build gpx uuid → index map for card scrolling
+  const courseIndexMap = useMemo(
+    () => new Map(courses.map((c, i) => [c.uuid, i])),
+    [courses]
+  );
+
+  // Scroll to card when polyline is clicked
+  const scrollToItem = useScrollItemToCenter(scrollerRef);
+  const handlePolylineClick = useCallback(
+    (courseUuid: string) => {
+      setActiveCourseUuid(courseUuid);
+      scrollToItem(courseUuid);
+    },
+    [scrollToItem]
+  );
+
+  // Multi-polyline rendering
+  useMultiPolyline(mapInstance, gpxList, handlePolylineClick);
+
+  // Sync scroll → active course
+  useCenteredActiveByScroll({
+    container: scrollerRef,
+    itemAttr: 'uuid',
+    onChange: setActiveCourseUuid
+  });
+
+  const handleMapInit = useCallback((map: naver.maps.Map) => {
+    setMapInstance(map);
+  }, []);
+
+  const handleLocationClick = useCallback(async () => {
+    try {
+      const loc = await getCurrentLocation();
+      if (mapInstance && loc) {
+        mapInstance.setCenter(new naver.maps.LatLng(loc.lat, loc.lng));
+        mapInstance.setZoom(14);
+      }
+    } catch {
+      // Error handled in useGeolocation
+    }
+  }, [getCurrentLocation, mapInstance]);
+
+  return (
+    <div className='absolute inset-0 overflow-hidden'>
+      {/* Naver Map */}
+      <NaverMap
+        key='my-course-naver-map'
+        className='absolute inset-0'
+        glassTopOverlay
+        onInit={handleMapInit}
+      />
+
+      {/* Controls Overlay */}
+      <div className='pointer-events-none absolute inset-x-0 top-[calc(env(safe-area-inset-top)+52px)] bottom-[env(safe-area-inset-bottom)] z-10 grid grid-rows-[auto_1fr] overflow-hidden'>
+        {/* Summary stats overlay */}
+        {summary && (
+          <div className='pointer-events-auto px-5 pt-3'>
+            <MyCourseSummary
+              myCourseCount={summary.myCourseCount}
+              myTotalDistance={summary.myTotalDistance}
+            />
+          </div>
+        )}
+
+        {/* Bottom area */}
+        <div className='relative touch-none overflow-y-hidden'>
+          <div className='absolute inset-x-0 bottom-0'>
+            <div className='space-y-2 px-5 pb-5'>
+              <div className='flex items-end justify-between'>
+                <div className='flex flex-col gap-2'>
+                  {/* Location button */}
+                  <Button
+                    size='icon'
+                    variant='secondary'
+                    disabled={isLocationLoading}
+                    className='shadow-runddy bg-w-100 pointer-events-auto h-9.5 w-9.5 rounded-full'
+                    onClick={handleLocationClick}
+                  >
+                    <Icon
+                      name='my_location'
+                      size={24}
+                      color='currentColor'
+                      className='text-g-60'
+                    />
+                  </Button>
+                </div>
+
+                {/* Register Course FAB */}
+                <RegisterCourseFAB />
+              </div>
+            </div>
+
+            {/* Course Cards */}
+            <MyCourseCardsSection
+              courses={courses}
+              scrollerRef={scrollerRef}
+              activeCourseUuid={activeCourseUuid}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const MyCourseCardsSection = memo(function MyCourseCardsSection({
+  courses,
+  scrollerRef,
+  activeCourseUuid
+}: {
+  courses: UserCourse[];
+  scrollerRef: React.RefObject<HTMLDivElement | null>;
+  activeCourseUuid: string | null;
+}) {
+  if (courses.length === 0) return null;
+
+  if (courses.length === 1) {
+    return (
+      <div className='px-4 pb-5'>
+        <MyCourseInfoCard
+          course={courses[0]}
+          className='rounded-2xl px-5 py-4.5 shadow-xl'
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={scrollerRef}
+      className='no-scrollbar pointer-events-auto flex touch-pan-x snap-x snap-mandatory gap-4 overflow-x-auto [overscroll-behavior-x:contain] [scroll-padding-left:16px] [scroll-padding-right:16px] px-4 pb-5'
+      onPointerDown={(e) => e.stopPropagation()}
+    >
+      {courses.map((course) => (
+        <div
+          key={course.uuid}
+          data-uuid={course.uuid}
+          className='w-[85%] max-w-[420px] shrink-0 snap-center'
+        >
+          <MyCourseInfoCard
+            course={course}
+            className='rounded-2xl px-5 py-4.5 shadow-xl'
+          />
+        </div>
+      ))}
+    </div>
+  );
+});
