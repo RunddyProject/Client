@@ -22,7 +22,6 @@ import {
 } from '@/shared/ui/primitives/dialog';
 import { Input } from '@/shared/ui/primitives/input';
 import { Label } from '@/shared/ui/primitives/label';
-import logoImgUrl from '/logo.svg';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -42,9 +41,10 @@ const Header = () => {
 
   const path = normalizePath(location.pathname);
   const isCoursePage = path === '/' || path === '/course';
-  const isHomeHeader = isCoursePage || Object.keys(menuTitles).includes(path);
+  const isHomeHeader =
+    (!isCoursePage && Object.keys(menuTitles).includes(path)) || isCoursePage;
 
-  const { config } = useHeader();
+  const { config, viewMode, setViewMode } = useHeader();
 
   const handleBack = () => {
     const canGoBack = window.history.state && window.history.state.idx > 0;
@@ -116,6 +116,9 @@ const Header = () => {
     );
   };
 
+  // Course page with view mode tabs
+  const hasTabs = isCoursePage && viewMode !== undefined && setViewMode;
+
   return config.showHeader ? (
     <header
       className={cn(
@@ -124,11 +127,48 @@ const Header = () => {
       )}
     >
       <div className='mx-auto flex h-13 max-w-xl items-center justify-between pr-2 pl-4'>
-        {isHomeHeader ? (
+        {hasTabs ? (
+          // Course Page Tab Header: [지도보기][목록보기] | [Menu]
+          <>
+            <div className='flex items-center'>
+              <button
+                onClick={() => setViewMode('map')}
+                className={cn(
+                  'text-contents-b16 rounded-full px-3 py-1.5 transition-colors',
+                  viewMode === 'map'
+                    ? 'bg-w-100 text-g-90 shadow-sm'
+                    : 'text-g-50'
+                )}
+              >
+                지도보기
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={cn(
+                  'text-contents-b16 rounded-full px-3 py-1.5 transition-colors',
+                  viewMode === 'list'
+                    ? 'bg-w-100 text-g-90 shadow-sm'
+                    : 'text-g-50'
+                )}
+              >
+                목록보기
+              </button>
+            </div>
+
+            <div className='flex items-center'>
+              {isDevelopment && <DevTokenDialog />}
+              <Menu titles={menuTitles} />
+            </div>
+          </>
+        ) : isHomeHeader ? (
           // Home Header: Runddy Logo | Profile | Menu
           <>
             <Link to='/'>
-              <img src={logoImgUrl} alt='Runddy Logo' width='90' />
+              <img
+                src={new URL('/logo.svg', import.meta.url).href}
+                alt='Runddy Logo'
+                width='90'
+              />
             </Link>
 
             <div className='flex items-center'>

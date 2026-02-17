@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router';
 
 import { CoursesApi } from '@/features/course/api/course.api';
+import { isMarathonCategory } from '@/features/course/model/category';
 import {
   DEFAULT_CENTER,
   DEFAULT_RADIUS
@@ -37,6 +38,9 @@ export function useCourses({
     }
   }, [keyword, setKeywordCenter]);
 
+  const category = params.get('category') ?? undefined;
+  const isMarathon = isMarathonCategory(category);
+
   const grades = params.getAll('grade').map(Number);
   const envTypes =
     (params.getAll('envType') as CourseSearchParams['envType']) || [];
@@ -52,7 +56,8 @@ export function useCourses({
     maxDist: params.get('maxDist') ? Number(params.get('maxDist')) : undefined,
     minEle: params.get('minEle') ? Number(params.get('minEle')) : undefined,
     maxEle: params.get('maxEle') ? Number(params.get('maxEle')) : undefined,
-    keyword: params.get('keyword') ?? undefined
+    keyword: params.get('keyword') ?? undefined,
+    isMarathon: isMarathon || undefined
   };
 
   const lastGeocodedKeywordRef = useRef<string | null>(null);
@@ -73,7 +78,8 @@ export function useCourses({
       search.maxDist,
       search.minEle,
       search.maxEle,
-      search.keyword
+      search.keyword,
+      search.isMarathon
     ],
     queryFn: async () => {
       if (!userLocation) return [];
@@ -182,7 +188,8 @@ export function usePrefetchCourses() {
         search?.maxDist,
         search?.minEle,
         search?.maxEle,
-        search?.keyword
+        search?.keyword,
+        search?.isMarathon
       ],
       queryFn: () =>
         CoursesApi.getCourses(userLocation.lat, userLocation.lng, search).then(

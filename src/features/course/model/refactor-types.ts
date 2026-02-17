@@ -19,7 +19,7 @@ import type { RefObject } from 'react';
  * CourseMap 컴포넌트의 Props
  */
 export interface CourseMapProps {
-  onViewModeChange: (mode: 'map' | 'list') => void;
+  onViewModeChange?: (mode: 'map' | 'list') => void;
 }
 
 /**
@@ -99,7 +99,6 @@ export interface CourseMapHandlers {
   onScrollChange: (uuid: string) => void;
   onSearchHere: () => void;
   onSearchByCurrentLocation: () => Promise<void>;
-  onViewModeChange: (mode: 'map' | 'list') => void;
 }
 
 /**

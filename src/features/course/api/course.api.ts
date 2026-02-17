@@ -31,7 +31,8 @@ export const CoursesApi = {
       maxDist: params.maxDist ? params.maxDist * 1000 : undefined,
       minEle: params.minEle ? params.minEle * 1000 : undefined,
       maxEle: params.maxEle ? params.maxEle * 1000 : undefined,
-      keyword: params.keyword
+      keyword: params.keyword,
+      isMarathon: params.isMarathon ? 'true' : undefined
     });
 
     return api.get<CoursesResponse>(`/course?${query}`);
