@@ -122,7 +122,7 @@ const Header = () => {
   return config.showHeader ? (
     <header
       className={cn(
-        'top-0 z-[101] w-full',
+        'top-0 z-[101] w-full pt-[env(safe-area-inset-top)]',
         isCoursePage ? 'fixed left-0' : 'bg-w-100 sticky'
       )}
     >
