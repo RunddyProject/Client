@@ -55,7 +55,7 @@ export const CategoryDropdown = memo(function CategoryDropdown({
       <PopoverContent
         align='start'
         sideOffset={8}
-        className='w-auto min-w-[120px] p-1'
+        className='bg-w-100 w-auto min-w-[120px] p-1'
       >
         {Object.values(CourseCategory).map((cat) => (
           <button

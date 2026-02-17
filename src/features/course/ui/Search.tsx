@@ -34,14 +34,12 @@ const Search = memo(function Search({ className }: SearchProps) {
 
   const handleCategoryChange = (category: CourseCategoryType) => {
     const newParams = new URLSearchParams();
-    // Keep keyword on category change
     const kw = params.get('keyword');
     if (kw) newParams.set('keyword', kw);
 
     if (category !== DEFAULT_CATEGORY) {
       newParams.set('category', category);
     }
-    // Reset filter params on category change
     navigate({ search: newParams.toString() });
   };
 
@@ -65,30 +63,47 @@ const Search = memo(function Search({ className }: SearchProps) {
   };
 
   return (
-    <div className='relative flex items-center gap-2'>
-      {/* Category Dropdown */}
-      <CategoryDropdown
-        value={currentCategory}
-        onChange={handleCategoryChange}
-      />
+    <>
+      {/* Connected search bar: [Dropdown | Search Input] */}
+      <div
+        className={cn(
+          'bg-w-100 flex h-12 items-center rounded-xl',
+          className
+        )}
+      >
+        {/* Category Dropdown (left section) */}
+        <CategoryDropdown
+          value={currentCategory}
+          onChange={handleCategoryChange}
+          className='shrink-0 pl-4 pr-3'
+        />
 
-      {/* Search Input */}
-      <div className='relative flex-1'>
-        <Icon
-          name='search'
-          size={24}
-          color='currentColor'
-          className='text-line-ter absolute top-1/2 left-4 -translate-y-1/2'
-        />
-        <Input
-          placeholder='지역, 코스이름 검색'
-          value={params.get('keyword') ?? keyword}
-          className={cn('bg-w-100 text-m18 pl-13', className)}
+        {/* Divider */}
+        <div className='bg-g-20 h-5 w-px shrink-0' />
+
+        {/* Search Input (right section) */}
+        <button
+          className='flex min-w-0 flex-1 items-center gap-2 pl-3 pr-4'
           onClick={() => setOpen(true)}
-          readOnly
-        />
+        >
+          <Icon
+            name='search'
+            size={20}
+            color='currentColor'
+            className='text-g-40 shrink-0'
+          />
+          <span
+            className={cn(
+              'contents-m15 truncate text-left',
+              params.get('keyword') ? 'text-pri' : 'text-placeholder'
+            )}
+          >
+            {params.get('keyword') || '지역, 코스이름 검색'}
+          </span>
+        </button>
       </div>
 
+      {/* Search Dialog (fullscreen) */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogPortal>
           <DialogContent
@@ -108,7 +123,7 @@ const Search = memo(function Search({ className }: SearchProps) {
               {/* Category Chip */}
               <button
                 onClick={handleCategoryChipRemove}
-                className='bg-g-10 text-contents-m14 text-pri flex shrink-0 items-center gap-1 rounded-full px-3 py-1.5'
+                className='bg-g-10 contents-m14 text-pri flex shrink-0 items-center gap-1 rounded-full px-3 py-1.5'
               >
                 {CATEGORY_LABELS[currentCategory]}
                 {isMarathonCategory(currentCategory) && (
@@ -126,7 +141,7 @@ const Search = memo(function Search({ className }: SearchProps) {
                 inputMode='search'
                 placeholder='지역, 코스이름 검색'
                 value={keyword}
-                className='bg-g-10 text-contents-m16 h-[42px]'
+                className='bg-g-10 contents-m16 h-[42px]'
                 onChange={(e) => setKeyword(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
@@ -140,7 +155,7 @@ const Search = memo(function Search({ className }: SearchProps) {
           </DialogContent>
         </DialogPortal>
       </Dialog>
-    </div>
+    </>
   );
 });
 

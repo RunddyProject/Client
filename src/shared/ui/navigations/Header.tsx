@@ -128,36 +128,46 @@ const Header = () => {
     >
       <div className='mx-auto flex h-13 max-w-xl items-center justify-between pr-2 pl-4'>
         {hasTabs ? (
-          // Course Page Tab Header: [지도보기][목록보기] | [Menu]
+          // Course Page Tab Header: centered toggle + right menu
           <>
-            <div className='flex items-center'>
-              <button
-                onClick={() => setViewMode('map')}
-                className={cn(
-                  'text-contents-b16 rounded-full px-3 py-1.5 transition-colors',
-                  viewMode === 'map'
-                    ? 'bg-w-100 text-g-90 shadow-sm'
-                    : 'text-g-50'
-                )}
-              >
-                지도보기
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={cn(
-                  'text-contents-b16 rounded-full px-3 py-1.5 transition-colors',
-                  viewMode === 'list'
-                    ? 'bg-w-100 text-g-90 shadow-sm'
-                    : 'text-g-50'
-                )}
-              >
-                목록보기
-              </button>
+            {/* Left spacer to balance menu button for centering */}
+            <div className='w-10' />
+
+            {/* Centered Toggle Pill */}
+            <div className='bg-g-20 absolute left-1/2 flex -translate-x-1/2 items-center rounded-full p-0.5'>
+              <div className='relative flex'>
+                {/* Sliding white indicator */}
+                <div
+                  className={cn(
+                    'bg-w-100 absolute top-0 bottom-0 w-1/2 rounded-full shadow-sm transition-transform duration-200 ease-in-out',
+                    viewMode === 'list' && 'translate-x-full'
+                  )}
+                />
+                <button
+                  onClick={() => setViewMode('map')}
+                  className={cn(
+                    'contents-b14 relative z-[1] rounded-full px-3.5 py-1.5 transition-colors duration-200',
+                    viewMode === 'map' ? 'text-g-90' : 'text-ter'
+                  )}
+                >
+                  지도보기
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={cn(
+                    'contents-b14 relative z-[1] rounded-full px-3.5 py-1.5 transition-colors duration-200',
+                    viewMode === 'list' ? 'text-g-90' : 'text-ter'
+                  )}
+                >
+                  목록보기
+                </button>
+              </div>
             </div>
 
+            {/* Right: Menu button (white circle) */}
             <div className='flex items-center'>
               {isDevelopment && <DevTokenDialog />}
-              <Menu titles={menuTitles} />
+              <Menu titles={menuTitles} circleButton />
             </div>
           </>
         ) : isHomeHeader ? (

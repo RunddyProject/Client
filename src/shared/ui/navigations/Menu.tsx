@@ -2,6 +2,7 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { Link } from 'react-router';
 
 import { Icon } from '@/shared/icons/icon';
+import { cn } from '@/shared/lib/utils';
 import Feedback from '@/shared/ui/actions/Feedback';
 import {
   Sheet,
@@ -15,12 +16,19 @@ import logoImgUrl from '/logo.svg';
 
 interface MenuProps {
   titles: Record<string, string>;
+  circleButton?: boolean;
 }
 
-const Menu = ({ titles }: MenuProps) => {
+const Menu = ({ titles, circleButton }: MenuProps) => {
   return (
     <Sheet>
-      <SheetTrigger className='p-3'>
+      <SheetTrigger
+        className={cn(
+          'p-3',
+          circleButton &&
+            'bg-w-100 shadow-runddy flex h-10 w-10 items-center justify-center rounded-full p-0'
+        )}
+      >
         <Icon name='menu' size={24} />
       </SheetTrigger>
       <SheetContent className='bg-w-100 fixed z-[10002] w-full'>

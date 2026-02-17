@@ -2,7 +2,6 @@ import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router';
 
 import { cn } from '@/shared/lib/utils';
-import { Button } from '@/shared/ui/primitives/button';
 
 interface RegisterCourseFABProps {
   className?: string;
@@ -12,18 +11,15 @@ export function RegisterCourseFAB({ className }: RegisterCourseFABProps) {
   const navigate = useNavigate();
 
   return (
-    <Button
+    <button
       className={cn(
-        'shadow-runddy pointer-events-auto gap-1 rounded-full px-3',
+        'shadow-runddy pointer-events-auto flex items-center gap-1 rounded-full border border-[#B8E6F8] bg-w-100 px-3 py-2',
         className
       )}
-      style={{
-        background: 'linear-gradient(180deg, #D5F3FF 0%, #F2FBFF 100%)'
-      }}
       onClick={() => navigate('/course/upload')}
     >
-      <Plus className='size-5 text-[#119BD1]' />
-      <span className='text-contents-r14 text-[#119BD1]'>코스 등록하기</span>
-    </Button>
+      <Plus className='size-5 text-runddy-blue' strokeWidth={2.5} />
+      <span className='contents-m14 text-runddy-blue'>코스 등록하기</span>
+    </button>
   );
 }
