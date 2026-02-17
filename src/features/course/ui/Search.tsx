@@ -4,7 +4,6 @@ import { useNavigate, useSearchParams } from 'react-router';
 import {
   CATEGORY_LABELS,
   DEFAULT_CATEGORY,
-  isMarathonCategory,
   type CourseCategoryType
 } from '@/features/course/model/category';
 import { CategoryDropdown } from '@/features/course/ui/CategoryDropdown';
@@ -64,26 +63,27 @@ const Search = memo(function Search({ className }: SearchProps) {
 
   return (
     <>
-      {/* Connected search bar: [Dropdown | Search Input] */}
+      {/* Connected search bar: [Chip Dropdown | Search Input] */}
       <div
         className={cn(
           'bg-w-100 flex h-12 items-center rounded-xl',
           className
         )}
       >
-        {/* Category Dropdown (left section) */}
-        <CategoryDropdown
-          value={currentCategory}
-          onChange={handleCategoryChange}
-          className='shrink-0 pl-4 pr-3'
-        />
+        {/* Category Dropdown Chip (left section) */}
+        <div className='shrink-0 pl-2.5'>
+          <CategoryDropdown
+            value={currentCategory}
+            onChange={handleCategoryChange}
+          />
+        </div>
 
         {/* Divider */}
-        <div className='bg-g-20 h-5 w-px shrink-0' />
+        <div className='bg-g-20 mx-2.5 h-5 w-px shrink-0' />
 
         {/* Search Input (right section) */}
         <button
-          className='flex min-w-0 flex-1 items-center gap-2 pl-3 pr-4'
+          className='flex min-w-0 flex-1 items-center gap-2 pr-4'
           onClick={() => setOpen(true)}
         >
           <Icon
@@ -126,7 +126,7 @@ const Search = memo(function Search({ className }: SearchProps) {
                 className='bg-g-10 contents-m14 text-pri flex shrink-0 items-center gap-1 rounded-full px-3 py-1.5'
               >
                 {CATEGORY_LABELS[currentCategory]}
-                {isMarathonCategory(currentCategory) && (
+                {currentCategory !== DEFAULT_CATEGORY && (
                   <Icon
                     name='close'
                     size={14}
