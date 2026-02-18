@@ -116,6 +116,7 @@ export function useCourseUpload(
     onSuccess: () => {
       // Invalidate courses query to refresh the list
       queryClient.invalidateQueries({ queryKey: ['courses'] });
+      queryClient.invalidateQueries({ queryKey: ['user-courses'] });
     }
   });
 

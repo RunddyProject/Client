@@ -34,7 +34,7 @@ export function useMarkers(
     const focusHex =
       options?.focusColor && options.focusColor.startsWith('#')
         ? options.focusColor
-        : runddyColor[options?.focusColor ?? 'blue'];
+        : runddyColor[options?.focusColor ?? 'default'];
 
     const incomingIds = new Set(markers.map((m) => m.id));
     for (const [id, mk] of _markers) {

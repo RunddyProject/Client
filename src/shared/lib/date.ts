@@ -18,3 +18,29 @@ export function formatReviewDate(createdAt: number | string): string {
   const d = String(date.getDate()).padStart(2, '0');
   return `${y}년 ${m}월 ${d}일`;
 }
+
+export function formatKST(createdAt: string): string {
+  const date = new Date(Number(createdAt) * 1000);
+
+  const formatter = new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+
+  const parts = formatter.formatToParts(date);
+
+  const map: Record<string, string> = {};
+  for (const part of parts) {
+    if (part.type !== 'literal') {
+      map[part.type] = part.value;
+    }
+  }
+
+  return `${map.year}.${map.month}.${map.day}(${map.weekday}) ${map.hour}:${map.minute}`;
+}

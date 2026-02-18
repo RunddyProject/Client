@@ -130,7 +130,7 @@ export function CourseUploadForm({
           focusKey={FOCUS_KEY}
           fitEnabled
           interactionsEnabled={false}
-          color='blue'
+          color='default'
         />
       </div>
 

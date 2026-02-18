@@ -31,7 +31,7 @@ function CourseInfoMap() {
 
   const activeColor: RUNDDY_COLOR = course
     ? SHAPE_TYPE_COLOR[course.shapeType]
-    : 'blue';
+    : 'default';
 
   const startPoint = course.coursePointList[0];
   const startMarker: MarkerInput = {

@@ -51,7 +51,7 @@ export function useGpxPolyline(
     const map = mapRef.current;
     if (!map) return;
 
-    const strokeColor = runddyColor[color ?? 'blue'];
+    const strokeColor = runddyColor[color ?? 'default'];
 
     if (!polylineRef.current) {
       polylineRef.current = new naver.maps.Polyline({

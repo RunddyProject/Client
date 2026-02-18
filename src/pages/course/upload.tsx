@@ -97,8 +97,10 @@ function CourseUpload() {
 
   const handleViewCourse = useCallback(() => {
     setShowSuccess(false);
-    if (uploadResult?.uuid) {
-      navigate(`/course/${uploadResult.uuid}`);
+    if (uploadResult?.courseUuid) {
+      navigate(`/course/${uploadResult.courseUuid}`, {
+        state: { isUserCourse: true }
+      });
     } else {
       navigate('/');
     }
