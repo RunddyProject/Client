@@ -22,12 +22,12 @@ import {
 } from '@/shared/ui/primitives/dialog';
 import { Input } from '@/shared/ui/primitives/input';
 import { Label } from '@/shared/ui/primitives/label';
-import logoImgUrl from '/logo.svg';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 const menuTitles: Record<string, string> = {
   '/': '런디코스',
+  // '/course/my': '내 코스', // TODO: v1.0 오픈 시 활성화
   '/me': '마이페이지'
 };
 
@@ -42,9 +42,11 @@ const Header = () => {
 
   const path = normalizePath(location.pathname);
   const isCoursePage = path === '/' || path === '/course';
-  const isHomeHeader = isCoursePage || Object.keys(menuTitles).includes(path);
+  const homePages = ['/', '/me'];
+  const isHomeHeader =
+    (!isCoursePage && homePages.includes(path)) || isCoursePage;
 
-  const { config } = useHeader();
+  const { config, viewMode, setViewMode } = useHeader();
 
   const handleBack = () => {
     const canGoBack = window.history.state && window.history.state.idx > 0;
@@ -116,24 +118,74 @@ const Header = () => {
     );
   };
 
+  // Any page with view mode tabs (course discovery, my courses, etc.)
+  const hasTabs = viewMode !== undefined && setViewMode;
+
   return config.showHeader ? (
     <header
       className={cn(
         'top-0 z-[101] w-full',
-        isCoursePage ? 'fixed left-0' : 'bg-w-100 sticky'
+        hasTabs || isCoursePage ? 'fixed left-0' : 'bg-w-100 sticky' // TODO: v1.0 오픈 시 isCoursePage 조건 제거
       )}
     >
       <div className='mx-auto flex h-13 max-w-xl items-center justify-between pr-2 pl-4'>
-        {isHomeHeader ? (
+        {hasTabs ? (
+          // Course Page Tab Header: centered toggle + right menu
+          <>
+            {/* Left spacer to balance menu button for centering */}
+            <div className='w-10' />
+
+            {/* Centered Toggle Pill */}
+            <div className='bg-g-20 shadow-runddy absolute left-1/2 flex -translate-x-1/2 items-center rounded-full p-1'>
+              <div className='relative flex gap-1'>
+                {/* Sliding white indicator */}
+                <div
+                  className={cn(
+                    'bg-w-100 absolute top-0 bottom-0 w-1/2 rounded-full shadow-sm transition-transform duration-200 ease-in-out',
+                    viewMode === 'list' && 'translate-x-full'
+                  )}
+                />
+                <button
+                  onClick={() => setViewMode('map')}
+                  className={cn(
+                    'relative z-[1] rounded-full px-3.5 py-1.5 transition-colors duration-200',
+                    viewMode === 'map' ? 'text-g-90' : 'text-ter'
+                  )}
+                >
+                  <span className='text-contents-b14'>지도보기</span>
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={cn(
+                    'relative z-[1] rounded-full px-3.5 py-1.5 transition-colors duration-200',
+                    viewMode === 'list' ? 'text-g-90' : 'text-ter'
+                  )}
+                >
+                  <span className='text-contents-b14'>목록보기</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Right: Menu button (white circle) */}
+            <div className='flex items-center'>
+              {isDevelopment && <DevTokenDialog />}
+              <Menu titles={menuTitles} circleButton />
+            </div>
+          </>
+        ) : isHomeHeader ? (
           // Home Header: Runddy Logo | Profile | Menu
           <>
             <Link to='/'>
-              <img src={logoImgUrl} alt='Runddy Logo' width='90' />
+              <img
+                src={new URL('/logo.svg', import.meta.url).href}
+                alt='Runddy Logo'
+                width='90'
+              />
             </Link>
 
             <div className='flex items-center'>
               {isDevelopment && <DevTokenDialog />}
-              <Menu titles={menuTitles} />
+              <Menu titles={menuTitles} circleButton />
             </div>
           </>
         ) : (
