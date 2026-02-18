@@ -12,6 +12,7 @@ import {
 } from '@/features/course/model/constants';
 import { ElevationChart } from '@/features/course/ui/ElevationChart';
 import { Icon } from '@/shared/icons/icon';
+import { formatKST } from '@/shared/lib/date';
 import { runddyColor } from '@/shared/model/constants';
 import Feedback from '@/shared/ui/actions/Feedback';
 import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
@@ -39,7 +40,7 @@ const CourseDetail = ({ isUserCourse = false }: CourseDetailProps) => {
   const { courseDetail: course, isLoading } = useCourseDetail(uuid ?? '');
   const activeColor: RUNDDY_COLOR = course
     ? SHAPE_TYPE_COLOR[course.shapeType]
-    : 'blue';
+    : 'default';
 
   const elevationChartData = useMemo(
     () => course && buildElevationChartData(course.coursePointList),
@@ -93,29 +94,42 @@ const CourseDetail = ({ isUserCourse = false }: CourseDetailProps) => {
               <Chip>{GRADE_TO_NAME[course.grade]}</Chip>
             </div>
           )}
-          <div className='flex items-center justify-between gap-1'>
-            <div className='text-contents-b16'>러닝 장소</div>
-            <Chip>{course.envTypeName}</Chip>
-          </div>
-          <div className='flex items-center justify-between gap-1'>
-            <div className='flex items-center gap-1'>
-              <div className='text-contents-b16'>코스 모양</div>
-              <Tooltip
-                title={'코스 모양에 대해 설명해 드릴게요'}
-                body={
-                  <ul className='text-w-100 marker:text-w-100/70 list-disc space-y-1 pl-5'>
-                    <li>순환코스: 출발한 곳으로 돌아오는 원형 코스</li>
-                    <li>
-                      직선코스: 한방향으로 쭉 달리는 형태(출발, 도착 다름)
-                    </li>
-                    <li>왕복코스: 같은 길을 따라 갔다가 되돌아오는 코스</li>
-                    <li>아트코스: 러닝 루트가 그림처럼 그려지는 코스</li>
-                  </ul>
-                }
-              />
+
+          {isUserCourse && (
+            <div className='flex items-center justify-between gap-1'>
+              <div className='text-contents-b16'>등록 날짜</div>
+              <div>{formatKST(course.createdAt)}</div>
             </div>
-            <Chip>{SHAPE_TYPE_TO_NAME[course.shapeType]}코스</Chip>
-          </div>
+          )}
+
+          {course.envType && (
+            <div className='flex items-center justify-between gap-1'>
+              <div className='text-contents-b16'>러닝 장소</div>
+              <Chip>{course.envTypeName}</Chip>
+            </div>
+          )}
+
+          {course.shapeType && (
+            <div className='flex items-center justify-between gap-1'>
+              <div className='flex items-center gap-1'>
+                <div className='text-contents-b16'>코스 모양</div>
+                <Tooltip
+                  title={'코스 모양에 대해 설명해 드릴게요'}
+                  body={
+                    <ul className='text-w-100 marker:text-w-100/70 list-disc space-y-1 pl-5'>
+                      <li>순환코스: 출발한 곳으로 돌아오는 원형 코스</li>
+                      <li>
+                        직선코스: 한방향으로 쭉 달리는 형태(출발, 도착 다름)
+                      </li>
+                      <li>왕복코스: 같은 길을 따라 갔다가 되돌아오는 코스</li>
+                      <li>아트코스: 러닝 루트가 그림처럼 그려지는 코스</li>
+                    </ul>
+                  }
+                />
+              </div>
+              <Chip>{SHAPE_TYPE_TO_NAME[course.shapeType]}코스</Chip>
+            </div>
+          )}
 
           <div>
             <div className='flex items-center justify-between gap-1 pb-4'>
@@ -202,22 +216,24 @@ const CourseDetail = ({ isUserCourse = false }: CourseDetailProps) => {
           </div>
 
           {/* Bottom Actions */}
-          <div className='items-col flex w-full pt-7.5'>
-            <Button
-              size='lg'
-              variant='secondary'
-              className='flex-1 rounded-tl-none rounded-bl-none shadow-none'
-              onClick={handleDownloadGPX}
-            >
-              <Icon
-                name='download'
-                size={24}
-                color='currentColor'
-                className='text-g-70'
-              />
-              <span className='text-sec text-contents-m16'>GPX 다운로드</span>
-            </Button>
-          </div>
+          {!isUserCourse && (
+            <div className='items-col flex w-full pt-7.5'>
+              <Button
+                size='lg'
+                variant='secondary'
+                className='flex-1 rounded-tl-none rounded-bl-none shadow-none'
+                onClick={handleDownloadGPX}
+              >
+                <Icon
+                  name='download'
+                  size={24}
+                  color='currentColor'
+                  className='text-g-70'
+                />
+                <span className='text-sec text-contents-m16'>GPX 다운로드</span>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 

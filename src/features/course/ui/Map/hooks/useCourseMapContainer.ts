@@ -69,7 +69,6 @@ import type { RefObject } from 'react';
  * ```
  */
 export function useCourseMapContainer(): CourseMapContainerData {
-
   // ============================================================================
   // Map Reference
   // ============================================================================
@@ -186,7 +185,7 @@ export function useCourseMapContainer(): CourseMapContainerData {
     () =>
       activeCourse
         ? SHAPE_TYPE_COLOR[activeCourse.shapeType]
-        : runddyColor['blue'],
+        : runddyColor['default'],
     [activeCourse]
   );
 

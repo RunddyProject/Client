@@ -92,7 +92,8 @@ export function useToggleBookmark() {
                   shapeTypeName: courseData.shapeTypeName,
                   totalDistance: courseData.totalDistance,
                   svg: courseData.svg,
-                  isBookmarked: true
+                  isBookmarked: true,
+                  createdAt: courseData.createdAt
                 }
               ]
             };

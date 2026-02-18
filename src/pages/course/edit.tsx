@@ -33,8 +33,7 @@ function MyCourseEdit() {
   const navigate = useNavigate();
   const { uuid } = useParams<{ uuid: string }>();
   const { courseDetail: course, isLoading } = useCourseDetail(uuid ?? '');
-  const { mutateAsync: editAsync, isPending: isEditing } =
-    useEditUserCourse();
+  const { mutateAsync: editAsync, isPending: isEditing } = useEditUserCourse();
 
   const [formData, setFormData] = useState<EditFormData | null>(null);
 
@@ -148,7 +147,7 @@ function MyCourseEdit() {
           focusKey='edit'
           fitEnabled
           interactionsEnabled={false}
-          color='blue'
+          color='default'
         />
       </div>
 

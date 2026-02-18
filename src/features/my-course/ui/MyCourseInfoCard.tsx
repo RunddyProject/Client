@@ -49,10 +49,10 @@ export const MyCourseInfoCard = memo(function MyCourseInfoCard({
       )}
     >
       {/* SVG thumbnail */}
-      {courseImageUrl[course.shapeType] ? (
+      {course.svg ? (
         <div className='relative h-[60px] w-[60px] shrink-0'>
           <img
-            src={courseImageUrl[course.shapeType]}
+            src={courseImageUrl[course.shapeType] || CourseLoopImageUrl}
             width='60'
             height='60'
             className='rounded-xl'
@@ -72,9 +72,9 @@ export const MyCourseInfoCard = memo(function MyCourseInfoCard({
           {course.name || '코스이름'}
         </div>
         <div className='no-scrollbar flex items-center gap-1 overflow-x-auto'>
-          <Badge>{course.envTypeName}</Badge>
-          <Badge>{(course.totalDistance / 1000).toFixed(1)}km</Badge>
+          {course.envTypeName && <Badge>{course.envTypeName}</Badge>}
           {course.isMarathon && <Badge>마라톤</Badge>}
+          <Badge>{(course.totalDistance / 1000).toFixed(1)}km</Badge>
         </div>
       </div>
     </div>

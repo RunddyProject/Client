@@ -89,7 +89,7 @@ const Search = memo(function Search({
         >
           <span
             className={cn(
-              'contents-m15 truncate text-left',
+              'text-contents-m15 truncate text-left',
               params.get('keyword') ? 'text-pri' : 'text-placeholder'
             )}
           >
@@ -143,7 +143,7 @@ const Search = memo(function Search({
                   inputMode='search'
                   placeholder='지역, 코스이름 검색'
                   value={keyword}
-                  className='contents-m16 h-[42px] bg-transparent px-2 hover:bg-transparent focus:bg-transparent focus:ring-0 active:bg-transparent'
+                  className='text-contents-m16 h-[42px] bg-transparent px-2 hover:bg-transparent focus:bg-transparent focus:ring-0 active:bg-transparent'
                   onChange={(e) => setKeyword(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {

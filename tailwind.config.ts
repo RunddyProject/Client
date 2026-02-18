@@ -26,7 +26,8 @@ export default {
           pressed: 'var(--runddy-pressed)',
           orange: 'var(--runddy-orange)',
           green: 'var(--runddy-green)',
-          pink: 'var(--runddy-pink)'
+          pink: 'var(--runddy-pink)',
+          default: 'var(--runddy-default)'
         },
         pri: 'var(--text-pri)',
         sec: 'var(--text-sec)',

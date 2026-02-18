@@ -41,6 +41,7 @@ export interface Course {
   totalDistance: number;
   svg: string;
   isBookmarked?: boolean;
+  createdAt: string;
 }
 
 export interface CoursesResponse {

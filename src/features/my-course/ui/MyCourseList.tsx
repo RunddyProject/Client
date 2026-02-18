@@ -48,11 +48,13 @@ export function MyCourseList({ courses }: MyCourseListProps) {
       >
         {/* Summary stats */}
         {summary && (
-          <MyCourseSummary
-            myCourseCount={summary.myCourseCount}
-            myTotalDistance={summary.myTotalDistance}
-            className='mb-5'
-          />
+          <div className='pt-3 pb-[30px]'>
+            <MyCourseSummary
+              myCourseCount={summary.myCourseCount}
+              myTotalDistance={summary.myTotalDistance}
+              className='bg-g-10'
+            />
+          </div>
         )}
 
         {/* Course list - virtualized */}

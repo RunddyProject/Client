@@ -26,13 +26,11 @@ export function MyCourseMap({ courses }: MyCourseMapProps) {
     courses[0]?.uuid ?? null
   );
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const scrollerRefAsElement =
-    scrollerRef as React.RefObject<HTMLElement>;
+  const scrollerRefAsElement = scrollerRef as React.RefObject<HTMLElement>;
 
   const { data: summary } = useUserCourseSummary();
   const { gpxList } = useUserCourseGpxList(true);
-  const { getCurrentLocation, isLoading: isLocationLoading } =
-    useGeolocation();
+  const { getCurrentLocation, isLoading: isLocationLoading } = useGeolocation();
 
   // Scroll to card when polyline is clicked
   const scrollToItem = useScrollItemToCenter(scrollerRefAsElement);
@@ -84,7 +82,7 @@ export function MyCourseMap({ courses }: MyCourseMapProps) {
       <div className='pointer-events-none absolute inset-x-0 top-[calc(env(safe-area-inset-top)+52px)] bottom-[env(safe-area-inset-bottom)] z-10 grid grid-rows-[auto_1fr] overflow-hidden'>
         {/* Summary stats overlay */}
         {summary && (
-          <div className='pointer-events-auto px-5 pt-3'>
+          <div className='pointer-events-auto px-5 pt-6'>
             <MyCourseSummary
               myCourseCount={summary.myCourseCount}
               myTotalDistance={summary.myTotalDistance}
@@ -121,10 +119,7 @@ export function MyCourseMap({ courses }: MyCourseMapProps) {
             </div>
 
             {/* Course Cards */}
-            <MyCourseCardsSection
-              courses={courses}
-              scrollerRef={scrollerRef}
-            />
+            <MyCourseCardsSection courses={courses} scrollerRef={scrollerRef} />
           </div>
         </div>
       </div>
@@ -155,7 +150,7 @@ const MyCourseCardsSection = memo(function MyCourseCardsSection({
   return (
     <div
       ref={scrollerRef}
-      className='no-scrollbar pointer-events-auto flex touch-pan-x snap-x snap-mandatory gap-4 overflow-x-auto [overscroll-behavior-x:contain] [scroll-padding-left:16px] [scroll-padding-right:16px] px-4 pb-5'
+      className='no-scrollbar pointer-events-auto flex touch-pan-x snap-x snap-mandatory [scroll-padding-right:16px] [scroll-padding-left:16px] gap-4 overflow-x-auto [overscroll-behavior-x:contain] px-4 pb-5'
       onPointerDown={(e) => e.stopPropagation()}
     >
       {courses.map((course) => (

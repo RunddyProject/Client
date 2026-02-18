@@ -138,9 +138,9 @@ const CourseInfo = () => {
     return null;
   }
 
-  const activeColor: RUNDDY_COLOR = course
+  const activeColor: RUNDDY_COLOR = course.shapeType
     ? SHAPE_TYPE_COLOR[course.shapeType]
-    : 'blue';
+    : 'default';
 
   const startPoint = course.coursePointList[0];
   const startMarker: MarkerInput = {
@@ -230,7 +230,7 @@ const CourseInfo = () => {
       </div>
 
       {isUserCourse ? (
-        <div className='mt-6'>
+        <div>
           <CourseDetail isUserCourse />
         </div>
       ) : (

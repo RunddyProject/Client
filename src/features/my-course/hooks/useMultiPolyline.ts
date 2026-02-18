@@ -31,13 +31,10 @@ export function useMultiPolyline(
       const points = gpx.coursePointList;
       if (points.length === 0) return;
 
-      const path = points.map(
-        (p) => new naver.maps.LatLng(p.lat, p.lng)
-      );
-      const colorHex =
-        (runddyColor as Record<string, string>)[
-          SHAPE_TYPE_COLOR[gpx.courseShapeType]
-        ] ?? '#04aef1';
+      const path = points.map((p) => new naver.maps.LatLng(p.lat, p.lng));
+      const colorHex = (runddyColor as Record<string, string>)[
+        SHAPE_TYPE_COLOR[gpx.courseShapeType] ?? 'default'
+      ];
 
       // Polyline
       const polyline = new naver.maps.Polyline({
