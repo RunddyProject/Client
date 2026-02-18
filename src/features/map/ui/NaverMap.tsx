@@ -124,29 +124,12 @@ export function NaverMap({
       )}
 
       {glassTopOverlay && (
+        /* White gradient for header area only — status bar zone has no overlay */
         <div
           aria-hidden
-          className='pointer-events-none absolute inset-x-0 top-0 z-10'
-          style={{ height: 'calc(52px + env(safe-area-inset-top))' }}
-        >
-          {/* Backdrop blur covers the full area (status bar + header) */}
-          <div
-            className='absolute inset-0'
-            style={{
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              maskImage:
-                'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%)',
-              WebkitMaskImage:
-                'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 85%)'
-            }}
-          />
-          {/* White gradient only for header area — starts below the status bar */}
-          <div
-            className='absolute inset-x-0 bottom-0 bg-gradient-to-b from-white/60 via-white/15 to-transparent'
-            style={{ height: '52px' }}
-          />
-        </div>
+          className='pointer-events-none absolute inset-x-0 z-10 bg-gradient-to-b from-white/60 via-white/15 to-transparent'
+          style={{ top: 'env(safe-area-inset-top)', height: '52px' }}
+        />
       )}
     </>
   );
