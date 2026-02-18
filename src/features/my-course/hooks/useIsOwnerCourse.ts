@@ -4,21 +4,25 @@ import { MyCourseApi } from '../api/my-course.api';
 
 /**
  * Check if the given course uuid belongs to the current user.
- * Uses `isPending` (not `isLoading`) so the guard blocks until data arrives.
+ *
+ * Guards against stale cache: when invalidated data doesn't contain the uuid
+ * but a background refetch is in progress, we keep `isChecking = true` until
+ * fresh data arrives instead of prematurely redirecting.
  */
 export function useIsOwnerCourse(uuid: string | undefined) {
-  const { data, isPending, isError } = useQuery({
+  const { data, isPending, isFetching, isError } = useQuery({
     queryKey: ['user-courses'],
     queryFn: MyCourseApi.getUserCourses,
     staleTime: 60_000,
     gcTime: 5 * 60_000
   });
 
-  const isOwner =
-    !isPending &&
-    !isError &&
-    !!uuid &&
-    (data?.courseList.some((c) => c.uuid === uuid) ?? false);
+  const ownerMatch =
+    !!uuid && (data?.courseList.some((c) => c.uuid === uuid) ?? false);
 
-  return { isOwner, isChecking: isPending, isError };
+  // Block while: initial load OR uuid not found but refetch in progress (stale cache)
+  const isChecking = isPending || (!ownerMatch && isFetching);
+  const isOwner = !isChecking && !isError && ownerMatch;
+
+  return { isOwner, isChecking, isError };
 }
