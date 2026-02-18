@@ -57,7 +57,7 @@ export function useCourses({
     minEle: params.get('minEle') ? Number(params.get('minEle')) : undefined,
     maxEle: params.get('maxEle') ? Number(params.get('maxEle')) : undefined,
     keyword: params.get('keyword') ?? undefined,
-    isMarathon: isMarathon || undefined
+    isMarathon
   };
 
   const lastGeocodedKeywordRef = useRef<string | null>(null);

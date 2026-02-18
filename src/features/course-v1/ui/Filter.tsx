@@ -216,7 +216,7 @@ const CourseFilter = memo(function CourseFilter({
       maxEle: !deepEqual(draft.elevationRange, DEFAULTS.elevationRange)
         ? draft.elevationRange[1] * 1000
         : undefined,
-      isMarathon: isMarathon || undefined
+      isMarathon
     }),
     [draft, DEFAULTS, isMarathon]
   );

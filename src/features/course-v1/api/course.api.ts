@@ -32,7 +32,7 @@ export const CoursesApi = {
       minEle: params.minEle ? params.minEle * 1000 : undefined,
       maxEle: params.maxEle ? params.maxEle * 1000 : undefined,
       keyword: params.keyword,
-      isMarathon: params.isMarathon ? 'true' : undefined
+      isMarathon: params.isMarathon ? 'true' : 'false'
     });
 
     return api.get<CoursesResponse>(`/course?${query}`);
