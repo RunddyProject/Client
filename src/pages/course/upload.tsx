@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { useCourseUpload } from '@/features/course-upload/hooks/useCourseUpload';
@@ -13,8 +13,13 @@ import type { UploadMethod } from '@/features/course-upload/model/types';
 
 function CourseUpload() {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [showMethodSheet, setShowMethodSheet] = useState(true);
+  // File passed directly from RegisterCourseFAB via navigation state
+  const stateFile = (location.state as { file?: File } | null)?.file;
+  const hasProcessedStateFile = useRef(false);
+
+  const [showMethodSheet, setShowMethodSheet] = useState(!stateFile);
   const [showSuccess, setShowSuccess] = useState(false);
 
   const {
@@ -50,6 +55,21 @@ function CourseUpload() {
       toast.error(uploadError.message || '코스 등록에 실패했습니다.');
     }
   }, [uploadError]);
+
+  // Auto-process file passed from navigation state (direct upload mode)
+  useEffect(() => {
+    if (stateFile && !hasProcessedStateFile.current) {
+      hasProcessedStateFile.current = true;
+      processFile(stateFile);
+    }
+  }, [stateFile, processFile]);
+
+  // If state file processing failed, navigate back
+  useEffect(() => {
+    if (gpxError && hasProcessedStateFile.current && !previewData) {
+      navigate(-1);
+    }
+  }, [gpxError, previewData, navigate]);
 
   const handleSelectMethod = useCallback(
     async (method: UploadMethod, file?: File) => {
