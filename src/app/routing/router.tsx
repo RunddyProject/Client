@@ -6,7 +6,8 @@ import Course from '@/pages/course/index';
 import CourseInfo from '@/pages/course/info';
 import CourseInfoLayout from '@/pages/course/info-layout';
 import CourseInfoMap from '@/pages/course/info-map';
-import MyCourses from '@/pages/course/my';
+import MyCourseEdit from '@/pages/course/my/edit';
+import MyCourses from '@/pages/course/my/index';
 import CourseUpload from '@/pages/course/upload';
 import Error from '@/pages/error';
 import Login from '@/pages/login/index';
@@ -14,7 +15,6 @@ import LoginSuccess from '@/pages/login/success';
 import MeDelete from '@/pages/me/delete';
 import MeEdit from '@/pages/me/edit';
 import Me from '@/pages/me/index';
-import MyCourseEdit from '@/pages/my-course/edit';
 import NotFound from '@/pages/not-found';
 import { ShareButton } from '@/shared/ui/actions/ShareButton';
 
