@@ -14,7 +14,7 @@ function Course() {
   }, [viewMode, setLastViewMode]);
 
   return (
-    <div className='fixed inset-0'>
+    <div className='fixed inset-0 overflow-hidden'>
       {viewMode === 'map' ? (
         <CourseMap onViewModeChange={() => setViewMode('list')} />
       ) : (

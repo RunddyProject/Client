@@ -33,7 +33,7 @@ const Login = () => {
   ];
 
   return (
-    <div className='flex min-h-screen flex-col items-center'>
+    <div className='flex min-h-screen flex-col items-center pt-[env(safe-area-inset-top)]'>
       <IndicatorCarousel slides={slides} />
       <div className='fixed bottom-0 w-full space-y-3 px-5 pt-5 pb-[calc(20px+env(safe-area-inset-bottom))]'>
         <Button

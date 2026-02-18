@@ -124,7 +124,29 @@ export function NaverMap({
       )}
 
       {glassTopOverlay && (
-        <div className="absolute top-0 z-10 h-[calc(52px+env(safe-area-inset-top))] w-full bg-transparent before:pointer-events-none before:absolute before:inset-0 before:[mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_100%)] before:backdrop-blur-[20px] before:content-[''] before:[-webkit-mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_85%)] after:pointer-events-none after:absolute after:inset-0 after:bg-gradient-to-b after:from-white/60 after:via-white/15 after:to-transparent after:content-['']" />
+        <div
+          aria-hidden
+          className='pointer-events-none absolute inset-x-0 top-0 z-10'
+          style={{ height: 'calc(52px + env(safe-area-inset-top))' }}
+        >
+          {/* Backdrop blur covers the full area (status bar + header) */}
+          <div
+            className='absolute inset-0'
+            style={{
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              maskImage:
+                'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%)',
+              WebkitMaskImage:
+                'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 85%)'
+            }}
+          />
+          {/* White gradient only for header area — starts below the status bar */}
+          <div
+            className='absolute inset-x-0 bottom-0 bg-gradient-to-b from-white/60 via-white/15 to-transparent'
+            style={{ height: '52px' }}
+          />
+        </div>
       )}
     </>
   );
