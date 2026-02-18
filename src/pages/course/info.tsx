@@ -205,19 +205,21 @@ const CourseInfo = () => {
           <div className='text-title-b18 truncate'>
             {course?.name || '코스이름'}
           </div>
-          <Button
-            variant='ghost'
-            size='icon'
-            className='h-6 w-6'
-            onClick={handleClickBookmark}
-            disabled={isSaving}
-            aria-label='Bookmark toggle'
-          >
-            <Icon
-              name={course.isBookmarked ? 'save_on_solid' : 'save_off_solid'}
-              size={24}
-            />
-          </Button>
+          {!isUserCourse && (
+            <Button
+              variant='ghost'
+              size='icon'
+              className='h-6 w-6'
+              onClick={handleClickBookmark}
+              disabled={isSaving}
+              aria-label='Bookmark toggle'
+            >
+              <Icon
+                name={course.isBookmarked ? 'save_on_solid' : 'save_off_solid'}
+                size={24}
+              />
+            </Button>
+          )}
         </div>
         <div
           className='text-[32px] font-bold'
@@ -227,23 +229,31 @@ const CourseInfo = () => {
         </div>
       </div>
 
-      <Tabs defaultValue={tab}>
-        <TabsList className='border-g-20 grid w-full grid-cols-2 border-b-[1.2px] px-5'>
-          <TabsTrigger value='detail'>
-            <span>상세정보</span>
-          </TabsTrigger>
-          <TabsTrigger value='review'>
-            <span>리뷰</span>
-            <span className='text-contents-r15 ml-1'>{courseReviewCount}</span>
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value='detail' className='mt-6'>
-          <CourseDetail />
-        </TabsContent>
-        <TabsContent value='review' className='mt-2'>
-          <CourseReview />
-        </TabsContent>
-      </Tabs>
+      {isUserCourse ? (
+        <div className='mt-6'>
+          <CourseDetail isUserCourse />
+        </div>
+      ) : (
+        <Tabs defaultValue={tab}>
+          <TabsList className='border-g-20 grid w-full grid-cols-2 border-b-[1.2px] px-5'>
+            <TabsTrigger value='detail'>
+              <span>상세정보</span>
+            </TabsTrigger>
+            <TabsTrigger value='review'>
+              <span>리뷰</span>
+              <span className='text-contents-r15 ml-1'>
+                {courseReviewCount}
+              </span>
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value='detail' className='mt-6'>
+            <CourseDetail />
+          </TabsContent>
+          <TabsContent value='review' className='mt-2'>
+            <CourseReview />
+          </TabsContent>
+        </Tabs>
+      )}
 
       {/* User course management dialogs */}
       {isUserCourse && (

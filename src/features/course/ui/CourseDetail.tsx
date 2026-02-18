@@ -29,7 +29,11 @@ const Chip = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-const CourseDetail = () => {
+interface CourseDetailProps {
+  isUserCourse?: boolean;
+}
+
+const CourseDetail = ({ isUserCourse = false }: CourseDetailProps) => {
   const { uuid } = useParams<{ uuid: Course['uuid'] }>();
 
   const { courseDetail: course, isLoading } = useCourseDetail(uuid ?? '');
@@ -83,10 +87,12 @@ const CourseDetail = () => {
     <>
       <div className='px-5'>
         <div className='space-y-8'>
-          <div className='flex items-center justify-between gap-1'>
-            <div className='text-contents-b16'>난이도</div>
-            <Chip>{GRADE_TO_NAME[course.grade]}</Chip>
-          </div>
+          {!isUserCourse && (
+            <div className='flex items-center justify-between gap-1'>
+              <div className='text-contents-b16'>난이도</div>
+              <Chip>{GRADE_TO_NAME[course.grade]}</Chip>
+            </div>
+          )}
           <div className='flex items-center justify-between gap-1'>
             <div className='text-contents-b16'>러닝 장소</div>
             <Chip>{course.envTypeName}</Chip>
@@ -215,22 +221,26 @@ const CourseDetail = () => {
         </div>
       </div>
 
-      <div className='bg-g-10 h-3 w-full' />
+      {!isUserCourse && (
+        <>
+          <div className='bg-g-10 h-3 w-full' />
 
-      <div className='space-y-8 px-5 py-10'>
-        <Feedback feedbackType='COURSE' />
-        <p className='text-ter text-contents-r14'>
-          소개하고 싶은 코스가 있다면
-          <br />
-          <a
-            href='mailto:runddyofficial@gmail.com'
-            className='text-runddy-blue cursor-pointer underline hover:underline'
-          >
-            runddyofficial@gmail.com
-          </a>
-          로 GPX 파일을 전달해 주세요 :)
-        </p>
-      </div>
+          <div className='space-y-8 px-5 py-10'>
+            <Feedback feedbackType='COURSE' />
+            <p className='text-ter text-contents-r14'>
+              소개하고 싶은 코스가 있다면
+              <br />
+              <a
+                href='mailto:runddyofficial@gmail.com'
+                className='text-runddy-blue cursor-pointer underline hover:underline'
+              >
+                runddyofficial@gmail.com
+              </a>
+              로 GPX 파일을 전달해 주세요 :)
+            </p>
+          </div>
+        </>
+      )}
     </>
   );
 };
