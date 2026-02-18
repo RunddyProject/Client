@@ -19,11 +19,11 @@ export function MyCourseMoreMenu({
         {/* Container constrained to max-w-xl */}
         <div className='fixed inset-0 z-50 mx-auto flex max-w-xl items-end justify-center'>
           {/* Overlay */}
-          <DialogPrimitive.Overlay className='absolute inset-0 bg-black/50' />
+          <DialogPrimitive.Overlay className='data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 absolute inset-0 bg-black/50 duration-300' />
 
           {/* Content - floating bottom sheet */}
           <DialogPrimitive.Content
-            className='bg-w-100 relative z-10 mx-5 mb-8 w-full rounded-3xl px-5 py-2 outline-none'
+            className='bg-w-100 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom relative z-10 mx-5 mb-8 w-full rounded-3xl px-5 py-2 outline-none duration-300 ease-out'
             onOpenAutoFocus={(e) => e.preventDefault()}
           >
             {/* Handle bar */}
