@@ -263,7 +263,7 @@ const CourseInfo = () => {
             onOpenChange={setMoreMenuOpen}
             onEdit={() => {
               setMoreMenuOpen(false);
-              navigate(`/course/${uuid}/edit`);
+              navigate(`/course/my/${uuid}/edit`);
             }}
             onDelete={() => {
               setMoreMenuOpen(false);

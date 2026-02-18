@@ -1,5 +1,6 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { Navigate, useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 
 import { useCourseDetail } from '@/features/course/hooks/useCourseDetail';
@@ -9,6 +10,7 @@ import {
 } from '@/features/course-upload/model/constants';
 import { NaverMap } from '@/features/map/ui/NaverMap';
 import { useEditUserCourse } from '@/features/my-course/hooks/useEditUserCourse';
+import { useUserCourses } from '@/features/my-course/hooks/useUserCourses';
 import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
 import { SelectButton } from '@/shared/ui/composites/select-button';
 import { Button } from '@/shared/ui/primitives/button';
@@ -31,7 +33,17 @@ interface EditFormData {
 
 function MyCourseEdit() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { uuid } = useParams<{ uuid: string }>();
+
+  // Ownership check: fetch user courses and verify uuid belongs to user
+  const { courses: userCourses, isLoading: isUserCoursesLoading } =
+    useUserCourses();
+  const isOwner = useMemo(
+    () => userCourses.some((c) => c.uuid === uuid),
+    [userCourses, uuid]
+  );
+
   const { courseDetail: course, isLoading } = useCourseDetail(uuid ?? '');
   const { mutateAsync: editAsync, isPending: isEditing } = useEditUserCourse();
 
@@ -95,14 +107,24 @@ function MyCourseEdit() {
 
     try {
       await editAsync({ uuid, data: payload });
+      // Invalidate to reflect changes on detail page
+      queryClient.invalidateQueries({ queryKey: ['course', uuid] });
       toast.success('코스가 수정되었어요');
       navigate(-1);
     } catch {
       // Error handled in mutation onError
     }
-  }, [uuid, formData, course, editAsync, navigate]);
+  }, [uuid, formData, course, editAsync, queryClient, navigate]);
 
-  if (isLoading || !course) return <LoadingSpinner />;
+  // Show loading while checking ownership
+  if (isLoading || isUserCoursesLoading) return <LoadingSpinner />;
+
+  // Redirect if not owner
+  if (!isOwner) {
+    return <Navigate to='/course/my' replace />;
+  }
+
+  if (!course) return <LoadingSpinner />;
   if (!formData) return <LoadingSpinner />;
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {

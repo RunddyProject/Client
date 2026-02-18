@@ -2,7 +2,6 @@ import { createBrowserRouter } from 'react-router';
 
 import App from '@/app/App';
 import ProtectedRoute from '@/app/routing/ProtectedRoute';
-import MyCourseEdit from '@/pages/course/edit';
 import Course from '@/pages/course/index';
 import CourseInfo from '@/pages/course/info';
 import CourseInfoLayout from '@/pages/course/info-layout';
@@ -15,6 +14,7 @@ import LoginSuccess from '@/pages/login/success';
 import MeDelete from '@/pages/me/delete';
 import MeEdit from '@/pages/me/edit';
 import Me from '@/pages/me/index';
+import MyCourseEdit from '@/pages/my-course/edit';
 import NotFound from '@/pages/not-found';
 import { ShareButton } from '@/shared/ui/actions/ShareButton';
 
@@ -40,14 +40,30 @@ export const router = createBrowserRouter([
           { index: true, element: <Course /> },
           {
             path: 'my',
-            element: (
-              <ProtectedRoute>
-                <MyCourses />
-              </ProtectedRoute>
-            ),
-            handle: {
-              header: { showBackButton: false, rightButton: null }
-            }
+            children: [
+              {
+                index: true,
+                element: (
+                  <ProtectedRoute>
+                    <MyCourses />
+                  </ProtectedRoute>
+                ),
+                handle: {
+                  header: { showBackButton: false, rightButton: null }
+                }
+              },
+              {
+                path: ':uuid/edit',
+                element: (
+                  <ProtectedRoute>
+                    <MyCourseEdit />
+                  </ProtectedRoute>
+                ),
+                handle: {
+                  header: { title: '코스 수정하기', rightButton: null }
+                }
+              }
+            ]
           },
           {
             path: 'upload',
@@ -73,17 +89,6 @@ export const router = createBrowserRouter([
                 path: 'map',
                 element: <CourseInfoMap />,
                 handle: { header: { title: '상세보기', rightButton: null } }
-              },
-              {
-                path: 'edit',
-                element: (
-                  <ProtectedRoute>
-                    <MyCourseEdit />
-                  </ProtectedRoute>
-                ),
-                handle: {
-                  header: { title: '코스 수정하기', rightButton: null }
-                }
               }
             ]
           }
