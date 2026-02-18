@@ -37,9 +37,7 @@ export interface CourseUploadRequest {
 
 // API Response for POST /course/user/upload
 export interface CourseUploadResponse {
-  uuid: string;
-  name: string;
-  success: boolean;
+  courseUuid: string;
 }
 
 // Enum types matching API

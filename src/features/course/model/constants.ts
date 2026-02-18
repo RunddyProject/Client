@@ -18,24 +18,26 @@ export const DEFAULT_RADIUS = 10;
 export const DEFAULT_ZOOM = 12;
 
 export const ENV_TYPE_TO_NAME: Record<EnvType, EnvTypeName> = {
-  PARK: '공원',
-  TRAIL: '산책로',
   TRACK: '트랙',
+  PARK: '공원',
+  RIVER: '강',
+  TRAIL: '산책로',
   URBAN: '도심',
-  BEACH: '해변',
   MOUNTAIN: '산',
-  FOREST: '숲'
+  FOREST: '숲',
+  BEACH: '해변'
   // ETC: '기타'
 } as const;
 
 export const ENV_NAME_TO_TYPE: Record<EnvTypeName, EnvType> = {
-  공원: 'PARK',
-  산책로: 'TRAIL',
   트랙: 'TRACK',
+  공원: 'PARK',
+  강: 'RIVER',
+  산책로: 'TRAIL',
   도심: 'URBAN',
-  해변: 'BEACH',
   산: 'MOUNTAIN',
-  숲: 'FOREST'
+  숲: 'FOREST',
+  해변: 'BEACH'
   // 기타: 'ETC'
 } as const;
 

@@ -108,7 +108,7 @@ const CourseMap = ({
     courses.find((c) => c.uuid === activeCourseId) ?? courses[0] ?? null;
   const activeColor: RUNDDY_COLOR = activeCourse
     ? SHAPE_TYPE_COLOR[activeCourse.shapeType]
-    : runddyColor['blue'];
+    : runddyColor['default'];
 
   // Performance optimization: Memoized marker array generation
   const markers = useOptimizedMarkers({

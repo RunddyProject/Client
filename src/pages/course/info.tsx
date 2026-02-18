@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   generatePath,
+  useLocation,
   useNavigate,
   useParams,
   useSearchParams
@@ -14,6 +16,9 @@ import CourseDetail from '@/features/course/ui/CourseDetail';
 import CourseReview from '@/features/course/ui/CourseReview';
 import { useLocationStore } from '@/features/map/model/location.store';
 import { NaverMap } from '@/features/map/ui/NaverMap';
+import { useDeleteUserCourse } from '@/features/my-course/hooks/useDeleteUserCourse';
+import { MyCourseDeleteDialog } from '@/features/my-course/ui/MyCourseDeleteDialog';
+import { MyCourseMoreMenu } from '@/features/my-course/ui/MyCourseMoreMenu';
 import { useToggleBookmark } from '@/features/user/hooks/useToggleBookmark';
 import { Icon } from '@/shared/icons/icon';
 import { runddyColor } from '@/shared/model/constants';
@@ -29,7 +34,27 @@ import {
 
 import type { Course } from '@/features/course/model/types';
 import type { MarkerInput } from '@/features/map/model/types';
+import type { UserCoursesResponse } from '@/features/my-course/model/types';
 import type { RUNDDY_COLOR } from '@/shared/model/types';
+
+/** Detect if the current course belongs to the logged-in user */
+function useIsUserCourse(uuid: string | undefined): boolean {
+  const location = useLocation();
+  const queryClient = useQueryClient();
+
+  // 1st priority: location state from My Courses navigation
+  if (location.state?.isUserCourse === true) return true;
+
+  // 2nd priority: check user-courses cache
+  if (uuid) {
+    const cached = queryClient.getQueryData<UserCoursesResponse>([
+      'user-courses'
+    ]);
+    if (cached?.courseList.some((c) => c.uuid === uuid)) return true;
+  }
+
+  return false;
+}
 
 const CourseInfo = () => {
   const navigate = useNavigate();
@@ -48,6 +73,13 @@ const CourseInfo = () => {
   const { courseDetail: course, isLoading } = useCourseDetail(uuid ?? '');
   const { courseReviewCount } = useCourseReview(uuid ?? '');
   const { toggle, isSaving } = useToggleBookmark();
+
+  // User course ownership detection
+  const isUserCourse = useIsUserCourse(uuid);
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const { mutateAsync: deleteAsync, isPending: isDeleting } =
+    useDeleteUserCourse();
 
   // Simple onInit - just save map reference, no dependencies
   const handleMapInit = useCallback((map: naver.maps.Map) => {
@@ -76,14 +108,26 @@ const CourseInfo = () => {
 
     setConfig({
       rightButton: (
-        <ShareButton
-          title={`${course.name} (${(course.totalDistance / 1000).toFixed(1)}km)`}
-        />
+        <div className='flex items-center gap-1'>
+          <ShareButton
+            title={`${course.name} (${(course.totalDistance / 1000).toFixed(1)}km)`}
+          />
+          {isUserCourse && (
+            <Button
+              variant='ghost'
+              size='icon'
+              className='h-8 w-8'
+              onClick={() => setMoreMenuOpen(true)}
+            >
+              <Icon name='more' size={24} />
+            </Button>
+          )}
+        </div>
       )
     });
 
     return () => resetConfig();
-  }, [course, resetConfig, setConfig]);
+  }, [course, isUserCourse, resetConfig, setConfig]);
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -94,9 +138,9 @@ const CourseInfo = () => {
     return null;
   }
 
-  const activeColor: RUNDDY_COLOR = course
+  const activeColor: RUNDDY_COLOR = course.shapeType
     ? SHAPE_TYPE_COLOR[course.shapeType]
-    : 'blue';
+    : 'default';
 
   const startPoint = course.coursePointList[0];
   const startMarker: MarkerInput = {
@@ -116,6 +160,17 @@ const CourseInfo = () => {
   const handleClickBookmark = () => {
     if (!uuid) return;
     toggle({ courseUuid: uuid, isBookmarked: !course.isBookmarked });
+  };
+
+  const handleDelete = async () => {
+    if (!uuid) return;
+    try {
+      await deleteAsync(uuid);
+      setDeleteDialogOpen(false);
+      navigate('/course/my');
+    } catch {
+      // Error handled in mutation onError
+    }
   };
 
   return (
@@ -150,19 +205,21 @@ const CourseInfo = () => {
           <div className='text-title-b18 truncate'>
             {course?.name || '코스이름'}
           </div>
-          <Button
-            variant='ghost'
-            size='icon'
-            className='h-6 w-6'
-            onClick={handleClickBookmark}
-            disabled={isSaving}
-            aria-label='Bookmark toggle'
-          >
-            <Icon
-              name={course.isBookmarked ? 'save_on_solid' : 'save_off_solid'}
-              size={24}
-            />
-          </Button>
+          {!isUserCourse && (
+            <Button
+              variant='ghost'
+              size='icon'
+              className='h-6 w-6'
+              onClick={handleClickBookmark}
+              disabled={isSaving}
+              aria-label='Bookmark toggle'
+            >
+              <Icon
+                name={course.isBookmarked ? 'save_on_solid' : 'save_off_solid'}
+                size={24}
+              />
+            </Button>
+          )}
         </div>
         <div
           className='text-[32px] font-bold'
@@ -172,23 +229,55 @@ const CourseInfo = () => {
         </div>
       </div>
 
-      <Tabs defaultValue={tab}>
-        <TabsList className='border-g-20 grid w-full grid-cols-2 border-b-[1.2px] px-5'>
-          <TabsTrigger value='detail'>
-            <span>상세정보</span>
-          </TabsTrigger>
-          <TabsTrigger value='review'>
-            <span>리뷰</span>
-            <span className='text-contents-r15 ml-1'>{courseReviewCount}</span>
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value='detail' className='mt-6'>
-          <CourseDetail />
-        </TabsContent>
-        <TabsContent value='review' className='mt-2'>
-          <CourseReview />
-        </TabsContent>
-      </Tabs>
+      {isUserCourse ? (
+        <div>
+          <CourseDetail isUserCourse />
+        </div>
+      ) : (
+        <Tabs defaultValue={tab}>
+          <TabsList className='border-g-20 grid w-full grid-cols-2 border-b-[1.2px] px-5'>
+            <TabsTrigger value='detail'>
+              <span>상세정보</span>
+            </TabsTrigger>
+            <TabsTrigger value='review'>
+              <span>리뷰</span>
+              <span className='text-contents-r15 ml-1'>
+                {courseReviewCount}
+              </span>
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value='detail' className='mt-6'>
+            <CourseDetail />
+          </TabsContent>
+          <TabsContent value='review' className='mt-2'>
+            <CourseReview />
+          </TabsContent>
+        </Tabs>
+      )}
+
+      {/* User course management dialogs */}
+      {isUserCourse && (
+        <>
+          <MyCourseMoreMenu
+            open={moreMenuOpen}
+            onOpenChange={setMoreMenuOpen}
+            onEdit={() => {
+              setMoreMenuOpen(false);
+              navigate(`/course/my/${uuid}/edit`);
+            }}
+            onDelete={() => {
+              setMoreMenuOpen(false);
+              setDeleteDialogOpen(true);
+            }}
+          />
+          <MyCourseDeleteDialog
+            open={deleteDialogOpen}
+            onOpenChange={setDeleteDialogOpen}
+            onConfirm={handleDelete}
+            isDeleting={isDeleting}
+          />
+        </>
+      )}
     </div>
   );
 };

@@ -11,7 +11,8 @@ export type EnvType =
   | 'URBAN'
   | 'BEACH'
   | 'MOUNTAIN'
-  | 'FOREST';
+  | 'FOREST'
+  | 'RIVER';
 // | 'ETC';
 export type EnvTypeName =
   | '공원'
@@ -20,7 +21,8 @@ export type EnvTypeName =
   | '도심'
   | '해변'
   | '산'
-  | '숲';
+  | '숲'
+  | '강';
 // | '기타';
 export type ShapeType = 'LOOP' | 'LINEAR' | 'OUT_AND_BACK' | 'ART'; // | 'ETC';
 export type ShapeTypeName = '순환' | '직선' | '왕복' | '아트'; // | '기타';
@@ -39,6 +41,7 @@ export interface Course {
   totalDistance: number;
   svg: string;
   isBookmarked?: boolean;
+  createdAt: string;
 }
 
 export interface CoursesResponse {
@@ -55,6 +58,7 @@ export type CourseSearchParams = {
   minEle?: number; // (m)
   maxEle?: number; // (m)
   keyword?: string; // text query
+  isMarathon?: boolean;
 };
 
 export type CourseFilterPayload = {
@@ -69,6 +73,7 @@ export type CourseFilterPayload = {
   minEle?: number;
   maxEle?: number;
   keyword?: string; // text query
+  isMarathon?: boolean;
 };
 
 export interface FilterCountResponse {
@@ -91,6 +96,7 @@ export interface CourseDetail
   elevationGain: number;
   elevationLoss: number;
   recommendCount: number;
+  isMarathon: boolean;
 }
 
 export interface CoursePointResponse {
