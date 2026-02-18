@@ -35,7 +35,7 @@ const Login = () => {
   return (
     <div className='flex min-h-screen flex-col items-center'>
       <IndicatorCarousel slides={slides} />
-      <div className='fixed bottom-0 w-full space-y-3 p-5'>
+      <div className='fixed bottom-0 w-full space-y-3 px-5 pt-5 pb-[calc(20px+env(safe-area-inset-bottom))]'>
         <Button
           onClick={() => login('kakao')}
           className='flex w-full items-center gap-2 bg-[#FEE500] font-medium text-[black]'

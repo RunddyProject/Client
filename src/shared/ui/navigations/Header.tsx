@@ -124,7 +124,7 @@ const Header = () => {
   return config.showHeader ? (
     <header
       className={cn(
-        'top-0 z-[101] w-full',
+        'top-0 z-[101] w-full pt-[env(safe-area-inset-top)]',
         hasTabs || isCoursePage ? 'fixed left-0' : 'bg-w-100 sticky' // TODO: v1.0 오픈 시 isCoursePage 조건 제거
       )}
     >

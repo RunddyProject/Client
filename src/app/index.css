@@ -16,6 +16,7 @@
   }
   body {
     color: var(--text-pri);
+    background-color: var(--w-100);
     /* iOS scroll bounce prevention */
     overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
