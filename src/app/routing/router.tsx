@@ -9,6 +9,7 @@ import CourseInfoMap from '@/pages/course/info-map';
 import MyCourseEdit from '@/pages/course/my/edit';
 import MyCourses from '@/pages/course/my/index';
 import CourseUpload from '@/pages/course/upload';
+import CourseV1 from '@/pages/course/v1';
 import Error from '@/pages/error';
 import Login from '@/pages/login/index';
 import LoginSuccess from '@/pages/login/success';
@@ -34,6 +35,7 @@ export const router = createBrowserRouter([
     errorElement: <Error />,
     children: [
       { index: true, element: <Course /> },
+      { path: 'course-v1', element: <CourseV1 /> },
       {
         path: 'course',
         children: [
