@@ -41,8 +41,7 @@ export function useMultiPolyline(
         map,
         path,
         strokeColor: colorHex,
-        strokeWeight: 4,
-        strokeOpacity: 0.8,
+        strokeWeight: 7,
         strokeLineCap: 'round',
         strokeLineJoin: 'round'
       });
