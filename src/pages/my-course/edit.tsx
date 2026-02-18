@@ -10,7 +10,7 @@ import {
 } from '@/features/course-upload/model/constants';
 import { NaverMap } from '@/features/map/ui/NaverMap';
 import { useEditUserCourse } from '@/features/my-course/hooks/useEditUserCourse';
-import { useUserCourses } from '@/features/my-course/hooks/useUserCourses';
+import { useIsOwnerCourse } from '@/features/my-course/hooks/useIsOwnerCourse';
 import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
 import { SelectButton } from '@/shared/ui/composites/select-button';
 import { Button } from '@/shared/ui/primitives/button';
@@ -36,13 +36,8 @@ function MyCourseEdit() {
   const queryClient = useQueryClient();
   const { uuid } = useParams<{ uuid: string }>();
 
-  // Ownership check: fetch user courses and verify uuid belongs to user
-  const { courses: userCourses, isLoading: isUserCoursesLoading } =
-    useUserCourses();
-  const isOwner = useMemo(
-    () => userCourses.some((c) => c.uuid === uuid),
-    [userCourses, uuid]
-  );
+  // Ownership guard: blocks render until API confirms this course belongs to the user
+  const { isOwner, isChecking, isError: isOwnerError } = useIsOwnerCourse(uuid);
 
   const { courseDetail: course, isLoading } = useCourseDetail(uuid ?? '');
   const { mutateAsync: editAsync, isPending: isEditing } = useEditUserCourse();
@@ -116,16 +111,15 @@ function MyCourseEdit() {
     }
   }, [uuid, formData, course, editAsync, queryClient, navigate]);
 
-  // Show loading while checking ownership
-  if (isLoading || isUserCoursesLoading) return <LoadingSpinner />;
+  // Block until ownership check completes
+  if (isChecking || isLoading) return <LoadingSpinner />;
 
-  // Redirect if not owner
-  if (!isOwner) {
+  // Redirect if not owner or ownership check failed
+  if (!isOwner || isOwnerError) {
     return <Navigate to='/course/my' replace />;
   }
 
-  if (!course) return <LoadingSpinner />;
-  if (!formData) return <LoadingSpinner />;
+  if (!course || !formData) return <LoadingSpinner />;
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, name: e.target.value });
