@@ -1,9 +1,12 @@
 import { useEffect, useCallback, useRef } from 'react';
 
 import { SHAPE_TYPE_COLOR } from '@/features/course/model/constants';
+import { makeDomIcon } from '@/features/map/hooks/useMarkers';
 import { runddyColor } from '@/shared/model/constants';
 
 import type { UserCourseGpxItem } from '../model/types';
+
+const MARKER_SIZE = 32;
 
 export function useMultiPolyline(
   map: naver.maps.Map | null,
@@ -21,19 +24,26 @@ export function useMultiPolyline(
       return;
     }
 
-    const polylines = gpxList.map((gpx) => {
-      const path = gpx.coursePointList.map(
+    const polylines: naver.maps.Polyline[] = [];
+    const markers: naver.maps.Marker[] = [];
+
+    gpxList.forEach((gpx) => {
+      const points = gpx.coursePointList;
+      if (points.length === 0) return;
+
+      const path = points.map(
         (p) => new naver.maps.LatLng(p.lat, p.lng)
       );
-      const color =
+      const colorHex =
         (runddyColor as Record<string, string>)[
           SHAPE_TYPE_COLOR[gpx.courseShapeType]
         ] ?? '#04aef1';
 
+      // Polyline
       const polyline = new naver.maps.Polyline({
         map,
         path,
-        strokeColor: color,
+        strokeColor: colorHex,
         strokeWeight: 4,
         strokeOpacity: 0.8,
         strokeLineCap: 'round',
@@ -46,7 +56,47 @@ export function useMultiPolyline(
         });
       }
 
-      return polyline;
+      polylines.push(polyline);
+
+      // Start marker
+      const startPoint = points[0];
+      const startMarker = new naver.maps.Marker({
+        position: new naver.maps.LatLng(startPoint.lat, startPoint.lng),
+        map,
+        icon: makeDomIcon('active_start', {
+          displaySize: MARKER_SIZE,
+          vars: { '--icon-primary': colorHex }
+        }),
+        zIndex: 100
+      });
+
+      if (onPolylineClickRef.current) {
+        naver.maps.Event.addListener(startMarker, 'click', () => {
+          onPolylineClickRef.current?.(gpx.courseUuid);
+        });
+      }
+
+      markers.push(startMarker);
+
+      // End marker
+      const endPoint = points[points.length - 1];
+      const endMarker = new naver.maps.Marker({
+        position: new naver.maps.LatLng(endPoint.lat, endPoint.lng),
+        map,
+        icon: makeDomIcon('active_end', {
+          displaySize: MARKER_SIZE,
+          vars: { '--icon-primary': colorHex }
+        }),
+        zIndex: 100
+      });
+
+      if (onPolylineClickRef.current) {
+        naver.maps.Event.addListener(endMarker, 'click', () => {
+          onPolylineClickRef.current?.(gpx.courseUuid);
+        });
+      }
+
+      markers.push(endMarker);
     });
 
     // Fit bounds to show all polylines (once)
@@ -66,6 +116,7 @@ export function useMultiPolyline(
 
     return () => {
       polylines.forEach((p) => p.setMap(null));
+      markers.forEach((m) => m.setMap(null));
     };
   }, [map, gpxList]);
 
