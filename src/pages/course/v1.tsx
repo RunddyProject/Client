@@ -31,7 +31,7 @@ function CourseV1() {
   }, [viewMode, setLastViewMode]);
 
   return (
-    <div className='relative h-[100dvh] overflow-hidden'>
+    <div className='fixed inset-0'>
       {viewMode === 'map' ? <CourseMap /> : <CourseList />}
     </div>
   );
