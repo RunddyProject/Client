@@ -9,17 +9,32 @@ import { CourseUploadSuccess } from '@/features/course-upload/ui/CourseUploadSuc
 import { UploadMethodSheet } from '@/features/course-upload/ui/UploadMethodSheet';
 import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
 
-import type { UploadMethod } from '@/features/course-upload/model/types';
+import type {
+  StravaPreviewState,
+  UploadMethod
+} from '@/features/course-upload/model/types';
 
 function CourseUpload() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const locationState = location.state as {
+    file?: File;
+    stravaPreview?: StravaPreviewState;
+  } | null;
+
   // File passed directly from RegisterCourseFAB via navigation state
-  const stateFile = (location.state as { file?: File } | null)?.file;
+  const stateFile = locationState?.file;
+  // Strava preview data passed from the activities page
+  const stravaPreview = locationState?.stravaPreview ?? null;
+
   const hasProcessedStateFile = useRef(false);
 
-  const [showMethodSheet, setShowMethodSheet] = useState(!stateFile);
+  const isStravaMode = !!stravaPreview;
+
+  const [showMethodSheet, setShowMethodSheet] = useState(
+    !stateFile && !isStravaMode
+  );
   const [showSuccess, setShowSuccess] = useState(false);
 
   const {
@@ -27,7 +42,7 @@ function CourseUpload() {
     isLoading: isGpxLoading,
     error: gpxError,
     processFile,
-    elevationChartData
+    elevationChartData: gpxElevationChartData
   } = useGpxUpload();
 
   const {
@@ -41,7 +56,7 @@ function CourseUpload() {
     isUploading,
     uploadError,
     uploadResult
-  } = useCourseUpload(previewData);
+  } = useCourseUpload(previewData, stravaPreview);
 
   // Show error toasts
   useEffect(() => {
@@ -76,7 +91,7 @@ function CourseUpload() {
       if (method === 'direct' && file) {
         await processFile(file);
       }
-      // Strava import is handled in the sheet component
+      // Strava: handled in UploadMethodSheet via navigation to /strava/activities
     },
     [processFile]
   );
@@ -118,14 +133,18 @@ function CourseUpload() {
     );
   }
 
-  // Show method selection if no preview data
-  if (!previewData) {
+  // Determine active course data (direct or Strava)
+  const activeCourseData = previewData ?? stravaPreview ?? null;
+  const activeElevationData =
+    stravaPreview?.elevationChartData ?? gpxElevationChartData;
+
+  // Show method selection if no data yet
+  if (!activeCourseData) {
     return (
       <UploadMethodSheet
         open={showMethodSheet}
         onOpenChange={(open) => {
           setShowMethodSheet(open);
-          // Navigate back if sheet is closed without selecting
           if (!open) {
             navigate(-1);
           }
@@ -138,13 +157,13 @@ function CourseUpload() {
   return (
     <>
       <CourseUploadForm
-        previewData={previewData}
+        courseData={activeCourseData}
         formData={formData}
         onFormDataChange={setFormData}
         startAddress={startAddress}
         endAddress={endAddress}
         isLoadingAddresses={isLoadingAddresses}
-        elevationChartData={elevationChartData}
+        elevationChartData={activeElevationData}
         isFormValid={isFormValid}
         isUploading={isUploading}
         onSubmit={handleSubmit}

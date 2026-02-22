@@ -1,8 +1,11 @@
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { useRef } from 'react';
+import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { UPLOAD_METHOD_LABELS } from '@/features/course-upload/model/constants';
+import { StravaApi } from '@/features/strava/api/strava.api';
+import { ApiError } from '@/shared/lib/http';
 
 import type { UploadMethod } from '@/features/course-upload/model/types';
 
@@ -18,6 +21,7 @@ export function UploadMethodSheet({
   onSelectMethod
 }: UploadMethodSheetProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   const handleDirectUpload = () => {
     fileInputRef.current?.click();
@@ -32,9 +36,27 @@ export function UploadMethodSheet({
     e.target.value = '';
   };
 
-  const handleStravaImport = () => {
-    // TODO: Implement Strava OAuth flow
-    toast.error('Strava 연동은 현재 준비 중입니다.');
+  const handleStravaImport = async () => {
+    try {
+      const { connected } = await StravaApi.getStatus();
+
+      if (connected) {
+        // Already connected — navigate to activity list
+        onOpenChange(false);
+        navigate('/strava/activities');
+        return;
+      }
+
+      // Not connected — start OAuth flow (redirects away from app)
+      const { authUrl } = await StravaApi.getConnectUrl();
+      window.location.href = authUrl;
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        toast.error('로그인이 필요합니다.');
+        return;
+      }
+      toast.error('Strava 연결에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   return (

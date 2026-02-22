@@ -8,7 +8,9 @@ import type {
   CoursePreviewData,
   CourseUploadFormData,
   CourseUploadRequest,
-  CourseUploadResponse
+  CourseUploadResponse,
+  StravaPreviewState,
+  StravaUploadRequest
 } from '@/features/course-upload/model/types';
 
 interface UseCourseUploadReturn {
@@ -34,7 +36,8 @@ const initialFormData: CourseUploadFormData = {
 };
 
 export function useCourseUpload(
-  previewData: CoursePreviewData | null
+  previewData: CoursePreviewData | null,
+  stravaPreview?: StravaPreviewState | null
 ): UseCourseUploadReturn {
   const queryClient = useQueryClient();
 
@@ -44,9 +47,22 @@ export function useCourseUpload(
   const [endAddress, setEndAddress] = useState<string>('');
   const [isLoadingAddresses, setIsLoadingAddresses] = useState(false);
 
-  // Fetch addresses when preview data is loaded
+  // Pre-fill name from Strava activity name
   useEffect(() => {
-    if (!previewData?.coursePointList.length) {
+    if (stravaPreview?.activityName) {
+      setFormData((prev) => ({
+        ...prev,
+        name: prev.name || stravaPreview.activityName
+      }));
+    }
+  }, [stravaPreview?.activityName]);
+
+  // Fetch addresses from course points (supports both direct and Strava previews)
+  useEffect(() => {
+    const coursePointList =
+      previewData?.coursePointList ?? stravaPreview?.coursePointList;
+
+    if (!coursePointList?.length) {
       setStartAddress('');
       setEndAddress('');
       return;
@@ -55,9 +71,8 @@ export function useCourseUpload(
     const fetchAddresses = async () => {
       setIsLoadingAddresses(true);
 
-      const startPoint = previewData.coursePointList[0];
-      const endPoint =
-        previewData.coursePointList[previewData.coursePointList.length - 1];
+      const startPoint = coursePointList[0];
+      const endPoint = coursePointList[coursePointList.length - 1];
 
       try {
         const [start, end] = await Promise.all([
@@ -77,26 +92,39 @@ export function useCourseUpload(
     };
 
     fetchAddresses();
-  }, [previewData]);
+  }, [previewData, stravaPreview]);
 
   // Validate form
   const isFormValid = useCallback(() => {
-    if (!previewData) return false;
+    const hasData = !!previewData || !!stravaPreview;
+    if (!hasData) return false;
     if (!formData.name.trim()) return false;
     if (formData.isMarathon === null) return false;
 
-    // If not marathon, envType and shapeType are required
     if (!formData.isMarathon) {
       if (!formData.envType) return false;
       if (!formData.shapeType) return false;
     }
 
     return true;
-  }, [formData, previewData]);
+  }, [formData, previewData, stravaPreview]);
 
   // Upload mutation
   const mutation = useMutation({
     mutationFn: async (): Promise<CourseUploadResponse> => {
+      if (stravaPreview) {
+        const request: StravaUploadRequest = {
+          stravaActivityId: stravaPreview.stravaActivityId,
+          courseName: formData.name.trim(),
+          isMarathon: formData.isMarathon!,
+          courseEnvType: formData.envType ?? undefined,
+          courseShapeType: formData.shapeType ?? undefined,
+          startAddress,
+          endAddress
+        };
+        return CourseUploadApi.uploadStravaActivity(request);
+      }
+
       if (!previewData) {
         throw new Error('GPX 파일을 먼저 업로드해주세요.');
       }
@@ -114,7 +142,6 @@ export function useCourseUpload(
       return CourseUploadApi.uploadCourse(request);
     },
     onSuccess: () => {
-      // Invalidate courses query to refresh the list
       queryClient.invalidateQueries({ queryKey: ['courses'] });
       queryClient.invalidateQueries({ queryKey: ['user-courses'] });
     }

@@ -16,14 +16,16 @@ import { ENV_TYPE_OPTIONS, SHAPE_TYPE_OPTIONS } from '../model/constants';
 
 import type { ElevationChartData } from '@/features/course/lib/elevation';
 import type { CoursePoint } from '@/features/course/model/types';
-import type {
-  CoursePreviewData,
-  CourseUploadFormData
-} from '@/features/course-upload/model/types';
+import type { CourseUploadFormData } from '@/features/course-upload/model/types';
 import type { LatLngBounds, MarkerInput } from '@/features/map/model/types';
 
+interface CourseDisplayData {
+  totalDistance: number;
+  coursePointList: CoursePoint[];
+}
+
 interface CourseUploadFormProps {
-  previewData: CoursePreviewData;
+  courseData: CourseDisplayData;
   formData: CourseUploadFormData;
   onFormDataChange: (data: CourseUploadFormData) => void;
   startAddress: string;
@@ -36,7 +38,7 @@ interface CourseUploadFormProps {
 }
 
 export function CourseUploadForm({
-  previewData,
+  courseData,
   formData,
   onFormDataChange,
   startAddress,
@@ -48,7 +50,7 @@ export function CourseUploadForm({
   onSubmit
 }: CourseUploadFormProps) {
   // Course points for the map
-  const coursePoints: CoursePoint[] = previewData.coursePointList;
+  const coursePoints: CoursePoint[] = courseData.coursePointList;
 
   // Create markers for start and end points
   // Use 'upload' as focusKey so markers get colored
@@ -250,7 +252,7 @@ export function CourseUploadForm({
                 코스 길이
               </Label>
               <div className='bg-g-10 text-sec text-contents-r15 flex h-14 items-center justify-between rounded-xl px-4'>
-                <span>{(previewData.totalDistance / 1000).toFixed(1)}</span>
+                <span>{(courseData.totalDistance / 1000).toFixed(1)}</span>
                 <span className='text-ter'>km</span>
               </div>
             </div>

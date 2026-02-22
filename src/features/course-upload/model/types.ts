@@ -1,3 +1,4 @@
+import type { ElevationChartData } from '@/features/course/lib/elevation';
 import type { CoursePoint } from '@/features/course/model/types';
 
 export type UploadMethod = 'direct' | 'strava';
@@ -9,12 +10,22 @@ export interface CoursePreviewResponse {
   coursePointList: CoursePoint[];
 }
 
-// Data structure for the upload form
+// Data structure for the upload form (direct GPX upload)
 export interface CoursePreviewData {
   file: File;
   totalDistance: number;
   svg: string;
   coursePointList: CoursePoint[];
+}
+
+// Navigation state passed from Strava activities page to upload page
+export interface StravaPreviewState {
+  stravaActivityId: number;
+  activityName: string;
+  totalDistance: number;
+  svg: string;
+  coursePointList: CoursePoint[];
+  elevationChartData: ElevationChartData;
 }
 
 export interface CourseUploadFormData {
@@ -24,9 +35,20 @@ export interface CourseUploadFormData {
   shapeType: CourseShapeType | null;
 }
 
-// API Request for POST /course/user/upload
+// API Request for POST /course/user/upload (direct GPX)
 export interface CourseUploadRequest {
   file: File;
+  courseName: string;
+  isMarathon: boolean;
+  courseEnvType?: CourseEnvType;
+  courseShapeType?: CourseShapeType;
+  startAddress: string;
+  endAddress: string;
+}
+
+// API Request for POST /strava/activities/{activityId}/register
+export interface StravaUploadRequest {
+  stravaActivityId: number;
   courseName: string;
   isMarathon: boolean;
   courseEnvType?: CourseEnvType;
