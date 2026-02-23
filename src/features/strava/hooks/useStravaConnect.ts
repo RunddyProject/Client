@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { ApiError } from '@/shared/lib/http';
 
@@ -8,7 +8,7 @@ export function useStravaConnect() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const connect = async () => {
+  const connect = useCallback(async () => {
     setIsConnecting(true);
     setError(null);
 
@@ -23,7 +23,7 @@ export function useStravaConnect() {
       setError(message);
       setIsConnecting(false);
     }
-  };
+  }, []);
 
   return { connect, isConnecting, error };
 }

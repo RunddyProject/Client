@@ -15,6 +15,7 @@ export function useStravaActivities() {
       return hasMore ? allPages.length + 1 : undefined;
     },
     staleTime: 60_000,
+    gcTime: 5 * 60_000,
     retry: false
   });
 }

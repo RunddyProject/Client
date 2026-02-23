@@ -14,6 +14,8 @@ import {
 
 import { ENV_TYPE_OPTIONS, SHAPE_TYPE_OPTIONS } from '../model/constants';
 
+const FOCUS_KEY = 'upload';
+
 import type { ElevationChartData } from '@/features/course/lib/elevation';
 import type { CoursePoint } from '@/features/course/model/types';
 import type { CourseUploadFormData } from '@/features/course-upload/model/types';
@@ -53,8 +55,6 @@ export function CourseUploadForm({
   const coursePoints: CoursePoint[] = courseData.coursePointList;
 
   // Create markers for start and end points
-  // Use 'upload' as focusKey so markers get colored
-  const FOCUS_KEY = 'upload';
   const markers: MarkerInput[] = useMemo(() => {
     if (!coursePoints.length) return [];
 

@@ -1,5 +1,5 @@
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
@@ -22,6 +22,7 @@ export function UploadMethodSheet({
 }: UploadMethodSheetProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const [isStravaLoading, setIsStravaLoading] = useState(false);
 
   const handleDirectUpload = () => {
     fileInputRef.current?.click();
@@ -37,6 +38,9 @@ export function UploadMethodSheet({
   };
 
   const handleStravaImport = async () => {
+    if (isStravaLoading) return;
+    setIsStravaLoading(true);
+
     try {
       const { connected } = await StravaApi.getStatus();
 
@@ -56,6 +60,8 @@ export function UploadMethodSheet({
         return;
       }
       toast.error('Strava 연결에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsStravaLoading(false);
     }
   };
 
@@ -98,9 +104,10 @@ export function UploadMethodSheet({
               <button
                 type='button'
                 onClick={handleStravaImport}
-                className='text-contents-r15 text-pri w-full py-5 text-left transition-colors'
+                disabled={isStravaLoading}
+                className='text-contents-r15 text-pri w-full py-5 text-left transition-colors disabled:opacity-50'
               >
-                {UPLOAD_METHOD_LABELS.strava}
+                {isStravaLoading ? '연결 확인 중...' : UPLOAD_METHOD_LABELS.strava}
               </button>
             </div>
 

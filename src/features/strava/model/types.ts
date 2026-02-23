@@ -1,3 +1,5 @@
+import type { CoursePoint } from '@/features/course/model/types';
+
 export interface StravaStatus {
   connected: boolean;
 }
@@ -29,12 +31,7 @@ export interface StravaActivitiesResponse {
 export interface StravaActivityGpxResponse {
   totalDistance: number;
   svg: string;
-  coursePointList: {
-    pointSeq: number;
-    lat: number;
-    lng: number;
-    ele: number;
-  }[];
+  coursePointList: CoursePoint[];
 }
 
 export interface StravaActivitiesParams {

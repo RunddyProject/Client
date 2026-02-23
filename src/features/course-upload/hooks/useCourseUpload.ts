@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { CourseUploadApi } from '@/features/course-upload/api/course-upload.api';
 import { reverseGeocode } from '@/features/map/lib/geocode';
@@ -95,7 +95,7 @@ export function useCourseUpload(
   }, [previewData, stravaPreview]);
 
   // Validate form
-  const isFormValid = useCallback(() => {
+  const isFormValid = useMemo(() => {
     const hasData = !!previewData || !!stravaPreview;
     if (!hasData) return false;
     if (!formData.name.trim()) return false;
@@ -152,7 +152,7 @@ export function useCourseUpload(
     setStartAddress('');
     setEndAddress('');
     mutation.reset();
-  }, [mutation]);
+  }, [mutation.reset]);
 
   return {
     formData,
@@ -160,7 +160,7 @@ export function useCourseUpload(
     startAddress,
     endAddress,
     isLoadingAddresses,
-    isFormValid: isFormValid(),
+    isFormValid,
     uploadCourse: mutation.mutate,
     uploadCourseAsync: mutation.mutateAsync,
     isUploading: mutation.isPending,
