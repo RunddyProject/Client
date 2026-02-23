@@ -50,6 +50,16 @@ vi.mock('@/features/course/lib/elevation', () => ({
   })
 }));
 
+const mockSetStravaPreview = vi.fn();
+vi.mock('@/features/strava/model/strava-upload.store', () => ({
+  useStravaUploadStore: (selector: (state: unknown) => unknown) =>
+    selector({
+      stravaPreview: null,
+      setStravaPreview: mockSetStravaPreview,
+      clearStravaPreview: vi.fn()
+    })
+}));
+
 import { toast } from 'sonner';
 import { ApiError } from '@/shared/lib/http';
 import { StravaApi } from '@/features/strava/api/strava.api';
@@ -156,17 +166,15 @@ describe('StravaActivitiesPage', () => {
 
     await waitFor(() => {
       expect(mockGetActivityGpx).toHaveBeenCalledWith(1);
-      expect(mockNavigate).toHaveBeenCalledWith(
-        '/course/upload',
+      // Strava 미리보기를 store에 저장
+      expect(mockSetStravaPreview).toHaveBeenCalledWith(
         expect.objectContaining({
-          state: expect.objectContaining({
-            stravaPreview: expect.objectContaining({
-              stravaActivityId: 1,
-              activityName: 'Run 1'
-            })
-          })
+          stravaActivityId: 1,
+          activityName: 'Run 1'
         })
       );
+      // location.state 없이 업로드 페이지로 이동
+      expect(mockNavigate).toHaveBeenCalledWith('/course/upload');
     });
   });
 

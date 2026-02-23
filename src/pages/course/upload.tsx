@@ -7,26 +7,22 @@ import { useGpxUpload } from '@/features/course-upload/hooks/useGpxUpload';
 import { CourseUploadForm } from '@/features/course-upload/ui/CourseUploadForm';
 import { CourseUploadSuccess } from '@/features/course-upload/ui/CourseUploadSuccess';
 import { UploadMethodSheet } from '@/features/course-upload/ui/UploadMethodSheet';
+import { useStravaUploadStore } from '@/features/strava/model/strava-upload.store';
 import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
 
-import type {
-  StravaPreviewState,
-  UploadMethod
-} from '@/features/course-upload/model/types';
+import type { UploadMethod } from '@/features/course-upload/model/types';
 
 function CourseUpload() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const locationState = location.state as {
-    file?: File;
-    stravaPreview?: StravaPreviewState;
-  } | null;
+  const locationState = location.state as { file?: File } | null;
 
   // File passed directly from RegisterCourseFAB via navigation state
   const stateFile = locationState?.file;
-  // Strava preview data passed from the activities page
-  const stravaPreview = locationState?.stravaPreview ?? null;
+  // Strava preview data from the in-memory store (set by StravaActivitiesPage)
+  const stravaPreview = useStravaUploadStore((state) => state.stravaPreview);
+  const clearStravaPreview = useStravaUploadStore((state) => state.clearStravaPreview);
 
   const hasProcessedStateFile = useRef(false);
 
@@ -57,6 +53,13 @@ function CourseUpload() {
     uploadError,
     uploadResult
   } = useCourseUpload(previewData, stravaPreview);
+
+  // Clear Strava preview store on unmount (handles back navigation, success close, etc.)
+  useEffect(() => {
+    return () => {
+      clearStravaPreview();
+    };
+  }, [clearStravaPreview]);
 
   // Show error toasts
   useEffect(() => {

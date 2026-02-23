@@ -6,15 +6,16 @@ import { buildElevationChartData } from '@/features/course/lib/elevation';
 import { StravaApi } from '@/features/strava/api/strava.api';
 import { useStravaActivities } from '@/features/strava/hooks/useStravaActivities';
 import { useStravaConnect } from '@/features/strava/hooks/useStravaConnect';
+import { useStravaUploadStore } from '@/features/strava/model/strava-upload.store';
 import { StravaActivityCard } from '@/features/strava/ui/StravaActivityCard';
 import { ApiError } from '@/shared/lib/http';
 
-import type { StravaPreviewState } from '@/features/course-upload/model/types';
 import type { StravaActivity } from '@/features/strava/model/types';
 
 function StravaActivitiesPage() {
   const navigate = useNavigate();
   const { connect } = useStravaConnect();
+  const setStravaPreview = useStravaUploadStore((state) => state.setStravaPreview);
   const [loadingActivityId, setLoadingActivityId] = useState<number | null>(
     null
   );
@@ -61,18 +62,16 @@ function StravaActivitiesPage() {
           gpxData.coursePointList
         );
 
-        const stravaPreviewState: StravaPreviewState = {
+        setStravaPreview({
           stravaActivityId: activity.id,
           activityName: activity.name,
           totalDistance: gpxData.totalDistance,
           svg: gpxData.svg,
           coursePointList: gpxData.coursePointList,
           elevationChartData
-        };
-
-        navigate('/course/upload', {
-          state: { stravaPreview: stravaPreviewState }
         });
+
+        navigate('/course/upload');
       } catch (err) {
         if (err instanceof ApiError && err.status === 401) {
           toast.error('Strava 연결이 해제되었습니다. 재연결합니다.');
@@ -84,7 +83,7 @@ function StravaActivitiesPage() {
         setLoadingActivityId(null);
       }
     },
-    [navigate, connect]
+    [navigate, connect, setStravaPreview]
   );
 
   // Handle 401 → trigger reconnect

@@ -8,7 +8,6 @@ vi.mock('@/shared/lib/http', () => ({
 }));
 
 // ─── Mock: @/shared/lib/query ────────────────────────────────────────────────
-// Replicate the real behaviour: filter undefined, join as key=value
 vi.mock('@/shared/lib/query', () => ({
   buildQuery: (params: Record<string, unknown>) => {
     const entries = Object.entries(params).filter(([, v]) => v !== undefined);
@@ -91,7 +90,7 @@ describe('StravaApi', () => {
 
   // ── getActivities ──────────────────────────────────────────────────────────
   describe('getActivities', () => {
-    it('params 없을 때 /strava/activities 호출 (쿼리 없음)', async () => {
+    it('params 없을 때 쿼리스트링 없이 호출', async () => {
       mockGet.mockResolvedValueOnce({ activityList: [] });
 
       await StravaApi.getActivities();
@@ -99,7 +98,7 @@ describe('StravaApi', () => {
       expect(mockGet).toHaveBeenCalledWith('/strava/activities');
     });
 
-    it('page + perPage 전달 시 쿼리스트링 포함', async () => {
+    it('page + perPage 전달 시 쿼리스트링 포함하여 호출', async () => {
       mockGet.mockResolvedValueOnce({ activityList: [] });
 
       await StravaApi.getActivities({ page: 2, perPage: 30 });
