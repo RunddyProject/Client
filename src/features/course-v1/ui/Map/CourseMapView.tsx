@@ -70,7 +70,7 @@ export const CourseMapView = memo(function CourseMapView({
   handlers
 }: CourseMapViewProps) {
   return (
-    <div className='absolute inset-0 overflow-hidden'>
+    <div className='absolute inset-0'>
       {/* Naver Map */}
       <NaverMap
         key='runddy-naver-map'
