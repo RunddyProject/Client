@@ -45,8 +45,11 @@ export function UploadMethodSheet({
       const { connected } = await StravaApi.getStatus();
 
       if (connected) {
-        // Already connected — navigate to activity list
-        onOpenChange(false);
+        // Already connected — navigate to activity list.
+        // Do NOT call onOpenChange(false) here: the parent's onOpenChange handler
+        // calls navigate(-1), which conflicts with navigate('/strava/activities')
+        // and corrupts the browser history stack.
+        // The sheet unmounts naturally when the page transitions.
         navigate('/strava/activities');
         return;
       }

@@ -120,7 +120,7 @@ describe('UploadMethodSheet', () => {
   });
 
   // ── Strava 연결됨 → activities 페이지로 이동 ────────────────────────────
-  it('Strava 이미 연결됨 → /strava/activities로 네비게이션', async () => {
+  it('Strava 이미 연결됨 → /strava/activities로 네비게이션 (onOpenChange 호출 없음)', async () => {
     const user = userEvent.setup();
     mockGetStatus.mockResolvedValue({ connected: true });
 
@@ -130,9 +130,12 @@ describe('UploadMethodSheet', () => {
     await user.click(stravaBtn);
 
     await waitFor(() => {
-      expect(onOpenChange).toHaveBeenCalledWith(false);
       expect(mockNavigate).toHaveBeenCalledWith('/strava/activities');
     });
+    // onOpenChange(false) 를 명시적으로 호출하지 않음:
+    // 부모의 onOpenChange 핸들러는 navigate(-1)을 포함하고 있어
+    // navigate('/strava/activities')와 충돌해 브라우저 히스토리가 꼬임.
+    expect(onOpenChange).not.toHaveBeenCalledWith(false);
   });
 
   // ── Strava 미연결 → OAuth 리다이렉트 ─────────────────────────────────────
