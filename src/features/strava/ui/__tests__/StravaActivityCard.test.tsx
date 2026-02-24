@@ -2,6 +2,16 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
+vi.mock('@mapbox/polyline', () => ({
+  default: {
+    decode: (str: string) => {
+      if (str === 'valid') return [[37.5, 127.0], [37.6, 127.1], [37.7, 127.2]];
+      if (str === 'single') return [[37.5, 127.0]];
+      return [];
+    }
+  }
+}));
+
 import { StravaActivityCard } from '../StravaActivityCard';
 
 import type { StravaActivity } from '../../model/types';
@@ -118,5 +128,26 @@ describe('StravaActivityCard', () => {
     render(<StravaActivityCard activity={activity} onClick={vi.fn()} />);
 
     expect(screen.getByText('5.0km')).toBeInTheDocument();
+  });
+
+  it('summaryPolyline이 유효하면 SVG 경로 렌더', () => {
+    const activity = { ...mockActivity, summaryPolyline: 'valid' };
+    const { getByTestId } = render(<StravaActivityCard activity={activity} onClick={vi.fn()} />);
+
+    expect(getByTestId('route-thumbnail')).toBeInTheDocument();
+  });
+
+  it('summaryPolyline이 비어있으면 폴백 placeholder 렌더', () => {
+    const activity = { ...mockActivity, summaryPolyline: '' };
+    const { queryByTestId } = render(<StravaActivityCard activity={activity} onClick={vi.fn()} />);
+
+    expect(queryByTestId('route-thumbnail')).not.toBeInTheDocument();
+  });
+
+  it('summaryPolyline 좌표가 1개 미만이면 폴백 placeholder 렌더', () => {
+    const activity = { ...mockActivity, summaryPolyline: 'single' };
+    const { queryByTestId } = render(<StravaActivityCard activity={activity} onClick={vi.fn()} />);
+
+    expect(queryByTestId('route-thumbnail')).not.toBeInTheDocument();
   });
 });

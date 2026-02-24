@@ -22,7 +22,6 @@ function CourseUpload() {
   const stateFile = locationState?.file;
   // Strava preview data from the in-memory store (set by StravaActivitiesPage)
   const stravaPreview = useStravaUploadStore((state) => state.stravaPreview);
-  const clearStravaPreview = useStravaUploadStore((state) => state.clearStravaPreview);
 
   const hasProcessedStateFile = useRef(false);
 
@@ -54,12 +53,10 @@ function CourseUpload() {
     uploadResult
   } = useCourseUpload(previewData, stravaPreview);
 
-  // Clear Strava preview store on unmount (handles back navigation, success close, etc.)
-  useEffect(() => {
-    return () => {
-      clearStravaPreview();
-    };
-  }, [clearStravaPreview]);
+  // Strava preview is cleared by StravaActivitiesPage on mount (when the user
+  // navigates back), so we don't need a cleanup here. Putting clearStravaPreview
+  // in a useEffect cleanup causes a blank page in React StrictMode because the
+  // artificial unmount → remount clears the store before the component re-reads it.
 
   // Show error toasts
   useEffect(() => {

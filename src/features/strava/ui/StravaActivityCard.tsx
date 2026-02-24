@@ -1,3 +1,4 @@
+import polyline from '@mapbox/polyline';
 import { Check } from 'lucide-react';
 
 import { cn } from '@/shared/lib/utils';
@@ -9,6 +10,33 @@ interface StravaActivityCardProps {
   onClick: (activity: StravaActivity) => void;
   isSelected?: boolean;
   isDisabled?: boolean;
+}
+
+function polylineToSvgPath(encodedPolyline: string): string | null {
+  if (!encodedPolyline) return null;
+  try {
+    const coords = polyline.decode(encodedPolyline);
+    if (coords.length < 2) return null;
+
+    const lats = coords.map(([lat]) => lat);
+    const lngs = coords.map(([, lng]) => lng);
+    const minLat = Math.min(...lats);
+    const maxLat = Math.max(...lats);
+    const minLng = Math.min(...lngs);
+    const maxLng = Math.max(...lngs);
+    const latRange = maxLat - minLat || 1;
+    const lngRange = maxLng - minLng || 1;
+
+    const points = coords.map(([lat, lng]) => {
+      const x = ((lng - minLng) / lngRange) * 100;
+      const y = 100 - ((lat - minLat) / latRange) * 100; // invert y axis
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    });
+
+    return `M ${points.join(' L ')}`;
+  } catch {
+    return null;
+  }
 }
 
 function formatDuration(seconds: number): string {
@@ -44,8 +72,32 @@ export function StravaActivityCard({
       disabled={isDisabled}
       className='flex w-full items-start gap-4 py-4 text-left transition-opacity disabled:opacity-50'
     >
-      {/* Left: Placeholder for route SVG thumbnail */}
-      <div className='bg-g-20 h-15 w-15 shrink-0 rounded-xl' />
+      {/* Left: Route SVG thumbnail */}
+      <div className='bg-g-10 flex h-15 w-15 shrink-0 items-center justify-center overflow-hidden rounded-xl'>
+        {(() => {
+          const d = polylineToSvgPath(activity.summaryPolyline);
+          return d ? (
+            <svg
+              data-testid='route-thumbnail'
+              viewBox='0 0 100 100'
+              xmlns='http://www.w3.org/2000/svg'
+              className='text-runddy-blue h-12 w-12'
+              preserveAspectRatio='xMidYMid meet'
+            >
+              <path
+                d={d}
+                fill='none'
+                stroke='currentColor'
+                strokeWidth='6'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              />
+            </svg>
+          ) : (
+            <div className='bg-g-20 h-full w-full' />
+          );
+        })()}
+      </div>
 
       {/* Center: Activity info */}
       <div className='flex min-w-0 flex-1 flex-col gap-1'>

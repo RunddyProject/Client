@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
@@ -17,8 +17,17 @@ function StravaActivitiesPage() {
   const navigate = useNavigate();
   const { connect } = useStravaConnect();
   const setStravaPreview = useStravaUploadStore((state) => state.setStravaPreview);
+  const clearStravaPreview = useStravaUploadStore((state) => state.clearStravaPreview);
   const [selectedActivity, setSelectedActivity] = useState<StravaActivity | null>(null);
   const [isConfirming, setIsConfirming] = useState(false);
+
+  // Clear any stale Strava preview from a previous session when this page mounts.
+  // This is the correct place for cleanup because the CourseUpload cleanup effect
+  // would fire on React StrictMode's artificial unmount, wiping the store while
+  // the component is still alive and causing a white page.
+  useEffect(() => {
+    clearStravaPreview();
+  }, [clearStravaPreview]);
 
   const {
     data,
