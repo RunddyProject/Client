@@ -154,26 +154,49 @@ describe('StravaActivitiesPage', () => {
     expect(screen.getByText('Run 3')).toBeInTheDocument();
   });
 
-  // ── 활동 선택 → 업로드 페이지 이동 ───────────────────────────────────────
-  it('활동 클릭 시 GPX 조회 후 /course/upload로 이동', async () => {
+  // ── CTA 버튼 활성화 상태 ──────────────────────────────────────────────────
+  it('활동 미선택 시 다음 버튼 비활성화', () => {
+    mockActivitiesSuccess([makeActivity(1)]);
+
+    render(<StravaActivitiesPage />);
+
+    expect(screen.getByRole('button', { name: '다음' })).toBeDisabled();
+  });
+
+  it('활동 선택 시 다음 버튼 활성화', async () => {
+    const user = userEvent.setup();
+    mockActivitiesSuccess([makeActivity(1)]);
+
+    render(<StravaActivitiesPage />);
+
+    await user.click(screen.getByRole('button', { name: /Run 1/i }));
+
+    expect(screen.getByRole('button', { name: '다음' })).not.toBeDisabled();
+  });
+
+  // ── 활동 선택 → 다음 버튼 → 업로드 페이지 이동 ──────────────────────────
+  it('카드 선택 후 다음 버튼 클릭 시 GPX 조회 후 /course/upload로 이동', async () => {
     const user = userEvent.setup();
     mockActivitiesSuccess([makeActivity(1)]);
     mockGetActivityGpx.mockResolvedValue(mockGpxResponse);
 
     render(<StravaActivitiesPage />);
 
+    // 카드 클릭 → 선택만 됨 (GPX 조회 없음)
     await user.click(screen.getByRole('button', { name: /Run 1/i }));
+    expect(mockGetActivityGpx).not.toHaveBeenCalled();
+
+    // 다음 버튼 클릭 → GPX 조회 + store 저장 + 이동
+    await user.click(screen.getByRole('button', { name: '다음' }));
 
     await waitFor(() => {
       expect(mockGetActivityGpx).toHaveBeenCalledWith(1);
-      // Strava 미리보기를 store에 저장
       expect(mockSetStravaPreview).toHaveBeenCalledWith(
         expect.objectContaining({
           stravaActivityId: 1,
           activityName: 'Run 1'
         })
       );
-      // location.state 없이 업로드 페이지로 이동
       expect(mockNavigate).toHaveBeenCalledWith('/course/upload');
     });
   });
@@ -186,6 +209,7 @@ describe('StravaActivitiesPage', () => {
     render(<StravaActivitiesPage />);
 
     await user.click(screen.getByRole('button', { name: /Run 1/i }));
+    await user.click(screen.getByRole('button', { name: '다음' }));
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
@@ -203,6 +227,7 @@ describe('StravaActivitiesPage', () => {
     render(<StravaActivitiesPage />);
 
     await user.click(screen.getByRole('button', { name: /Run 1/i }));
+    await user.click(screen.getByRole('button', { name: '다음' }));
 
     await waitFor(() => {
       expect(mockConnect).toHaveBeenCalled();
@@ -220,6 +245,7 @@ describe('StravaActivitiesPage', () => {
     render(<StravaActivitiesPage />);
 
     await user.click(screen.getByRole('button', { name: /Run 1/i }));
+    await user.click(screen.getByRole('button', { name: '다음' }));
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(

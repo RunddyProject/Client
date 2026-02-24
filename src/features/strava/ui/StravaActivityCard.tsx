@@ -1,11 +1,14 @@
-import { ChevronRight } from 'lucide-react';
+import { Check } from 'lucide-react';
+
+import { cn } from '@/shared/lib/utils';
 
 import type { StravaActivity } from '../model/types';
 
 interface StravaActivityCardProps {
   activity: StravaActivity;
   onClick: (activity: StravaActivity) => void;
-  isLoading?: boolean;
+  isSelected?: boolean;
+  isDisabled?: boolean;
 }
 
 function formatDuration(seconds: number): string {
@@ -31,16 +34,17 @@ function formatDistance(meters: number): string {
 export function StravaActivityCard({
   activity,
   onClick,
-  isLoading
+  isSelected = false,
+  isDisabled = false
 }: StravaActivityCardProps) {
   return (
     <button
       type='button'
       onClick={() => onClick(activity)}
-      disabled={isLoading}
-      className='flex w-full items-center gap-4 py-4 text-left transition-opacity disabled:opacity-50'
+      disabled={isDisabled}
+      className='flex w-full items-start gap-4 py-4 text-left transition-opacity disabled:opacity-50'
     >
-      {/* Left: Placeholder for future SVG thumbnail */}
+      {/* Left: Placeholder for route SVG thumbnail */}
       <div className='bg-g-20 h-15 w-15 shrink-0 rounded-xl' />
 
       {/* Center: Activity info */}
@@ -62,8 +66,18 @@ export function StravaActivityCard({
         </div>
       </div>
 
-      {/* Right: Chevron */}
-      <ChevronRight className='text-g-50 size-5 shrink-0' />
+      {/* Top-right: Radio button */}
+      <div
+        className={cn(
+          'flex size-6 shrink-0 items-center justify-center rounded-full',
+          isSelected ? 'bg-runddy-blue' : 'border border-g-30 bg-white'
+        )}
+      >
+        <Check
+          className={cn('size-3.5', isSelected ? 'text-white' : 'text-g-40')}
+          strokeWidth={2.5}
+        />
+      </div>
     </button>
   );
 }

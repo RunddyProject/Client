@@ -81,18 +81,36 @@ describe('StravaActivityCard', () => {
     expect(onClick).toHaveBeenCalledWith(mockActivity);
   });
 
-  it('isLoading=true 시 버튼 비활성화', () => {
+  it('isDisabled=true 시 버튼 비활성화', () => {
     render(
-      <StravaActivityCard activity={mockActivity} onClick={vi.fn()} isLoading />
+      <StravaActivityCard activity={mockActivity} onClick={vi.fn()} isDisabled />
     );
 
     expect(screen.getByRole('button')).toBeDisabled();
   });
 
-  it('isLoading=false(기본) 시 버튼 활성화', () => {
+  it('isDisabled=false(기본) 시 버튼 활성화', () => {
     render(<StravaActivityCard activity={mockActivity} onClick={vi.fn()} />);
 
     expect(screen.getByRole('button')).not.toBeDisabled();
+  });
+
+  it('isSelected=true 시 선택된 라디오 버튼 렌더', () => {
+    const { container } = render(
+      <StravaActivityCard activity={mockActivity} onClick={vi.fn()} isSelected />
+    );
+
+    // bg-runddy-blue 클래스가 있는 라디오 원이 존재해야 함
+    expect(container.querySelector('.bg-runddy-blue')).toBeInTheDocument();
+  });
+
+  it('isSelected=false(기본) 시 미선택 라디오 버튼 렌더', () => {
+    const { container } = render(
+      <StravaActivityCard activity={mockActivity} onClick={vi.fn()} />
+    );
+
+    // bg-runddy-blue 가 없어야 함
+    expect(container.querySelector('.bg-runddy-blue')).not.toBeInTheDocument();
   });
 
   it('소수점 1자리로 거리 표시 (5000m → 5.0km)', () => {
