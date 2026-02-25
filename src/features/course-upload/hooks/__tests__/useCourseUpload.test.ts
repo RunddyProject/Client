@@ -6,8 +6,7 @@ import { renderHook } from '@/test/utils';
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 vi.mock('@/features/course-upload/api/course-upload.api', () => ({
   CourseUploadApi: {
-    uploadCourse: vi.fn(),
-    uploadStravaActivity: vi.fn()
+    uploadCourse: vi.fn()
   }
 }));
 
@@ -23,11 +22,14 @@ import { useCourseUpload } from '../useCourseUpload';
 import type { CoursePreviewData, StravaPreviewState } from '../../model/types';
 
 const mockUploadCourse = vi.mocked(CourseUploadApi.uploadCourse);
-const mockUploadStrava = vi.mocked(CourseUploadApi.uploadStravaActivity);
 const mockReverseGeocode = vi.mocked(reverseGeocode);
 
 // ─── Fixtures ────────────────────────────────────────────────────────────────
 const mockFile = new File(['gpx content'], 'route.gpx', {
+  type: 'application/gpx+xml'
+});
+
+const mockStravaFile = new File(['strava gpx'], 'run.gpx', {
   type: 'application/gpx+xml'
 });
 
@@ -44,7 +46,7 @@ const mockPreviewData: CoursePreviewData = {
 };
 
 const mockStravaPreview: StravaPreviewState = {
-  stravaActivityId: 99999,
+  file: mockStravaFile,
   activityName: '한강 새벽 러닝',
   totalDistance: 10000,
   svg: '<svg></svg>',
@@ -190,10 +192,8 @@ describe('useCourseUpload', () => {
 
     it('isMarathon=false이면 envType + shapeType 필수', async () => {
       const { result } = renderHook(() => useCourseUpload(mockPreviewData));
-      // 주소 비동기 effect 완료 대기
       await waitFor(() => expect(result.current.isLoadingAddresses).toBe(false));
 
-      // envType/shapeType 없음 → invalid
       await act(async () => {
         result.current.setFormData({
           name: '코스',
@@ -204,7 +204,6 @@ describe('useCourseUpload', () => {
       });
       expect(result.current.isFormValid).toBe(false);
 
-      // envType만 있음 → invalid
       await act(async () => {
         result.current.setFormData({
           name: '코스',
@@ -215,7 +214,6 @@ describe('useCourseUpload', () => {
       });
       expect(result.current.isFormValid).toBe(false);
 
-      // 둘 다 있음 → valid
       await act(async () => {
         result.current.setFormData({
           name: '코스',
@@ -268,7 +266,6 @@ describe('useCourseUpload', () => {
 
       const { result } = renderHook(() => useCourseUpload(mockPreviewData));
 
-      // 주소 로딩 완료 대기
       await waitFor(() => expect(result.current.isLoadingAddresses).toBe(false));
 
       act(() => {
@@ -321,8 +318,8 @@ describe('useCourseUpload', () => {
 
   // ── Strava 업로드 뮤테이션 ─────────────────────────────────────────────────
   describe('Strava 활동 업로드', () => {
-    it('stravaPreview 있을 때 uploadStravaActivity 사용', async () => {
-      mockUploadStrava.mockResolvedValue({ courseUuid: 'strava-uuid' });
+    it('stravaPreview 있을 때 uploadCourse 사용 (GPX 파일 포함)', async () => {
+      mockUploadCourse.mockResolvedValue({ courseUuid: 'strava-uuid' });
 
       const { result } = renderHook(() =>
         useCourseUpload(null, mockStravaPreview)
@@ -343,16 +340,15 @@ describe('useCourseUpload', () => {
         await result.current.uploadCourseAsync();
       });
 
-      expect(mockUploadStrava).toHaveBeenCalledWith(
+      expect(mockUploadCourse).toHaveBeenCalledWith(
         expect.objectContaining({
-          stravaActivityId: 99999,
+          file: mockStravaFile,
           courseName: '한강 새벽 러닝',
           isMarathon: false,
           courseEnvType: 'RIVER',
           courseShapeType: 'LINEAR'
         })
       );
-      expect(mockUploadCourse).not.toHaveBeenCalled();
     });
   });
 

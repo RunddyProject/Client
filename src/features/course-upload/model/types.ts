@@ -20,7 +20,7 @@ export interface CoursePreviewData {
 
 // Navigation state passed from Strava activities page to upload page
 export interface StravaPreviewState {
-  stravaActivityId: number;
+  file: File;
   activityName: string;
   totalDistance: number;
   svg: string;
@@ -38,17 +38,6 @@ export interface CourseUploadFormData {
 // API Request for POST /course/user/upload (direct GPX)
 export interface CourseUploadRequest {
   file: File;
-  courseName: string;
-  isMarathon: boolean;
-  courseEnvType?: CourseEnvType;
-  courseShapeType?: CourseShapeType;
-  startAddress: string;
-  endAddress: string;
-}
-
-// API Request for POST /strava/activities/{activityId}/register
-export interface StravaUploadRequest {
-  stravaActivityId: number;
   courseName: string;
   isMarathon: boolean;
   courseEnvType?: CourseEnvType;

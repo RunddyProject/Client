@@ -11,7 +11,24 @@ import { StravaActivityCard } from '@/features/strava/ui/StravaActivityCard';
 import { ApiError } from '@/shared/lib/http';
 import { cn } from '@/shared/lib/utils';
 
+import type { CoursePoint } from '@/features/course/model/types';
 import type { StravaActivity } from '@/features/strava/model/types';
+
+function buildGpxFile(coursePointList: CoursePoint[], name: string): File {
+  const trkpts = coursePointList
+    .map(({ lat, lng, ele }) => `      <trkpt lat="${lat}" lon="${lng}"><ele>${ele}</ele></trkpt>`)
+    .join('\n');
+  const gpx = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Runddy">
+  <trk>
+    <name>${name}</name>
+    <trkseg>
+${trkpts}
+    </trkseg>
+  </trk>
+</gpx>`;
+  return new File([gpx], `${name}.gpx`, { type: 'application/gpx+xml' });
+}
 
 function StravaActivitiesPage() {
   const navigate = useNavigate();
@@ -67,12 +84,11 @@ function StravaActivitiesPage() {
         return;
       }
 
-      const elevationChartData = buildElevationChartData(
-        gpxData.coursePointList
-      );
+      const elevationChartData = buildElevationChartData(gpxData.coursePointList);
+      const file = buildGpxFile(gpxData.coursePointList, selectedActivity.name);
 
       setStravaPreview({
-        stravaActivityId: selectedActivity.id,
+        file,
         activityName: selectedActivity.name,
         totalDistance: gpxData.totalDistance,
         svg: gpxData.svg,

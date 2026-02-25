@@ -193,7 +193,7 @@ describe('StravaActivitiesPage', () => {
       expect(mockGetActivityGpx).toHaveBeenCalledWith(1);
       expect(mockSetStravaPreview).toHaveBeenCalledWith(
         expect.objectContaining({
-          stravaActivityId: 1,
+          file: expect.any(File),
           activityName: 'Run 1'
         })
       );

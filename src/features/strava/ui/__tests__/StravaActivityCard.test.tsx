@@ -21,7 +21,7 @@ const mockActivity: StravaActivity = {
   name: '한강공원 새벽 러닝',
   sportType: 'Run',
   distance: 10200,
-  movingTime: 3660,   // 1시간 1분
+  movingTime: 3660,
   elapsedTime: 3800,
   totalElevationGain: 80,
   startDate: '2024-06-01T22:00:00Z',
@@ -39,44 +39,63 @@ describe('StravaActivityCard', () => {
     expect(screen.getByText('한강공원 새벽 러닝')).toBeInTheDocument();
   });
 
+  it('날짜 표시 (YYYY.MM.DD. 오전/오후 h:mm 러닝 포맷)', () => {
+    render(<StravaActivityCard activity={mockActivity} onClick={vi.fn()} />);
+
+    // startDateLocal '2024-06-02T07:00:00+09:00' → '2024.06.02. 오전 7:00 러닝'
+    expect(screen.getByText('2024.06.02. 오전 7:00 러닝')).toBeInTheDocument();
+  });
+
+  it('오후 시간 포맷 (13시 → 오후 1:00)', () => {
+    const activity = { ...mockActivity, startDateLocal: '2024-06-02T13:30:00+09:00' };
+    render(<StravaActivityCard activity={activity} onClick={vi.fn()} />);
+
+    expect(screen.getByText('2024.06.02. 오후 1:30 러닝')).toBeInTheDocument();
+  });
+
   it('거리 km 변환 표시 (10200m → 10.2km)', () => {
     render(<StravaActivityCard activity={mockActivity} onClick={vi.fn()} />);
 
     expect(screen.getByText('10.2km')).toBeInTheDocument();
   });
 
-  it('이동 시간 포맷 표시 (3660초 → 1시간 1분)', () => {
-    render(<StravaActivityCard activity={mockActivity} onClick={vi.fn()} />);
-
-    expect(screen.getByText('1시간 1분')).toBeInTheDocument();
-  });
-
-  it('이동 시간이 1시간 미만이면 분만 표시 (1800초 → 30분)', () => {
-    const activity = { ...mockActivity, movingTime: 1800 };
+  it('소수점 1자리로 거리 표시 (5000m → 5.0km)', () => {
+    const activity = { ...mockActivity, distance: 5000 };
     render(<StravaActivityCard activity={activity} onClick={vi.fn()} />);
 
-    expect(screen.getByText('30분')).toBeInTheDocument();
+    expect(screen.getByText('5.0km')).toBeInTheDocument();
   });
 
-  it('고도 상승이 0보다 크면 ↑Xm 표시', () => {
+  it('평균 페이스 표시 (averageSpeed 2.78 m/s → 6\'00")', () => {
+    // 1000 / 2.78 ≈ 360s → 6분 0초
     render(<StravaActivityCard activity={mockActivity} onClick={vi.fn()} />);
 
-    expect(screen.getByText('↑80m')).toBeInTheDocument();
+    expect(screen.getByText(`6'00"`)).toBeInTheDocument();
   });
 
-  it('고도 상승이 0이면 고도 표시 없음', () => {
-    const activity = { ...mockActivity, totalElevationGain: 0 };
-    render(<StravaActivityCard activity={activity} onClick={vi.fn()} />);
-
-    expect(screen.queryByText(/↑/)).not.toBeInTheDocument();
-  });
-
-  it('날짜 표시 (startDateLocal 기준)', () => {
+  it('총 걸린 시간 표시 (3800초 → 01:03)', () => {
+    // 3800s = 1h 3m 20s → 01:03
     render(<StravaActivityCard activity={mockActivity} onClick={vi.fn()} />);
 
-    // 날짜가 렌더링되었는지 확인 (정확한 포맷은 로케일 의존)
-    const dateText = screen.getByText(/2024/);
-    expect(dateText).toBeInTheDocument();
+    expect(screen.getByText('01:03')).toBeInTheDocument();
+  });
+
+  it('거리 라벨 표시', () => {
+    render(<StravaActivityCard activity={mockActivity} onClick={vi.fn()} />);
+
+    expect(screen.getByText('거리')).toBeInTheDocument();
+  });
+
+  it('평균 페이스 라벨 표시', () => {
+    render(<StravaActivityCard activity={mockActivity} onClick={vi.fn()} />);
+
+    expect(screen.getByText('평균 페이스')).toBeInTheDocument();
+  });
+
+  it('총 걸린 시간 라벨 표시', () => {
+    render(<StravaActivityCard activity={mockActivity} onClick={vi.fn()} />);
+
+    expect(screen.getByText('총 걸린 시간')).toBeInTheDocument();
   });
 
   it('클릭 시 onClick에 activity 객체 전달', async () => {
@@ -110,7 +129,6 @@ describe('StravaActivityCard', () => {
       <StravaActivityCard activity={mockActivity} onClick={vi.fn()} isSelected />
     );
 
-    // bg-runddy-blue 클래스가 있는 라디오 원이 존재해야 함
     expect(container.querySelector('.bg-runddy-blue')).toBeInTheDocument();
   });
 
@@ -119,15 +137,7 @@ describe('StravaActivityCard', () => {
       <StravaActivityCard activity={mockActivity} onClick={vi.fn()} />
     );
 
-    // bg-runddy-blue 가 없어야 함
     expect(container.querySelector('.bg-runddy-blue')).not.toBeInTheDocument();
-  });
-
-  it('소수점 1자리로 거리 표시 (5000m → 5.0km)', () => {
-    const activity = { ...mockActivity, distance: 5000 };
-    render(<StravaActivityCard activity={activity} onClick={vi.fn()} />);
-
-    expect(screen.getByText('5.0km')).toBeInTheDocument();
   });
 
   it('summaryPolyline이 유효하면 SVG 경로 렌더', () => {

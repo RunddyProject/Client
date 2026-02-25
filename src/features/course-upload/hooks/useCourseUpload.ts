@@ -9,8 +9,7 @@ import type {
   CourseUploadFormData,
   CourseUploadRequest,
   CourseUploadResponse,
-  StravaPreviewState,
-  StravaUploadRequest
+  StravaPreviewState
 } from '@/features/course-upload/model/types';
 
 interface UseCourseUploadReturn {
@@ -109,28 +108,16 @@ export function useCourseUpload(
     return true;
   }, [formData, previewData, stravaPreview]);
 
-  // Upload mutation
+  // Upload mutation — both direct GPX and Strava go through the same endpoint
   const mutation = useMutation({
     mutationFn: async (): Promise<CourseUploadResponse> => {
-      if (stravaPreview) {
-        const request: StravaUploadRequest = {
-          stravaActivityId: stravaPreview.stravaActivityId,
-          courseName: formData.name.trim(),
-          isMarathon: formData.isMarathon!,
-          courseEnvType: formData.envType ?? undefined,
-          courseShapeType: formData.shapeType ?? undefined,
-          startAddress,
-          endAddress
-        };
-        return CourseUploadApi.uploadStravaActivity(request);
-      }
-
-      if (!previewData) {
-        throw new Error('GPX 파일을 먼저 업로드해주세요.');
+      const file = previewData?.file ?? stravaPreview?.file;
+      if (!file) {
+        throw new Error('GPX 파일을 찾을 수 없습니다.');
       }
 
       const request: CourseUploadRequest = {
-        file: previewData.file,
+        file,
         courseName: formData.name.trim(),
         isMarathon: formData.isMarathon!,
         courseEnvType: formData.envType ?? undefined,

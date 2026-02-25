@@ -3,8 +3,7 @@ import { api } from '@/shared/lib/http';
 import type {
   CoursePreviewResponse,
   CourseUploadRequest,
-  CourseUploadResponse,
-  StravaUploadRequest
+  CourseUploadResponse
 } from '@/features/course-upload/model/types';
 
 export const CourseUploadApi = {
@@ -42,22 +41,4 @@ export const CourseUploadApi = {
     return api.postForm<CourseUploadResponse>('/course/user/upload', formData);
   },
 
-  /**
-   * Register course from a connected Strava activity
-   * POST /strava/activities/{activityId}/register
-   */
-  uploadStravaActivity: (
-    request: StravaUploadRequest
-  ): Promise<CourseUploadResponse> =>
-    api.post<CourseUploadResponse>(
-      `/strava/activities/${request.stravaActivityId}/register`,
-      {
-        courseName: request.courseName,
-        isMarathon: request.isMarathon,
-        courseEnvType: request.courseEnvType,
-        courseShapeType: request.courseShapeType,
-        startAddress: request.startAddress,
-        endAddress: request.endAddress
-      }
-    )
 };

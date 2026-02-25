@@ -39,20 +39,33 @@ function polylineToSvgPath(encodedPolyline: string): string | null {
   }
 }
 
-function formatDuration(seconds: number): string {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  if (h > 0) return `${h}시간 ${m}분`;
-  return `${m}분`;
+/** YYYY.MM.DD. 오전/오후 h:mm 러닝 — parsed directly from the ISO string to
+ *  avoid timezone conversion issues in test/server environments. */
+function formatDate(isoString: string): string {
+  const [datePart, timePart] = isoString.split('T');
+  const [year, month, day] = datePart.split('-');
+  const [hourStr, minStr] = timePart.split(':');
+  const hours = parseInt(hourStr, 10);
+  const minutes = parseInt(minStr, 10);
+  const ampm = hours < 12 ? '오전' : '오후';
+  const hour12 = hours % 12 || 12;
+  return `${year}.${month}.${day}. ${ampm} ${hour12}:${String(minutes).padStart(2, '0')} 러닝`;
 }
 
-function formatDate(isoString: string): string {
-  const date = new Date(isoString);
-  return date.toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+/** Pace in min'ss" per km from m/s */
+function formatPace(averageSpeedMps: number): string {
+  if (averageSpeedMps <= 0) return '-';
+  const totalSec = Math.round(1000 / averageSpeedMps);
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
+  return `${min}'${String(sec).padStart(2, '0')}"`;
+}
+
+/** Elapsed time as HH:MM */
+function formatElapsedTime(seconds: number): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
 function formatDistance(meters: number): string {
@@ -100,21 +113,28 @@ export function StravaActivityCard({
       </div>
 
       {/* Center: Activity info */}
-      <div className='flex min-w-0 flex-1 flex-col gap-1'>
+      <div className='flex min-w-0 flex-1 flex-col gap-1.5'>
         <p className='text-contents-m15 text-pri truncate'>{activity.name}</p>
         <p className='text-caption-r13 text-ter'>
           {formatDate(activity.startDateLocal)}
         </p>
-        <div className='text-caption-r13 text-sec flex gap-2'>
-          <span>{formatDistance(activity.distance)}km</span>
-          <span>·</span>
-          <span>{formatDuration(activity.movingTime)}</span>
-          {activity.totalElevationGain > 0 && (
-            <>
-              <span>·</span>
-              <span>↑{Math.round(activity.totalElevationGain)}m</span>
-            </>
-          )}
+
+        {/* Stats row: 거리 | 평균 페이스 | 총 걸린 시간 */}
+        <div className='flex items-center gap-3'>
+          <div className='flex flex-col gap-0.5'>
+            <span className='text-caption-r11 text-ter'>거리</span>
+            <span className='text-caption-m13 text-sec'>{formatDistance(activity.distance)}km</span>
+          </div>
+          <div className='bg-g-30 h-6 w-px' />
+          <div className='flex flex-col gap-0.5'>
+            <span className='text-caption-r11 text-ter'>평균 페이스</span>
+            <span className='text-caption-m13 text-sec'>{formatPace(activity.averageSpeed)}</span>
+          </div>
+          <div className='bg-g-30 h-6 w-px' />
+          <div className='flex flex-col gap-0.5'>
+            <span className='text-caption-r11 text-ter'>총 걸린 시간</span>
+            <span className='text-caption-m13 text-sec'>{formatElapsedTime(activity.elapsedTime)}</span>
+          </div>
         </div>
       </div>
 
