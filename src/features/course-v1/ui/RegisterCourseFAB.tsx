@@ -16,7 +16,7 @@ interface RegisterCourseFABProps {
 
 export function RegisterCourseFAB({
   className,
-  uploadMode = 'direct'
+  uploadMode = 'sheet'
 }: RegisterCourseFABProps) {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);

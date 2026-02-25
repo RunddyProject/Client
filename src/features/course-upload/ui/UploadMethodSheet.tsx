@@ -74,18 +74,19 @@ export function UploadMethodSheet({
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
-        {/* Container constrained to max-w-xl */}
-        <div className='fixed inset-0 z-50 mx-auto flex max-w-xl items-end justify-center'>
-          {/* Overlay - only covers the max-w-xl area */}
-          {dim && <DialogPrimitive.Overlay className='absolute inset-0 bg-black/50' />}
+        {/* Full-viewport overlay */}
+        {dim && (
+          <DialogPrimitive.Overlay className='fixed inset-0 z-50 bg-black/50 duration-300 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0' />
+        )}
 
-          {/* Content - bottom sheet with margins */}
-          <DialogPrimitive.Content
-            className='bg-w-100 relative z-10 mx-5 mb-8 w-full rounded-3xl px-5 py-2 outline-none'
-            onOpenAutoFocus={(e) => e.preventDefault()}
-          >
+        {/* Bottom sheet: fixed to viewport bottom, centered within max-w-xl */}
+        <DialogPrimitive.Content
+          className='fixed inset-x-0 bottom-0 z-50 flex justify-center px-5 pb-8 outline-none duration-300 ease-out data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom-full data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom-full data-[state=closed]:ease-in'
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
+          <div className='bg-w-100 w-full max-w-xl rounded-3xl px-5 py-2'>
             {/* Handle bar */}
-            <div className='flex justify-center pb-2'>
+            <div className='flex justify-center pb-2 pt-3'>
               <div className='bg-g-30 h-1 w-10 rounded-full' />
             </div>
 
@@ -125,8 +126,8 @@ export function UploadMethodSheet({
               className='hidden'
               aria-label='GPX 파일 선택'
             />
-          </DialogPrimitive.Content>
-        </div>
+          </div>
+        </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
   );
