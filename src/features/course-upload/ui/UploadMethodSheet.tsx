@@ -76,17 +76,17 @@ export function UploadMethodSheet({
       <DialogPrimitive.Portal>
         {/* Full-viewport overlay */}
         {dim && (
-          <DialogPrimitive.Overlay className='fixed inset-0 z-50 bg-black/50 duration-300 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0' />
+          <DialogPrimitive.Overlay className='data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 fixed inset-0 z-[500] bg-black/50 duration-300' />
         )}
 
         {/* Bottom sheet: fixed to viewport bottom, centered within max-w-xl */}
         <DialogPrimitive.Content
-          className='fixed inset-x-0 bottom-0 z-50 flex justify-center px-5 pb-8 outline-none duration-300 ease-out data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom-full data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom-full data-[state=closed]:ease-in'
+          className='data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom-full data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom-full fixed inset-x-0 bottom-0 z-[500] flex justify-center px-5 pb-8 duration-300 ease-out outline-none data-[state=closed]:ease-in'
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           <div className='bg-w-100 w-full max-w-xl rounded-3xl px-5 py-2'>
             {/* Handle bar */}
-            <div className='flex justify-center pb-2 pt-3'>
+            <div className='flex justify-center pt-3 pb-2'>
               <div className='bg-g-30 h-1 w-10 rounded-full' />
             </div>
 
@@ -114,7 +114,9 @@ export function UploadMethodSheet({
                 disabled={isStravaLoading}
                 className='text-contents-r15 text-pri w-full py-5 text-left transition-colors disabled:opacity-50'
               >
-                {isStravaLoading ? '연결 확인 중...' : UPLOAD_METHOD_LABELS.strava}
+                {isStravaLoading
+                  ? '연결 확인 중...'
+                  : UPLOAD_METHOD_LABELS.strava}
               </button>
             </div>
 
