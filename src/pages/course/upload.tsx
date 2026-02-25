@@ -150,6 +150,7 @@ function CourseUpload() {
           }
         }}
         onSelectMethod={handleSelectMethod}
+        dim={false}
       />
     );
   }

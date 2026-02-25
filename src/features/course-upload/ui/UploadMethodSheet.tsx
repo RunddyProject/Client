@@ -13,12 +13,15 @@ interface UploadMethodSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelectMethod: (method: UploadMethod, file?: File) => void;
+  /** Render a dark overlay behind the sheet. Default: true. */
+  dim?: boolean;
 }
 
 export function UploadMethodSheet({
   open,
   onOpenChange,
-  onSelectMethod
+  onSelectMethod,
+  dim = true
 }: UploadMethodSheetProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -74,7 +77,7 @@ export function UploadMethodSheet({
         {/* Container constrained to max-w-xl */}
         <div className='fixed inset-0 z-50 mx-auto flex max-w-xl items-end justify-center'>
           {/* Overlay - only covers the max-w-xl area */}
-          <DialogPrimitive.Overlay className='absolute inset-0 bg-black/50' />
+          {dim && <DialogPrimitive.Overlay className='absolute inset-0 bg-black/50' />}
 
           {/* Content - bottom sheet with margins */}
           <DialogPrimitive.Content
