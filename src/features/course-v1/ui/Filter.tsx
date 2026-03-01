@@ -377,7 +377,7 @@ const CourseFilter = memo(function CourseFilter({
       </div>
 
       <DialogPortal>
-        <DialogOverlay className='fixed inset-0 z-[400]' />
+        <DialogOverlay className='z-[400]' />
         <DialogContent
           fullWidth
           className='bg-w-100 z-[410] mx-auto flex h-full max-w-xl flex-col'

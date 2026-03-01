@@ -85,7 +85,7 @@ const Header = () => {
           </Button>
         </DialogTrigger>
         <DialogPortal>
-          <DialogOverlay className='fixed inset-0 z-[400]' />
+          <DialogOverlay className='z-[400]' />
           <DialogContent className='bg-w-100 fixed top-1/2 left-1/2 z-[410] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg p-6 shadow-xl'>
             <DialogHeader>
               <DialogTitle>개발용 AccessToken 설정</DialogTitle>
