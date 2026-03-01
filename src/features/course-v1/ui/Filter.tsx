@@ -380,7 +380,7 @@ const CourseFilter = memo(function CourseFilter({
         <DialogOverlay className='fixed inset-0 z-[400]' />
         <DialogContent
           fullWidth
-          className='bg-w-100 z-[410] flex h-full flex-col'
+          className='bg-w-100 z-[410] mx-auto flex h-full max-w-xl flex-col'
         >
           <DialogHeader>
             <DialogTitle>상세 필터</DialogTitle>

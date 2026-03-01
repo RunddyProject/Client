@@ -78,7 +78,7 @@ function MeDelete() {
         <AlertDialog>
           <AlertDialogOverlay />
           <AlertDialogTrigger asChild>
-            <div className='fixed bottom-0 w-full p-5'>
+            <div className='fixed bottom-0 w-full mx-auto max-w-xl p-5'>
               <Button
                 type='submit'
                 size='lg'
