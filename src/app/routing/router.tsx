@@ -17,6 +17,8 @@ import MeDelete from '@/pages/me/delete';
 import MeEdit from '@/pages/me/edit';
 import Me from '@/pages/me/index';
 import NotFound from '@/pages/not-found';
+import StravaActivities from '@/pages/strava/activities';
+import StravaSuccess from '@/pages/strava/success';
 import { ShareButton } from '@/shared/ui/actions/ShareButton';
 
 type HeaderMeta = {
@@ -93,6 +95,31 @@ export const router = createBrowserRouter([
                 handle: { header: { title: '상세보기', rightButton: null } }
               }
             ]
+          }
+        ]
+      },
+      {
+        path: 'strava',
+        children: [
+          {
+            path: 'success',
+            element: <StravaSuccess />,
+            handle: { header: { showHeader: false } }
+          },
+          {
+            path: 'activities',
+            element: (
+              <ProtectedRoute>
+                <StravaActivities />
+              </ProtectedRoute>
+            ),
+            handle: {
+              header: {
+                title: 'Strava에서 가져오기',
+                showBackButton: true,
+                rightButton: null
+              }
+            }
           }
         ]
       },

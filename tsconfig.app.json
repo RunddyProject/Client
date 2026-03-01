@@ -28,5 +28,11 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "scripts/tokens/build-tokens.ts"]
+  "include": ["src", "scripts/tokens/build-tokens.ts"],
+  "exclude": [
+    "src/**/__tests__/**",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/test/**"
+  ]
 }

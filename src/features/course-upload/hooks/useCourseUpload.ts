@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { CourseUploadApi } from '@/features/course-upload/api/course-upload.api';
 import { reverseGeocode } from '@/features/map/lib/geocode';
@@ -8,7 +8,8 @@ import type {
   CoursePreviewData,
   CourseUploadFormData,
   CourseUploadRequest,
-  CourseUploadResponse
+  CourseUploadResponse,
+  StravaPreviewState
 } from '@/features/course-upload/model/types';
 
 interface UseCourseUploadReturn {
@@ -34,7 +35,8 @@ const initialFormData: CourseUploadFormData = {
 };
 
 export function useCourseUpload(
-  previewData: CoursePreviewData | null
+  previewData: CoursePreviewData | null,
+  stravaPreview?: StravaPreviewState | null
 ): UseCourseUploadReturn {
   const queryClient = useQueryClient();
 
@@ -44,9 +46,22 @@ export function useCourseUpload(
   const [endAddress, setEndAddress] = useState<string>('');
   const [isLoadingAddresses, setIsLoadingAddresses] = useState(false);
 
-  // Fetch addresses when preview data is loaded
+  // Pre-fill name from Strava activity name
   useEffect(() => {
-    if (!previewData?.coursePointList.length) {
+    if (stravaPreview?.activityName) {
+      setFormData((prev) => ({
+        ...prev,
+        name: prev.name || stravaPreview.activityName
+      }));
+    }
+  }, [stravaPreview?.activityName]);
+
+  // Fetch addresses from course points (supports both direct and Strava previews)
+  useEffect(() => {
+    const coursePointList =
+      previewData?.coursePointList ?? stravaPreview?.coursePointList;
+
+    if (!coursePointList?.length) {
       setStartAddress('');
       setEndAddress('');
       return;
@@ -55,9 +70,8 @@ export function useCourseUpload(
     const fetchAddresses = async () => {
       setIsLoadingAddresses(true);
 
-      const startPoint = previewData.coursePointList[0];
-      const endPoint =
-        previewData.coursePointList[previewData.coursePointList.length - 1];
+      const startPoint = coursePointList[0];
+      const endPoint = coursePointList[coursePointList.length - 1];
 
       try {
         const [start, end] = await Promise.all([
@@ -77,32 +91,33 @@ export function useCourseUpload(
     };
 
     fetchAddresses();
-  }, [previewData]);
+  }, [previewData, stravaPreview]);
 
   // Validate form
-  const isFormValid = useCallback(() => {
-    if (!previewData) return false;
+  const isFormValid = useMemo(() => {
+    const hasData = !!previewData || !!stravaPreview;
+    if (!hasData) return false;
     if (!formData.name.trim()) return false;
     if (formData.isMarathon === null) return false;
 
-    // If not marathon, envType and shapeType are required
     if (!formData.isMarathon) {
       if (!formData.envType) return false;
       if (!formData.shapeType) return false;
     }
 
     return true;
-  }, [formData, previewData]);
+  }, [formData, previewData, stravaPreview]);
 
-  // Upload mutation
+  // Upload mutation — both direct GPX and Strava go through the same endpoint
   const mutation = useMutation({
     mutationFn: async (): Promise<CourseUploadResponse> => {
-      if (!previewData) {
-        throw new Error('GPX 파일을 먼저 업로드해주세요.');
+      const file = previewData?.file ?? stravaPreview?.file;
+      if (!file) {
+        throw new Error('GPX 파일을 찾을 수 없습니다.');
       }
 
       const request: CourseUploadRequest = {
-        file: previewData.file,
+        file,
         courseName: formData.name.trim(),
         isMarathon: formData.isMarathon!,
         courseEnvType: formData.envType ?? undefined,
@@ -114,7 +129,6 @@ export function useCourseUpload(
       return CourseUploadApi.uploadCourse(request);
     },
     onSuccess: () => {
-      // Invalidate courses query to refresh the list
       queryClient.invalidateQueries({ queryKey: ['courses'] });
       queryClient.invalidateQueries({ queryKey: ['user-courses'] });
     }
@@ -125,7 +139,7 @@ export function useCourseUpload(
     setStartAddress('');
     setEndAddress('');
     mutation.reset();
-  }, [mutation]);
+  }, [mutation.reset]);
 
   return {
     formData,
@@ -133,7 +147,7 @@ export function useCourseUpload(
     startAddress,
     endAddress,
     isLoadingAddresses,
-    isFormValid: isFormValid(),
+    isFormValid,
     uploadCourse: mutation.mutate,
     uploadCourseAsync: mutation.mutateAsync,
     isUploading: mutation.isPending,

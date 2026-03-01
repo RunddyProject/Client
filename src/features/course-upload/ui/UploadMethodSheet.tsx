@@ -1,8 +1,11 @@
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { UPLOAD_METHOD_LABELS } from '@/features/course-upload/model/constants';
+import { StravaApi } from '@/features/strava/api/strava.api';
+import { ApiError } from '@/shared/lib/http';
 
 import type { UploadMethod } from '@/features/course-upload/model/types';
 
@@ -10,14 +13,19 @@ interface UploadMethodSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelectMethod: (method: UploadMethod, file?: File) => void;
+  /** Render a dark overlay behind the sheet. Default: true. */
+  dim?: boolean;
 }
 
 export function UploadMethodSheet({
   open,
   onOpenChange,
-  onSelectMethod
+  onSelectMethod,
+  dim = true
 }: UploadMethodSheetProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+  const [isStravaLoading, setIsStravaLoading] = useState(false);
 
   const handleDirectUpload = () => {
     fileInputRef.current?.click();
@@ -32,26 +40,53 @@ export function UploadMethodSheet({
     e.target.value = '';
   };
 
-  const handleStravaImport = () => {
-    // TODO: Implement Strava OAuth flow
-    toast.error('Strava 연동은 현재 준비 중입니다.');
+  const handleStravaImport = async () => {
+    if (isStravaLoading) return;
+    setIsStravaLoading(true);
+
+    try {
+      const { connected } = await StravaApi.getStatus();
+
+      if (connected) {
+        // Already connected — navigate to activity list.
+        // Do NOT call onOpenChange(false) here: the parent's onOpenChange handler
+        // calls navigate(-1), which conflicts with navigate('/strava/activities')
+        // and corrupts the browser history stack.
+        // The sheet unmounts naturally when the page transitions.
+        navigate('/strava/activities');
+        return;
+      }
+
+      // Not connected — start OAuth flow (redirects away from app)
+      const { authUrl } = await StravaApi.getConnectUrl();
+      window.location.href = authUrl;
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        toast.error('로그인이 필요합니다.');
+        return;
+      }
+      toast.error('Strava 연결에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsStravaLoading(false);
+    }
   };
 
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
-        {/* Container constrained to max-w-xl */}
-        <div className='fixed inset-0 z-50 mx-auto flex max-w-xl items-end justify-center'>
-          {/* Overlay - only covers the max-w-xl area */}
-          <DialogPrimitive.Overlay className='absolute inset-0 bg-black/50' />
+        {/* Full-viewport overlay */}
+        {dim && (
+          <DialogPrimitive.Overlay className='data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 fixed inset-0 z-[500] bg-black/50 duration-300' />
+        )}
 
-          {/* Content - bottom sheet with margins */}
-          <DialogPrimitive.Content
-            className='bg-w-100 relative z-10 mx-5 mb-8 w-full rounded-3xl px-5 py-2 outline-none'
-            onOpenAutoFocus={(e) => e.preventDefault()}
-          >
+        {/* Bottom sheet: fixed to viewport bottom, centered within max-w-xl */}
+        <DialogPrimitive.Content
+          className='data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom-full data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom-full fixed inset-x-0 bottom-0 z-[500] flex justify-center px-5 pb-8 duration-300 ease-out outline-none data-[state=closed]:ease-in'
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
+          <div className='bg-w-100 w-full max-w-xl rounded-3xl px-5 py-2'>
             {/* Handle bar */}
-            <div className='flex justify-center pb-2'>
+            <div className='flex justify-center pt-3 pb-2'>
               <div className='bg-g-30 h-1 w-10 rounded-full' />
             </div>
 
@@ -76,9 +111,12 @@ export function UploadMethodSheet({
               <button
                 type='button'
                 onClick={handleStravaImport}
-                className='text-contents-r15 text-pri w-full py-5 text-left transition-colors'
+                disabled={isStravaLoading}
+                className='text-contents-r15 text-pri w-full py-5 text-left transition-colors disabled:opacity-50'
               >
-                {UPLOAD_METHOD_LABELS.strava}
+                {isStravaLoading
+                  ? '연결 확인 중...'
+                  : UPLOAD_METHOD_LABELS.strava}
               </button>
             </div>
 
@@ -90,8 +128,8 @@ export function UploadMethodSheet({
               className='hidden'
               aria-label='GPX 파일 선택'
             />
-          </DialogPrimitive.Content>
-        </div>
+          </div>
+        </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
   );
