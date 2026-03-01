@@ -81,10 +81,10 @@ export function UploadMethodSheet({
 
         {/* Bottom sheet: fixed to viewport bottom, centered within max-w-xl */}
         <DialogPrimitive.Content
-          className='data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom-full data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom-full fixed inset-x-0 bottom-0 z-[310] flex justify-center px-5 pb-8 duration-300 ease-out outline-none data-[state=closed]:ease-in'
+          className='data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom-full data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom-full fixed inset-x-0 bottom-0 z-[310] mx-auto max-w-xl px-5 pb-8 duration-300 ease-out outline-none data-[state=closed]:ease-in'
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
-          <div className='bg-w-100 w-full max-w-xl rounded-3xl px-5 py-2'>
+          <div className='bg-w-100 w-full rounded-3xl px-5 py-2'>
             {/* Handle bar */}
             <div className='flex justify-center pt-3 pb-2'>
               <div className='bg-g-30 h-1 w-10 rounded-full' />

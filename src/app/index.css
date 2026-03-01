@@ -82,7 +82,7 @@
 @layer components {
   [data-slot='dialog-content'],
   [data-slot='alert-dialog-content'] {
-    max-width: 36rem !important;
+    max-width: min(calc(100% - 2.5rem), 36rem) !important;
   }
 
   [data-slot='dropdown-menu-content'] {
