@@ -1,28 +1,32 @@
 import { Plus } from 'lucide-react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
+import { UploadMethodSheet } from '@/features/course-upload/ui/UploadMethodSheet';
 import { cn } from '@/shared/lib/utils';
+
+import type { UploadMethod } from '@/features/course-upload/model/types';
 
 interface RegisterCourseFABProps {
   className?: string;
-  /** 'direct' opens file picker immediately, 'sheet' navigates to upload page with method sheet */
+  /** 'direct' opens file picker immediately, 'sheet' shows upload method sheet inline with dim overlay */
   uploadMode?: 'direct' | 'sheet';
 }
 
 export function RegisterCourseFAB({
   className,
-  uploadMode = 'direct'
+  uploadMode = 'sheet'
 }: RegisterCourseFABProps) {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const handleClick = () => {
     if (uploadMode === 'direct') {
       fileInputRef.current?.click();
     } else {
-      navigate('/course/upload');
+      setIsSheetOpen(true);
     }
   };
 
@@ -38,6 +42,14 @@ export function RegisterCourseFAB({
 
     navigate('/course/upload', { state: { file } });
     e.target.value = '';
+  };
+
+  const handleSheetSelectMethod = (method: UploadMethod, file?: File) => {
+    if (method === 'direct' && file) {
+      setIsSheetOpen(false);
+      navigate('/course/upload', { state: { file } });
+    }
+    // 'strava': UploadMethodSheet navigates internally
   };
 
   return (
@@ -81,6 +93,14 @@ export function RegisterCourseFAB({
           onChange={handleFileChange}
           className='hidden'
           aria-label='GPX 파일 선택'
+        />
+      )}
+
+      {uploadMode === 'sheet' && (
+        <UploadMethodSheet
+          open={isSheetOpen}
+          onOpenChange={setIsSheetOpen}
+          onSelectMethod={handleSheetSelectMethod}
         />
       )}
     </>

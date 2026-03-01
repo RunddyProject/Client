@@ -39,5 +39,6 @@ export const CourseUploadApi = {
     formData.append('endAddress', request.endAddress);
 
     return api.postForm<CourseUploadResponse>('/course/user/upload', formData);
-  }
+  },
+
 };
