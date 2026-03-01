@@ -85,8 +85,8 @@ const Header = () => {
           </Button>
         </DialogTrigger>
         <DialogPortal>
-          <DialogOverlay className='fixed inset-0 z-[10000]' />
-          <DialogContent className='bg-w-100 fixed top-1/2 left-1/2 z-[10001] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg p-6 shadow-xl'>
+          <DialogOverlay className='fixed inset-0 z-[400]' />
+          <DialogContent className='bg-w-100 fixed top-1/2 left-1/2 z-[410] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg p-6 shadow-xl'>
             <DialogHeader>
               <DialogTitle>개발용 AccessToken 설정</DialogTitle>
               <DialogDescription>
@@ -124,7 +124,7 @@ const Header = () => {
   return config.showHeader ? (
     <header
       className={cn(
-        'top-0 z-[101] w-full',
+        'top-0 z-[100] w-full',
         hasTabs || isCoursePage ? 'fixed left-0' : 'bg-w-100 sticky' // TODO: v1.0 오픈 시 isCoursePage 조건 제거
       )}
     >

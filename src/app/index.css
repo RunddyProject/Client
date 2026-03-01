@@ -76,7 +76,7 @@
   transform: translateX(-50%) !important;
   gap: 10px !important;
   pointer-events: none !important;
-  z-index: 9999 !important;
+  z-index: 700 !important;
 }
 
 @layer components {

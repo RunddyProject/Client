@@ -54,7 +54,7 @@ const CourseReviewMine = () => {
         <DialogPortal>
           <DialogContent
             fullWidth
-            className='bg-w-100 fixed inset-0 top-1/2 left-1/2 z-[10000] flex h-full w-full flex-col rounded-none p-0'
+            className='bg-w-100 fixed inset-0 top-1/2 left-1/2 z-[410] flex h-full w-full flex-col rounded-none p-0'
           >
             <DialogHeader>
               <DialogClose className='justify-self-start rounded'>
@@ -82,7 +82,7 @@ const CourseReviewMine = () => {
                   side='bottom'
                   align='center'
                   sideOffset={4}
-                  className='bg-w-100 text-contents-r15 relative z-[10002] mt-3 mr-5 flex w-[168px] flex-col px-1 py-0'
+                  className='bg-w-100 text-contents-r15 relative z-[420] mt-3 mr-5 flex w-[168px] flex-col px-1 py-0'
                 >
                   <div className='border-g-20 flex h-[46px] w-full flex-col justify-center border-b'>
                     <CourseReviewWrite triggerMode='editReview' />
@@ -138,7 +138,7 @@ const CourseReviewMine = () => {
             <AlertDialog open={openDelete} onOpenChange={setOpenDelete}>
               <AlertDialogOverlay />
 
-              <AlertDialogContent className='z-[10005]'>
+              <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>
                     작성하신 리뷰를 삭제하시겠어요?

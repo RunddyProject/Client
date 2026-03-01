@@ -24,7 +24,7 @@ export function CourseUploadSuccess({
       <DialogPortal>
         <DialogContent
           fullWidth
-          className='bg-w-100 fixed top-1/2 left-1/2 z-[10003] flex h-dvh w-full max-w-xl -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center p-5'
+          className='bg-w-100 fixed top-1/2 left-1/2 z-[500] flex h-dvh w-full max-w-xl -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center p-5'
         >
           <div className='flex flex-1 flex-col items-center justify-center'>
             <Icon name='circle_check_on' size={60} className='mb-5' />
