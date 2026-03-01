@@ -54,9 +54,9 @@ const CourseReviewMine = () => {
         <DialogPortal>
           <DialogContent
             fullWidth
-            className='bg-w-100 fixed inset-0 top-1/2 left-1/2 z-[10000] flex h-full w-full flex-col rounded-none p-0'
+            className='bg-w-100 z-[10000] flex flex-col rounded-none p-0'
           >
-            <DialogHeader>
+            <DialogHeader className='h-auto pt-[env(safe-area-inset-top)]'>
               <DialogClose className='justify-self-start rounded'>
                 <Button
                   variant='ghost'

@@ -125,9 +125,9 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
         <DialogPortal>
           <DialogContent
             fullWidth
-            className='bg-w-100 fixed inset-0 top-1/2 left-1/2 z-[10003] flex h-full w-full flex-col rounded-none p-0'
+            className='bg-w-100 z-[10003] flex flex-col rounded-none p-0'
           >
-            <DialogHeader>
+            <DialogHeader className='h-auto pt-[env(safe-area-inset-top)]'>
               <DialogClose className='justify-self-start rounded'>
                 <Button
                   variant='ghost'
@@ -172,7 +172,7 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
               ))}
             </div>
 
-            <div className='bg-w-100 fixed right-0 bottom-0 left-0 p-5'>
+            <div className='bg-w-100 fixed right-0 bottom-0 left-0 p-5 pb-[calc(env(safe-area-inset-bottom)+20px)]'>
               <Button
                 size='lg'
                 className='w-full'

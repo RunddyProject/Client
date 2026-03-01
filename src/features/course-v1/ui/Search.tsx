@@ -103,7 +103,7 @@ const Search = memo(function Search({
         <DialogPortal>
           <DialogContent
             fullWidth
-            className='bg-w-100 absolute top-1/2 left-1/2 z-[103] flex h-full -translate-y-1/2 transform-none flex-col rounded-none py-1 pr-5 pl-2'
+            className='bg-w-100 z-[103] flex flex-col rounded-none pr-5 pl-2 pt-[calc(env(safe-area-inset-top)+4px)] pb-[env(safe-area-inset-bottom)]'
           >
             <div className='mb-4 flex items-center gap-2'>
               <Button

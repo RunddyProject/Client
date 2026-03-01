@@ -344,9 +344,9 @@ const CourseFilter = memo(function CourseFilter({
         <DialogOverlay className='fixed inset-0 z-[10000]' />
         <DialogContent
           fullWidth
-          className='bg-w-100 z-[10001] flex h-full flex-col'
+          className='bg-w-100 z-[10001] flex flex-col'
         >
-          <DialogHeader>
+          <DialogHeader className='h-auto pt-[env(safe-area-inset-top)]'>
             <DialogTitle>상세 필터</DialogTitle>
             <DialogClose className='col-start-3 justify-self-end rounded p-3'>
               <Button variant='ghost' size='icon' className='rounded p-3'>
@@ -463,7 +463,7 @@ const CourseFilter = memo(function CourseFilter({
             </div>
           </div>
 
-          <DialogFooter className='flex w-full gap-3 p-5'>
+          <DialogFooter className='flex w-full gap-3 px-5 pb-[calc(env(safe-area-inset-bottom)+20px)] pt-5'>
             <Button
               variant='secondary'
               size='lg'

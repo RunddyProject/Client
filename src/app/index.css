@@ -80,7 +80,7 @@
 }
 
 @layer components {
-  [data-slot='dialog-content'],
+  [data-slot='dialog-content']:not([data-full-width]),
   [data-slot='alert-dialog-content'] {
     max-width: 36rem !important;
   }

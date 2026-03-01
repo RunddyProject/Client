@@ -85,8 +85,9 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {courses.length > 0 ? (
+          <>
           <div
-            className='relative w-full pb-[calc(env(safe-area-inset-bottom)+80px)]'
+            className='relative w-full'
             style={{ height: totalSize }}
           >
             {visibleItems.map((virtualItem) => {
@@ -113,6 +114,8 @@ const CourseList = ({ onViewModeChange }: CourseListProps) => {
               );
             })}
           </div>
+          <div className='h-[calc(env(safe-area-inset-bottom)+80px)]' />
+          </>
         ) : (
           <div className='flex flex-col items-center space-y-4 pt-[150px]'>
             <Icon name='empty_graphic' size={100} />
