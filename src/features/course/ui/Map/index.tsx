@@ -12,16 +12,16 @@
  * Usage:
  * ```tsx
  * // Recommended: Named import
- * import { CourseMap } from '@/features/course/ui/Map';
+ * import { CourseMap } from '@/features/course-v1/ui/Map';
  *
  * // Also works: Default import (for backward compatibility)
- * import CourseMap from '@/features/course/ui/Map';
+ * import CourseMap from '@/features/course-v1/ui/Map';
  *
  * // Access individual components if needed
- * import { CourseMapContainer, CourseMapView } from '@/features/course/ui/Map';
+ * import { CourseMapContainer, CourseMapView } from '@/features/course-v1/ui/Map';
  *
  * // Access hooks directly
- * import { useCourseMapContainer, useMapScrollSync } from '@/features/course/ui/Map/hooks';
+ * import { useCourseMapContainer, useMapScrollSync } from '@/features/course-v1/ui/Map/hooks';
  * ```
  */
 

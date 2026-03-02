@@ -1,6 +1,9 @@
 import { useMemo } from 'react';
 
-import type { PolylineCoordinatesOptions, PolylineCoordinates } from '@/features/course/model/refactor-types';
+import type {
+  PolylineCoordinatesOptions,
+  PolylineCoordinates
+} from '@/features/course/model/refactor-types';
 
 /**
  * Polyline coordinate array memoization hook

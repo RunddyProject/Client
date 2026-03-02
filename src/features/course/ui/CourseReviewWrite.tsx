@@ -125,63 +125,63 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
           fullWidth
           className='bg-w-100 z-[500] flex flex-col rounded-none p-0'
         >
-            <DialogHeader>
-              <DialogClose className='justify-self-start rounded'>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='h-8 w-8'
-                  onClick={() => setOpen(false)}
-                >
-                  <Icon name='chevron_left' size={24} />
-                </Button>
-              </DialogClose>
-              <DialogTitle className='col-start-2'>
-                {hasMyReview ? '리뷰 수정하기' : '리뷰 남기기'}
-              </DialogTitle>
-            </DialogHeader>
-
-            <div className='flex-1 overflow-y-auto px-5 pt-1 pb-6'>
-              {categories.map((category) => (
-                <div key={category.categoryCode} className='py-5 first:pt-0'>
-                  <div className='text-contents-b16 mb-4'>{category.label}</div>
-                  <ToggleGroup
-                    type='multiple'
-                    value={category.keywords
-                      .filter((k) => k.isSelected)
-                      .map((k) => String(k.keywordId))}
-                    onValueChange={(newValues) =>
-                      handleToggleChange(category.categoryCode, newValues)
-                    }
-                    className='flex flex-wrap gap-x-2.5 gap-y-3'
-                  >
-                    {category.keywords.map((keyword) => (
-                      <ToggleGroupItem
-                        key={keyword.keywordId}
-                        value={String(keyword.keywordId)}
-                        className='bg-g-10 data-[state=on]:bg-g-90 data-[state=on]:text-w-100 text-contents-m15 flex items-center gap-2 rounded-full px-3 py-2'
-                      >
-                        <span>{keyword.emoji}</span>
-                        <span> {keyword.label}</span>
-                      </ToggleGroupItem>
-                    ))}
-                  </ToggleGroup>
-                </div>
-              ))}
-            </div>
-
-            <div className='bg-w-100 fixed right-0 bottom-0 left-0 mx-auto max-w-xl p-5'>
+          <DialogHeader>
+            <DialogClose className='justify-self-start rounded'>
               <Button
-                size='lg'
-                className='w-full'
-                onClick={handleSave}
-                disabled={categories.every((cat) =>
-                  cat.keywords.every((kw) => !kw.isSelected)
-                )}
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8'
+                onClick={() => setOpen(false)}
               >
-                저장
+                <Icon name='chevron_left' size={24} />
               </Button>
-            </div>
+            </DialogClose>
+            <DialogTitle className='col-start-2'>
+              {hasMyReview ? '리뷰 수정하기' : '리뷰 남기기'}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className='flex-1 overflow-y-auto px-5 pt-1 pb-6'>
+            {categories.map((category) => (
+              <div key={category.categoryCode} className='py-5 first:pt-0'>
+                <div className='text-contents-b16 mb-4'>{category.label}</div>
+                <ToggleGroup
+                  type='multiple'
+                  value={category.keywords
+                    .filter((k) => k.isSelected)
+                    .map((k) => String(k.keywordId))}
+                  onValueChange={(newValues) =>
+                    handleToggleChange(category.categoryCode, newValues)
+                  }
+                  className='flex flex-wrap gap-x-2.5 gap-y-3'
+                >
+                  {category.keywords.map((keyword) => (
+                    <ToggleGroupItem
+                      key={keyword.keywordId}
+                      value={String(keyword.keywordId)}
+                      className='bg-g-10 data-[state=on]:bg-g-90 data-[state=on]:text-w-100 text-contents-m15 flex items-center gap-2 rounded-full px-3 py-2'
+                    >
+                      <span>{keyword.emoji}</span>
+                      <span> {keyword.label}</span>
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+              </div>
+            ))}
+          </div>
+
+          <div className='bg-w-100 fixed right-0 bottom-0 left-0 mx-auto max-w-xl p-5'>
+            <Button
+              size='lg'
+              className='w-full'
+              onClick={handleSave}
+              disabled={categories.every((cat) =>
+                cat.keywords.every((kw) => !kw.isSelected)
+              )}
+            >
+              저장
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

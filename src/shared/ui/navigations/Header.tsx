@@ -25,7 +25,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 
 const menuTitles: Record<string, string> = {
   '/': '런디코스',
-  // '/course/my': '내 코스', // TODO: v1.0 오픈 시 활성화
+  '/course/my': '내 코스',
   '/me': '마이페이지'
 };
 
@@ -123,7 +123,7 @@ const Header = () => {
     <header
       className={cn(
         'top-0 z-[101] w-full pt-[env(safe-area-inset-top)]',
-        hasTabs || isCoursePage ? 'fixed left-0' : 'bg-w-100 sticky' // TODO: v1.0 오픈 시 isCoursePage 조건 제거
+        hasTabs ? 'fixed left-0' : 'bg-w-100 sticky'
       )}
     >
       <div className='mx-auto flex h-13 max-w-xl items-center justify-between pr-2 pl-4'>

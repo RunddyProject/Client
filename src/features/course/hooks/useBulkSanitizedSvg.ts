@@ -29,7 +29,16 @@ export function useBulkSanitizedSvg(courses: Course[]): Map<string, string> {
   return useMemo(() => {
     const map = new Map<string, string>();
 
-    const allowedTags = ['svg', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'g'];
+    const allowedTags = [
+      'svg',
+      'path',
+      'circle',
+      'rect',
+      'line',
+      'polyline',
+      'polygon',
+      'g'
+    ];
     const scriptPattern = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
     const eventPattern = /\s+on\w+\s*=/gi;
     const tagPattern = new RegExp(`<(${allowedTags.join('|')})([^>]*)>`, 'gi');

@@ -102,6 +102,13 @@ const CourseDetail = ({ isUserCourse = false }: CourseDetailProps) => {
             </div>
           )}
 
+          {course.isMarathon && (
+            <div className='flex items-center justify-between gap-1'>
+              <div className='text-contents-b16'>코스 분류</div>
+              <Chip>마라톤</Chip>
+            </div>
+          )}
+
           {course.envType && (
             <div className='flex items-center justify-between gap-1'>
               <div className='text-contents-b16'>러닝 장소</div>
