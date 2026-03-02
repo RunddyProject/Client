@@ -36,7 +36,7 @@ const Menu = ({ titles, circleButton }: MenuProps) => {
           className='text-line-ter'
         />
       </SheetTrigger>
-      <SheetContent className='bg-w-100 fixed z-[500] w-full'>
+      <SheetContent className='bg-w-100 fixed z-[500] w-full' showOverlay={false}>
         <SheetHeader className='flex h-13 items-center justify-between pr-2 pl-5'>
           <VisuallyHidden asChild>
             <SheetTitle>메뉴</SheetTitle>

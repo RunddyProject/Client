@@ -52,7 +52,7 @@ function AlertDialogContent({
       <AlertDialogPrimitive.Content
         data-slot='alert-dialog-content'
         className={cn(
-          'bg-w-100 fixed top-1/2 left-1/2 z-[600] flex w-[calc(100vw_-_5rem)] -translate-x-1/2 -translate-y-1/2 flex-col rounded-[20px] px-4 pt-6 pb-4 duration-200',
+          'bg-w-100 fixed top-1/2 left-1/2 z-[600] flex w-[calc(100vw_-_5rem)] min-[36rem]:w-[calc(36rem-5rem)] -translate-x-1/2 -translate-y-1/2 flex-col rounded-[20px] px-4 pt-6 pb-4 duration-200',
           className
         )}
         {...props}
