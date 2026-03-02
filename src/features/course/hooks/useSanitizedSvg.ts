@@ -26,7 +26,16 @@ export function useSanitizedSvg(
   options?: SvgSanitizationOptions
 ): string {
   const {
-    allowedTags = ['svg', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'g'],
+    allowedTags = [
+      'svg',
+      'path',
+      'circle',
+      'rect',
+      'line',
+      'polyline',
+      'polygon',
+      'g'
+    ],
     removeScripts = true,
     removeEventHandlers = true
   } = options ?? {};
@@ -37,7 +46,8 @@ export function useSanitizedSvg(
     // 1. Remove script tags
     let cleaned = svg;
     if (removeScripts) {
-      const scriptPattern = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
+      const scriptPattern =
+        /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
       cleaned = cleaned.replace(scriptPattern, '');
     }
 

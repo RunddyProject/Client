@@ -14,27 +14,10 @@
 import { CourseMapView } from './CourseMapView';
 import { useCourseMapContainer } from './hooks/useCourseMapContainer';
 
-import type { CourseMapProps } from '@/features/course/model/refactor-types';
-
-/**
- * CourseMapContainer - Main entry point for the Course Map feature
- *
- * Receives grouped data from the hook and spreads it into flat props
- * for the View component, ensuring React.memo optimization works.
- *
- * @param props - Component props
- * @param props.onViewModeChange - Callback when user switches to list view
- *
- * @example
- * ```tsx
- * <CourseMapContainer onViewModeChange={(mode) => setViewMode(mode)} />
- * ```
- */
-export function CourseMapContainer({ onViewModeChange }: CourseMapProps) {
+export function CourseMapContainer() {
   // Get grouped data from the facade hook
-  const { data, status, mapConfig, refs, handlers } = useCourseMapContainer({
-    onViewModeChange
-  });
+  const { data, status, mapConfig, refs, handlers } =
+    useCourseMapContainer();
 
   // Spread groups into flat props for React.memo optimization
   return (

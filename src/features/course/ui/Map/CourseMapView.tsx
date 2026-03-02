@@ -22,6 +22,7 @@ import { memo } from 'react';
 
 import CourseFilter from '@/features/course/ui/Filter';
 import CourseInfoCard from '@/features/course/ui/InfoCard';
+import { RegisterCourseFAB } from '@/features/course/ui/RegisterCourseFAB';
 import Search from '@/features/course/ui/Search';
 import { NaverMap } from '@/features/map/ui/NaverMap';
 import { Icon } from '@/shared/icons/icon';
@@ -141,19 +142,8 @@ export const CourseMapView = memo(function CourseMapView({
                   </Button>
                 </div>
 
-                {/* List View Button */}
-                <Button
-                  className='shadow-runddy bg-w-100 pointer-events-auto gap-1 rounded-full px-3'
-                  onClick={() => handlers.onViewModeChange('list')}
-                >
-                  <Icon
-                    name='list'
-                    size={20}
-                    color='currentColor'
-                    className='text-g-60'
-                  />
-                  <span className='text-sec text-contents-r-14'>목록 보기</span>
-                </Button>
+                {/* Register Course FAB */}
+                <RegisterCourseFAB />
               </div>
             </div>
 

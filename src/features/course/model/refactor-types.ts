@@ -5,7 +5,6 @@
  * TypeScript Interface와 Hook Signature를 정의합니다.
  */
 
-
 import type { Course, CoursePoint } from '@/features/course/model/types';
 import type { MarkerInput } from '@/features/map/model/types';
 import type { RUNDDY_COLOR } from '@/shared/model/types';
@@ -19,7 +18,7 @@ import type { RefObject } from 'react';
  * CourseMap 컴포넌트의 Props
  */
 export interface CourseMapProps {
-  onViewModeChange: (mode: 'map' | 'list') => void;
+  onViewModeChange?: (mode: 'map' | 'list') => void;
 }
 
 /**
@@ -99,7 +98,6 @@ export interface CourseMapHandlers {
   onScrollChange: (uuid: string) => void;
   onSearchHere: () => void;
   onSearchByCurrentLocation: () => Promise<void>;
-  onViewModeChange: (mode: 'map' | 'list') => void;
 }
 
 /**

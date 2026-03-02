@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router';
 
 import { useCourseCount } from '@/features/course/hooks/useCourseCount';
 import { useCourses } from '@/features/course/hooks/useCourses';
+import { isMarathonCategory } from '@/features/course/model/category';
 import {
   grades,
   envTypeNames,
@@ -47,7 +48,7 @@ interface FilterState {
   elevationRange: Tuple2;
 }
 
-const DEFAULTS: FilterState = {
+const RUNDDY_DEFAULTS: FilterState = {
   grade: [],
   envType: [],
   shapeType: [],
@@ -55,11 +56,23 @@ const DEFAULTS: FilterState = {
   elevationRange: [0, 1000]
 };
 
+const MARATHON_DEFAULTS: FilterState = {
+  grade: [],
+  envType: [],
+  shapeType: [],
+  distanceRange: [0, 40],
+  elevationRange: [0, 400]
+};
+
 const FilterChipsBar = ({
   applied,
+  defaults,
+  isMarathon,
   onRemove
 }: {
   applied: FilterState;
+  defaults: FilterState;
+  isMarathon: boolean;
   onRemove: (field: keyof FilterState, value?: string) => void;
 }) => {
   const isSameRange = (a: [number, number], b: [number, number]) =>
@@ -84,34 +97,37 @@ const FilterChipsBar = ({
 
   return (
     <div className='flex items-center gap-2'>
-      {applied.grade.map((g) => (
-        <Chip key={`grade-${g}`} onClick={() => onRemove('grade', g)}>
-          {GRADE_TO_NAME[Number(g) as GradeType]}
-        </Chip>
-      ))}
+      {!isMarathon &&
+        applied.grade.map((g) => (
+          <Chip key={`grade-${g}`} onClick={() => onRemove('grade', g)}>
+            {GRADE_TO_NAME[Number(g) as GradeType]}
+          </Chip>
+        ))}
 
-      {applied.envType.map((env) => (
-        <Chip key={`env-${env}`} onClick={() => onRemove('envType', env)}>
-          {env}
-        </Chip>
-      ))}
+      {!isMarathon &&
+        applied.envType.map((env) => (
+          <Chip key={`env-${env}`} onClick={() => onRemove('envType', env)}>
+            {env}
+          </Chip>
+        ))}
 
-      {applied.shapeType.map((shape) => (
-        <Chip
-          key={`shape-${shape}`}
-          onClick={() => onRemove('shapeType', shape)}
-        >
-          {shape}
-        </Chip>
-      ))}
+      {!isMarathon &&
+        applied.shapeType.map((shape) => (
+          <Chip
+            key={`shape-${shape}`}
+            onClick={() => onRemove('shapeType', shape)}
+          >
+            {shape}
+          </Chip>
+        ))}
 
-      {!isSameRange(applied.distanceRange, DEFAULTS.distanceRange) && (
+      {!isSameRange(applied.distanceRange, defaults.distanceRange) && (
         <Chip onClick={() => onRemove('distanceRange')}>
           {applied.distanceRange[0]}–{applied.distanceRange[1]}km
         </Chip>
       )}
 
-      {!isSameRange(applied.elevationRange, DEFAULTS.elevationRange) && (
+      {!isSameRange(applied.elevationRange, defaults.elevationRange) && (
         <Chip onClick={() => onRemove('elevationRange')}>
           {applied.elevationRange[0]}–{applied.elevationRange[1]}m
         </Chip>
@@ -129,6 +145,10 @@ const CourseFilter = memo(function CourseFilter({
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const { lastSearchedCenter, lastSearchedRadius } = useLocationStore();
+
+  const isMarathon = isMarathonCategory(params.get('category') ?? undefined);
+  const DEFAULTS = isMarathon ? MARATHON_DEFAULTS : RUNDDY_DEFAULTS;
+  const elevationMax = isMarathon ? 400 : 1000;
 
   const applied: FilterState = useMemo(
     () => ({
@@ -158,10 +178,10 @@ const CourseFilter = memo(function CourseFilter({
       ],
       elevationRange: [
         Number(params.get('minEle') ?? 0),
-        Number(params.get('maxEle') ?? 1000)
+        Number(params.get('maxEle') ?? elevationMax)
       ]
     }),
-    [params]
+    [params, elevationMax]
   );
 
   const [draft, setDraft] = useState<FilterState>(applied);
@@ -193,9 +213,10 @@ const CourseFilter = memo(function CourseFilter({
         : undefined,
       maxEle: !deepEqual(draft.elevationRange, DEFAULTS.elevationRange)
         ? draft.elevationRange[1] * 1000
-        : undefined
+        : undefined,
+      isMarathon
     }),
-    [draft]
+    [draft, DEFAULTS, isMarathon]
   );
 
   const { courses } = useCourses({
@@ -203,7 +224,6 @@ const CourseFilter = memo(function CourseFilter({
     radius: lastSearchedRadius
   });
 
-  // ✅ Performance optimization: Only fetch count when dialog is open AND draft differs from applied
   const isFilterChanged = !deepEqual(draft, applied);
   const { count } = useCourseCount(payload, open && isFilterChanged);
 
@@ -233,20 +253,23 @@ const CourseFilter = memo(function CourseFilter({
   };
 
   const handleApply = () => {
-    const queryParams: Record<string, any> = {
+    const queryParams: Record<
+      string,
+      string | number | (string | number)[] | undefined
+    > = {
       ...Object.fromEntries(params.entries())
     };
 
-    if (draft.grade.length > 0) queryParams.grade = draft.grade;
+    if (!isMarathon && draft.grade.length > 0) queryParams.grade = draft.grade;
     else delete queryParams.grade;
 
-    if (draft.envType.length > 0)
+    if (!isMarathon && draft.envType.length > 0)
       queryParams.envType = draft.envType.map(
         (k) => ENV_NAME_TO_TYPE[k as keyof typeof ENV_NAME_TO_TYPE] ?? k
       );
     else delete queryParams.envType;
 
-    if (draft.shapeType.length > 0)
+    if (!isMarathon && draft.shapeType.length > 0)
       queryParams.shapeType = draft.shapeType.map(
         (k) => SHAPE_NAME_TO_TYPE[k as keyof typeof SHAPE_NAME_TO_TYPE] ?? k
       );
@@ -298,6 +321,14 @@ const CourseFilter = memo(function CourseFilter({
     navigate({ search: next.toString() });
   };
 
+  const isDistanceFullRange = (range: Tuple2) =>
+    range[0] === DEFAULTS.distanceRange[0] &&
+    range[1] === DEFAULTS.distanceRange[1];
+
+  const isElevationFullRange = (range: Tuple2) =>
+    range[0] === DEFAULTS.elevationRange[0] &&
+    range[1] === DEFAULTS.elevationRange[1];
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <div className='flex items-center gap-2'>
@@ -334,24 +365,28 @@ const CourseFilter = memo(function CourseFilter({
         </DialogTrigger>
 
         {!open && !deepEqual(applied, DEFAULTS) && (
-          <FilterChipsBar applied={applied} onRemove={handleRemove} />
+          <FilterChipsBar
+            applied={applied}
+            defaults={DEFAULTS}
+            isMarathon={isMarathon}
+            onRemove={handleRemove}
+          />
         )}
       </div>
 
-      <DialogContent
-        fullWidth
-        className='bg-w-100 z-[410] flex flex-col'
-      >
-          <DialogHeader>
-            <DialogTitle>상세 필터</DialogTitle>
-            <DialogClose className='col-start-3 justify-self-end rounded p-3'>
-              <Button variant='ghost' size='icon' className='rounded p-3'>
-                <Icon name='close' size={24} />
-              </Button>
-            </DialogClose>
-          </DialogHeader>
+      <DialogContent fullWidth className='bg-w-100 z-[410] flex flex-col'>
+        <DialogHeader>
+          <DialogTitle>상세 필터</DialogTitle>
+          <DialogClose className='col-start-3 justify-self-end rounded p-3'>
+            <Button variant='ghost' size='icon' className='rounded p-3'>
+              <Icon name='close' size={24} />
+            </Button>
+          </DialogClose>
+        </DialogHeader>
 
-          <div className='flex-1 overflow-x-clip overflow-y-auto'>
+        <div className='flex-1 overflow-x-clip overflow-y-auto'>
+          {/* Grade - hidden for marathon */}
+          {!isMarathon && (
             <div className='p-5'>
               <div className='text-contents-b16 mb-5'>난이도</div>
               <ToggleGroup
@@ -370,7 +405,10 @@ const CourseFilter = memo(function CourseFilter({
                 ))}
               </ToggleGroup>
             </div>
+          )}
 
+          {/* Running Place - hidden for marathon */}
+          {!isMarathon && (
             <div className='p-5'>
               <div className='text-contents-b16 mb-5'>러닝 장소</div>
               <ToggleGroup
@@ -390,7 +428,10 @@ const CourseFilter = memo(function CourseFilter({
                 ))}
               </ToggleGroup>
             </div>
+          )}
 
+          {/* Course Shape - hidden for marathon */}
+          {!isMarathon && (
             <div className='p-5'>
               <div className='mb-5 flex items-center gap-1'>
                 <div className='text-contents-b16'>코스 모양</div>
@@ -420,61 +461,74 @@ const CourseFilter = memo(function CourseFilter({
                     onClick={() => handleToggle('shapeType', shape)}
                     className='rounded-full'
                   >
-                    {shape}코스
+                    {shape}
                   </ToggleGroupItem>
                 ))}
               </ToggleGroup>
             </div>
+          )}
 
-            <div className='p-5'>
-              <div className='text-contents-b16 mb-5'>코스 길이</div>
-              <Slider
-                value={draft.distanceRange}
-                onValueChange={setDistanceRange}
-                min={0}
-                max={40}
-                step={1}
-              />
-              <div className='text-ter text-contents-r14 flex justify-between pt-2'>
-                <span>0km</span>
-                <span>20km</span>
-                <span>40km 이상</span>
-              </div>
+          {/* Course Distance */}
+          <div className='p-5'>
+            <div className='mb-5 flex items-center justify-between'>
+              <div className='text-contents-b16'>코스 길이</div>
+              {isDistanceFullRange(draft.distanceRange) && (
+                <span className='text-ter text-contents-r14'>전체</span>
+              )}
             </div>
-
-            <div className='p-5'>
-              <div className='text-contents-b16 mb-5'>코스 경사</div>
-              <Slider
-                value={draft.elevationRange}
-                onValueChange={setElevationRange}
-                min={0}
-                max={1000}
-                step={10}
-              />
-              <div className='text-ter text-contents-r14 flex justify-between pt-2'>
-                <span>0m</span>
-                <span>500m</span>
-                <span>1000m 이상</span>
-              </div>
+            <Slider
+              value={draft.distanceRange}
+              onValueChange={setDistanceRange}
+              min={0}
+              max={40}
+              step={1}
+            />
+            <div className='text-ter text-contents-r14 flex justify-between pt-2'>
+              <span>0km</span>
+              <span>20km</span>
+              <span>40km 이상</span>
             </div>
           </div>
 
-          <DialogFooter className='flex w-full gap-3 p-5'>
-            <Button
-              variant='secondary'
-              size='lg'
-              className='flex-1'
-              onClick={() => setDraft(DEFAULTS)}
-            >
-              초기화
+          {/* Course Elevation */}
+          <div className='p-5'>
+            <div className='mb-5 flex items-center justify-between'>
+              <div className='text-contents-b16'>코스 고도</div>
+              {isElevationFullRange(draft.elevationRange) && (
+                <span className='text-ter text-contents-r14'>전체</span>
+              )}
+            </div>
+            <Slider
+              value={draft.elevationRange}
+              onValueChange={setElevationRange}
+              min={0}
+              max={elevationMax}
+              step={10}
+            />
+            <div className='text-ter text-contents-r14 flex justify-between pt-2'>
+              <span>0m</span>
+              <span>{elevationMax / 2}m</span>
+              <span>{elevationMax}m 이상</span>
+            </div>
+          </div>
+        </div>
+
+        <DialogFooter className='flex w-full gap-3 p-5'>
+          <Button
+            variant='secondary'
+            size='lg'
+            className='flex-1'
+            onClick={() => setDraft(DEFAULTS)}
+          >
+            초기화
+          </Button>
+          <DialogClose asChild className='flex-2'>
+            <Button type='button' size='lg' onClick={handleApply}>
+              {displayCount}개의 코스 보기
             </Button>
-            <DialogClose asChild className='flex-2'>
-              <Button type='button' size='lg' onClick={handleApply}>
-                {displayCount}개의 코스 보기
-              </Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   );
 });

@@ -26,7 +26,7 @@ const Menu = ({ titles, circleButton }: MenuProps) => {
         className={cn(
           'mx-1.5 p-3',
           circleButton &&
-            'shadow-runddy flex h-[42px] w-[42px] items-center justify-center rounded-full bg-transparent p-0' // TODO: v1.0 오픈 시 bg-w-100으로 변경
+            'shadow-runddy bg-w-100 flex h-[42px] w-[42px] items-center justify-center rounded-full p-0'
         )}
       >
         <Icon
@@ -36,7 +36,10 @@ const Menu = ({ titles, circleButton }: MenuProps) => {
           className='text-line-ter'
         />
       </SheetTrigger>
-      <SheetContent className='bg-w-100 fixed z-[500] w-full' showOverlay={false}>
+      <SheetContent
+        className='bg-w-100 fixed z-[500] w-full'
+        showOverlay={false}
+      >
         <SheetHeader className='flex h-13 items-center justify-between pr-2 pl-5'>
           <VisuallyHidden asChild>
             <SheetTitle>메뉴</SheetTitle>

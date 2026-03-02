@@ -4,7 +4,7 @@ import {
   CATEGORY_LABELS,
   CourseCategory,
   type CourseCategoryType
-} from '@/features/course-v1/model/category';
+} from '@/features/course/model/category';
 import { Icon } from '@/shared/icons/icon';
 import { cn } from '@/shared/lib/utils';
 import {
