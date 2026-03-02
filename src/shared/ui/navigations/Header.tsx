@@ -60,7 +60,10 @@ const DevTokenDialog = () => {
           <Key className='h-4 w-4' />
         </Button>
       </DialogTrigger>
-      <DialogContent className='bg-w-100 z-[410]'>
+      <DialogContent
+        className='bg-w-100 z-[410]'
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>개발용 AccessToken 설정</DialogTitle>
         </DialogHeader>
