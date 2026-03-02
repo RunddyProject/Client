@@ -56,7 +56,7 @@ function CourseInfoMap() {
   const zoom = hasSavedState ? courseDetailMapState.zoom : undefined;
 
   return (
-    <div className='relative h-[100dvh]'>
+    <div className='relative h-[calc(100dvh-env(safe-area-inset-top)-3.25rem)]'>
       <NaverMap
         key={`course-info-map-${course.uuid}`}
         center={center}

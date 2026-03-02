@@ -90,7 +90,7 @@ export const CourseMapView = memo(function CourseMapView({
 
       {/* Search Here Button */}
       {showSearchButton && (
-        <div className='fixed top-[178px] left-1/2 z-50 -translate-x-1/2 transform'>
+        <div className='fixed top-[calc(env(safe-area-inset-top)+178px)] left-1/2 z-50 -translate-x-1/2 transform'>
           <Button
             className='shadow-runddy gap-1.5 rounded-full px-3 py-2'
             onClick={handlers.onSearchHere}
