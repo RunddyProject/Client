@@ -21,7 +21,6 @@ import {
   DialogClose,
   DialogContent,
   DialogHeader,
-  DialogPortal,
   DialogTitle
 } from '@/shared/ui/primitives/dialog';
 import {
@@ -51,11 +50,10 @@ const CourseReviewMine = () => {
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogPortal>
-          <DialogContent
-            fullWidth
-            className='bg-w-100 fixed inset-0 top-1/2 left-1/2 z-[410] flex h-full w-full max-w-xl flex-col rounded-none p-0'
-          >
+        <DialogContent
+          fullWidth
+          className='bg-w-100 z-[410] flex flex-col rounded-none p-0'
+        >
             <DialogHeader>
               <DialogClose className='justify-self-start rounded'>
                 <Button
@@ -158,8 +156,7 @@ const CourseReviewMine = () => {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-          </DialogContent>
-        </DialogPortal>
+        </DialogContent>
       </Dialog>
     </div>
   );

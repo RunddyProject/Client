@@ -23,8 +23,6 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogOverlay,
-  DialogPortal,
   DialogTitle,
   DialogTrigger
 } from '@/shared/ui/primitives/dialog';
@@ -340,12 +338,10 @@ const CourseFilter = memo(function CourseFilter({
         )}
       </div>
 
-      <DialogPortal>
-        <DialogOverlay className='z-[400]' />
-        <DialogContent
-          fullWidth
-          className='bg-w-100 z-[410] mx-auto flex h-full max-w-xl flex-col'
-        >
+      <DialogContent
+        fullWidth
+        className='bg-w-100 z-[410] flex flex-col'
+      >
           <DialogHeader>
             <DialogTitle>상세 필터</DialogTitle>
             <DialogClose className='col-start-3 justify-self-end rounded p-3'>
@@ -479,7 +475,6 @@ const CourseFilter = memo(function CourseFilter({
             </DialogClose>
           </DialogFooter>
         </DialogContent>
-      </DialogPortal>
     </Dialog>
   );
 });

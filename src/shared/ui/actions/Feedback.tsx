@@ -9,7 +9,6 @@ import {
   DialogClose,
   DialogContent,
   DialogHeader,
-  DialogPortal,
   DialogTitle
 } from '@/shared/ui/primitives/dialog';
 import { Textarea } from '@/shared/ui/primitives/textarea';
@@ -70,11 +69,10 @@ const Feedback = ({ feedbackType }: FeedbackProps) => {
         />
       </div>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogPortal>
-          <DialogContent
-            fullWidth
-            className='bg-w-100 fixed inset-0 top-1/2 left-1/2 z-[500] flex h-full w-full max-w-xl flex-col rounded-none p-0'
-          >
+        <DialogContent
+          fullWidth
+          className='bg-w-100 z-[500] flex flex-col rounded-none p-0'
+        >
             <DialogHeader>
               <DialogClose className='justify-self-start rounded'>
                 <Button
@@ -125,8 +123,7 @@ const Feedback = ({ feedbackType }: FeedbackProps) => {
                 의견 보내기
               </Button>
             </div>
-          </DialogContent>
-        </DialogPortal>
+        </DialogContent>
       </Dialog>
     </div>
   );
