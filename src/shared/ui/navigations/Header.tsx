@@ -15,8 +15,6 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogOverlay,
-  DialogPortal,
   DialogTitle,
   DialogTrigger
 } from '@/shared/ui/primitives/dialog';
@@ -33,12 +31,72 @@ const menuTitles: Record<string, string> = {
 
 const normalizePath = (p: string) => p.replace(/\/+$/, '') || '/';
 
-const Header = () => {
+const DevTokenDialog = () => {
   const { refreshAuth } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
   const [devToken, setDevToken] = useState('');
   const [isDevDialogOpen, setIsDevDialogOpen] = useState(false);
+
+  const handleDevTokenSubmit = async () => {
+    if (!devToken.trim()) {
+      toast('오류: 토큰을 입력해주세요');
+      return;
+    }
+
+    try {
+      authService.setAccessTokenManually(devToken.trim());
+      await refreshAuth();
+      setIsDevDialogOpen(false);
+      setDevToken('');
+      toast('성공: 개발용 토큰이 설정되었습니다');
+    } catch {
+      toast('오류: 토큰 설정에 실패했습니다');
+    }
+  };
+
+  return (
+    <Dialog open={isDevDialogOpen} onOpenChange={setIsDevDialogOpen}>
+      <DialogTrigger asChild>
+        <Button variant='ghost' size='icon' className='h-12 w-12'>
+          <Key className='h-4 w-4' />
+        </Button>
+      </DialogTrigger>
+      <DialogContent
+        className='bg-w-100 z-[410]'
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
+        <DialogHeader>
+          <DialogTitle>개발용 AccessToken 설정</DialogTitle>
+        </DialogHeader>
+        <DialogDescription>
+          Swagger에서 받은 accessToken을 입력하세요
+        </DialogDescription>
+        <div className='space-y-4 py-4'>
+          <div className='space-y-2'>
+            <Label htmlFor='token'>AccessToken</Label>
+            <Input
+              id='token'
+              placeholder='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+              value={devToken}
+              onChange={(e) => setDevToken(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleDevTokenSubmit();
+                }
+              }}
+            />
+          </div>
+          <Button onClick={handleDevTokenSubmit} className='w-full'>
+            토큰 설정
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const Header = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const path = normalizePath(location.pathname);
   const isCoursePage = path === '/' || path === '/course';
@@ -58,73 +116,13 @@ const Header = () => {
     }
   };
 
-  const handleDevTokenSubmit = async () => {
-    if (!devToken.trim()) {
-      toast('오류: 토큰을 입력해주세요');
-      return;
-    }
-
-    try {
-      authService.setAccessTokenManually(devToken.trim());
-      await refreshAuth();
-      setIsDevDialogOpen(false);
-      setDevToken('');
-      toast('성공: 개발용 토큰이 설정되었습니다');
-    } catch {
-      toast('오류: 토큰 설정에 실패했습니다');
-    }
-  };
-
-  // Dev Token Button (only in development)
-  const DevTokenDialog = () => {
-    return (
-      <Dialog open={isDevDialogOpen} onOpenChange={setIsDevDialogOpen}>
-        <DialogTrigger asChild>
-          <Button variant='ghost' size='icon' className='h-12 w-12'>
-            <Key className='h-4 w-4' />
-          </Button>
-        </DialogTrigger>
-        <DialogPortal>
-          <DialogOverlay className='fixed inset-0 z-[10000]' />
-          <DialogContent className='bg-w-100 fixed top-1/2 left-1/2 z-[10001] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg p-6 shadow-xl'>
-            <DialogHeader>
-              <DialogTitle>개발용 AccessToken 설정</DialogTitle>
-              <DialogDescription>
-                Swagger에서 받은 accessToken을 입력하세요
-              </DialogDescription>
-            </DialogHeader>
-            <div className='space-y-4 py-4'>
-              <div className='space-y-2'>
-                <Label htmlFor='token'>AccessToken</Label>
-                <Input
-                  id='token'
-                  placeholder='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
-                  value={devToken}
-                  onChange={(e) => setDevToken(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleDevTokenSubmit();
-                    }
-                  }}
-                />
-              </div>
-              <Button onClick={handleDevTokenSubmit} className='w-full'>
-                토큰 설정
-              </Button>
-            </div>
-          </DialogContent>
-        </DialogPortal>
-      </Dialog>
-    );
-  };
-
   // Any page with view mode tabs (course discovery, my courses, etc.)
   const hasTabs = viewMode !== undefined && setViewMode;
 
   return config.showHeader ? (
     <header
       className={cn(
-        'top-0 z-[101] w-full',
+        'top-0 z-[100] w-full',
         hasTabs || isCoursePage ? 'fixed left-0' : 'bg-w-100 sticky' // TODO: v1.0 오픈 시 isCoursePage 조건 제거
       )}
     >

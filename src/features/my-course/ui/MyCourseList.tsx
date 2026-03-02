@@ -96,8 +96,10 @@ export function MyCourseList({ courses }: MyCourseListProps) {
         )}
       </div>
       {/* Register Course FAB */}
-      <div className='fixed right-5 bottom-[calc(env(safe-area-inset-bottom)+20px)] z-50'>
-        <RegisterCourseFAB />
+      <div className='pointer-events-none fixed inset-0 z-50 mx-auto max-w-xl'>
+        <div className='pointer-events-auto absolute right-5 bottom-[calc(env(safe-area-inset-bottom)+20px)]'>
+          <RegisterCourseFAB />
+        </div>
       </div>
     </div>
   );

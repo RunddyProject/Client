@@ -17,7 +17,7 @@ export function MyCourseMoreMenu({
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
         {/* Container constrained to max-w-xl */}
-        <div className='fixed inset-0 z-50 mx-auto flex max-w-xl items-end justify-center'>
+        <div className='fixed inset-0 z-[300] mx-auto flex max-w-xl items-end justify-center'>
           {/* Overlay */}
           <DialogPrimitive.Overlay className='data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 absolute inset-0 bg-black/50 duration-300' />
 
