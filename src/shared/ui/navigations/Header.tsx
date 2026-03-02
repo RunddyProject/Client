@@ -15,8 +15,6 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogOverlay,
-  DialogPortal,
   DialogTitle,
   DialogTrigger
 } from '@/shared/ui/primitives/dialog';
@@ -33,30 +31,10 @@ const menuTitles: Record<string, string> = {
 
 const normalizePath = (p: string) => p.replace(/\/+$/, '') || '/';
 
-const Header = () => {
+const DevTokenDialog = () => {
   const { refreshAuth } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
   const [devToken, setDevToken] = useState('');
   const [isDevDialogOpen, setIsDevDialogOpen] = useState(false);
-
-  const path = normalizePath(location.pathname);
-  const isCoursePage = path === '/' || path === '/course';
-  const homePages = ['/', '/me'];
-  const isHomeHeader =
-    (!isCoursePage && homePages.includes(path)) || isCoursePage;
-
-  const { config, viewMode, setViewMode } = useHeader();
-
-  const handleBack = () => {
-    const canGoBack = window.history.state && window.history.state.idx > 0;
-
-    if (canGoBack) {
-      navigate(-1);
-    } else {
-      navigate('/');
-    }
-  };
 
   const handleDevTokenSubmit = async () => {
     if (!devToken.trim()) {
@@ -75,47 +53,64 @@ const Header = () => {
     }
   };
 
-  // Dev Token Button (only in development)
-  const DevTokenDialog = () => {
-    return (
-      <Dialog open={isDevDialogOpen} onOpenChange={setIsDevDialogOpen}>
-        <DialogTrigger asChild>
-          <Button variant='ghost' size='icon' className='h-12 w-12'>
-            <Key className='h-4 w-4' />
+  return (
+    <Dialog open={isDevDialogOpen} onOpenChange={setIsDevDialogOpen}>
+      <DialogTrigger asChild>
+        <Button variant='ghost' size='icon' className='h-12 w-12'>
+          <Key className='h-4 w-4' />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className='bg-w-100 z-[410]'>
+        <DialogHeader>
+          <DialogTitle>개발용 AccessToken 설정</DialogTitle>
+        </DialogHeader>
+        <DialogDescription>
+          Swagger에서 받은 accessToken을 입력하세요
+        </DialogDescription>
+        <div className='space-y-4 py-4'>
+          <div className='space-y-2'>
+            <Label htmlFor='token'>AccessToken</Label>
+            <Input
+              id='token'
+              placeholder='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+              value={devToken}
+              onChange={(e) => setDevToken(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleDevTokenSubmit();
+                }
+              }}
+            />
+          </div>
+          <Button onClick={handleDevTokenSubmit} className='w-full'>
+            토큰 설정
           </Button>
-        </DialogTrigger>
-        <DialogPortal>
-          <DialogOverlay className='z-[400]' />
-          <DialogContent className='bg-w-100 fixed top-1/2 left-1/2 z-[410] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg p-6 shadow-xl'>
-            <DialogHeader>
-              <DialogTitle>개발용 AccessToken 설정</DialogTitle>
-              <DialogDescription>
-                Swagger에서 받은 accessToken을 입력하세요
-              </DialogDescription>
-            </DialogHeader>
-            <div className='space-y-4 py-4'>
-              <div className='space-y-2'>
-                <Label htmlFor='token'>AccessToken</Label>
-                <Input
-                  id='token'
-                  placeholder='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
-                  value={devToken}
-                  onChange={(e) => setDevToken(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleDevTokenSubmit();
-                    }
-                  }}
-                />
-              </div>
-              <Button onClick={handleDevTokenSubmit} className='w-full'>
-                토큰 설정
-              </Button>
-            </div>
-          </DialogContent>
-        </DialogPortal>
-      </Dialog>
-    );
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const Header = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const path = normalizePath(location.pathname);
+  const isCoursePage = path === '/' || path === '/course';
+  const homePages = ['/', '/me'];
+  const isHomeHeader =
+    (!isCoursePage && homePages.includes(path)) || isCoursePage;
+
+  const { config, viewMode, setViewMode } = useHeader();
+
+  const handleBack = () => {
+    const canGoBack = window.history.state && window.history.state.idx > 0;
+
+    if (canGoBack) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
   };
 
   // Any page with view mode tabs (course discovery, my courses, etc.)
