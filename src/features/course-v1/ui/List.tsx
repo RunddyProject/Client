@@ -61,7 +61,7 @@ const CourseList = () => {
   );
 
   return (
-    <div className='flex h-dvh flex-col overflow-hidden px-5 pt-[calc(env(safe-area-inset-top)+52px)]'>
+    <div className='fixed top-0 right-0 bottom-0 left-0 flex flex-col overflow-hidden px-5 pt-[calc(env(safe-area-inset-top)+52px)]'>
       {/* Search bar */}
       <div className='pointer-events-auto touch-none pt-3'>
         <Search className='bg-g-10' />
