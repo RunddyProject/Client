@@ -81,7 +81,7 @@ export class AuthService {
       this.writeToken(token);
       return token;
     } catch (error: any) {
-      if (error?.response?.status === 401) {
+      if (error?.status === 401) {
         console.warn('[Auth] getAccessToken 401 - session expired');
       } else {
         console.error('[Auth] Failed to get access token:', error);
@@ -113,7 +113,9 @@ export class AuthService {
 
   // Public getters
   getToken(): string | null {
-    return this.readToken();
+    const token = this.readToken();
+    if (!token || this.isTokenExpired(token)) return null;
+    return token;
   }
 
   getUserFromToken(): User | null {
@@ -139,7 +141,7 @@ export class AuthService {
       });
       return true;
     } catch (error: any) {
-      if (error?.response?.status === 401) {
+      if (error?.status === 401) {
         console.warn('[Auth] checkAuthOnServer 401');
         this.clearToken();
       } else {
@@ -169,7 +171,7 @@ export class AuthService {
         profileUrl: res?.profileUrl
       };
     } catch (error: any) {
-      if (error?.response?.status === 401) this.clearToken();
+      if (error?.status === 401) this.clearToken();
       return null;
     }
   }

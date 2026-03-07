@@ -2,6 +2,9 @@ import { authService } from '../../features/user/api/auth';
 
 type ResponseType = 'json' | 'text' | 'blob' | 'arrayBuffer';
 
+// 동시에 여러 요청이 401을 받을 때 토큰 갱신을 한 번만 호출하기 위한 lock
+let refreshTokenPromise: Promise<string | null> | null = null;
+
 interface ApiRequestOptions extends RequestInit {
   responseType?: ResponseType;
 }
@@ -25,7 +28,8 @@ export class ApiError extends Error {
 // Fetch wrapper that automatically adds JWT token to headers
 export async function apiRequest<T = unknown>(
   endpoint: string,
-  options: ApiRequestOptions = {}
+  options: ApiRequestOptions = {},
+  isRetry = false
 ): Promise<T> {
   const { headers = {}, responseType = 'json', ...restOptions } = options;
 
@@ -54,6 +58,25 @@ export async function apiRequest<T = unknown>(
   const response = await fetch(url, config);
 
   if (!response.ok) {
+    // 401이고 재시도가 아니고 토큰 갱신 엔드포인트 자체가 아닌 경우에만 갱신 시도
+    if (
+      response.status === 401 &&
+      !isRetry &&
+      !endpoint.includes('/auth/access-token')
+    ) {
+      if (!refreshTokenPromise) {
+        refreshTokenPromise = authService
+          .getAccessToken()
+          .finally(() => {
+            refreshTokenPromise = null;
+          });
+      }
+      const newToken = await refreshTokenPromise;
+      if (newToken) {
+        return apiRequest<T>(endpoint, options, true);
+      }
+    }
+
     const body = await response.text().catch(() => '');
     throw new ApiError(response.status, response.statusText, body);
   }
