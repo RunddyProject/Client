@@ -63,6 +63,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   useEffect(() => {
+    // LoginSuccess handles token exchange on the OAuth callback page.
+    // Skipping auto-init here prevents a race where both AuthProvider and
+    // LoginSuccess call getAccessToken() simultaneously, which can exhaust
+    // a single-use refresh token before the user lands on the app.
+    if (window.location.pathname === '/login/success') {
+      setIsLoading(false);
+      return;
+    }
     refreshAuth();
   }, []);
 

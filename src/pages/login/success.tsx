@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 
+import { useAuth } from '@/app/providers/AuthContext';
 import { authService } from '@/features/user/api/auth';
 
 const LoginSuccess = () => {
   const navigate = useNavigate();
+  const { refreshAuth } = useAuth();
 
   useEffect(() => {
     const handleLoginSuccess = async () => {
@@ -12,6 +14,8 @@ const LoginSuccess = () => {
         const token = await authService.getAccessToken();
 
         if (token) {
+          // Sync AuthContext so ProtectedRoute sees authenticated state before navigation
+          await refreshAuth();
           navigate('/', { replace: true });
         } else {
           navigate('/login', { replace: true });
@@ -23,7 +27,7 @@ const LoginSuccess = () => {
     };
 
     handleLoginSuccess();
-  }, [navigate]);
+  }, [navigate, refreshAuth]);
 
   return (
     <div className='flex min-h-screen items-center justify-center'>
