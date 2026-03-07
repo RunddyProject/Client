@@ -14,7 +14,7 @@ const LoginSuccess = () => {
         const token = await authService.getAccessToken();
 
         if (token) {
-          // 토큰 저장 후 AuthContext 상태를 갱신해야 ProtectedRoute가 인증된 상태를 인식함
+          // Sync AuthContext so ProtectedRoute sees authenticated state before navigation
           await refreshAuth();
           navigate('/', { replace: true });
         } else {

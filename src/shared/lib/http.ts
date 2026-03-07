@@ -2,7 +2,7 @@ import { authService } from '../../features/user/api/auth';
 
 type ResponseType = 'json' | 'text' | 'blob' | 'arrayBuffer';
 
-// 동시에 여러 요청이 401을 받을 때 토큰 갱신을 한 번만 호출하기 위한 lock
+// Ensures concurrent 401 responses trigger only one token refresh call
 let refreshTokenPromise: Promise<string | null> | null = null;
 
 interface ApiRequestOptions extends RequestInit {
@@ -58,18 +58,16 @@ export async function apiRequest<T = unknown>(
   const response = await fetch(url, config);
 
   if (!response.ok) {
-    // 401이고 재시도가 아니고 토큰 갱신 엔드포인트 자체가 아닌 경우에만 갱신 시도
+    // On 401, attempt one token refresh then retry — skip for the refresh endpoint itself
     if (
       response.status === 401 &&
       !isRetry &&
       !endpoint.includes('/auth/access-token')
     ) {
       if (!refreshTokenPromise) {
-        refreshTokenPromise = authService
-          .getAccessToken()
-          .finally(() => {
-            refreshTokenPromise = null;
-          });
+        refreshTokenPromise = authService.getAccessToken().finally(() => {
+          refreshTokenPromise = null;
+        });
       }
       const newToken = await refreshTokenPromise;
       if (newToken) {

@@ -63,8 +63,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   useEffect(() => {
-    // /login/success 페이지에서는 LoginSuccess 컴포넌트가 직접 토큰 발급을 처리.
-    // AuthProvider가 동시에 getAccessToken()을 호출하면 refresh token이 이중 소비되므로 스킵.
+    // LoginSuccess handles token exchange on the OAuth callback page.
+    // Skipping auto-init here prevents a race where both AuthProvider and
+    // LoginSuccess call getAccessToken() simultaneously, which can exhaust
+    // a single-use refresh token before the user lands on the app.
     if (window.location.pathname === '/login/success') {
       setIsLoading(false);
       return;
