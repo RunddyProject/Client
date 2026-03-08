@@ -29,6 +29,7 @@ export const CourseUploadApi = {
     formData.append('file', request.file);
     formData.append('courseName', request.courseName);
     formData.append('isMarathon', String(request.isMarathon));
+    formData.append('isShared', String(request.isShared));
     if (request.courseEnvType) {
       formData.append('courseEnvType', request.courseEnvType);
     }
@@ -39,6 +40,5 @@ export const CourseUploadApi = {
     formData.append('endAddress', request.endAddress);
 
     return api.postForm<CourseUploadResponse>('/course/user/upload', formData);
-  },
-
+  }
 };
