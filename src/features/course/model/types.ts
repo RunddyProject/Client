@@ -91,12 +91,14 @@ export interface CourseDetail
   extends Course,
     CoursePointResponse,
     LatLngBounds {
+  creatorName: string;
   startAddress: string;
   endAddress: string;
   elevationGain: number;
   elevationLoss: number;
   recommendCount: number;
   isMarathon: boolean;
+  isShared: boolean;
 }
 
 export interface CoursePointResponse {
