@@ -38,8 +38,9 @@ export function useCourses({
     }
   }, [keyword, setKeywordCenter]);
 
-  const category = params.get('category') ?? undefined;
+  const category = params.get('category') ?? '';
   const isMarathon = isMarathonCategory(category);
+  const courseType = category === 'user' ? 'USER' : 'OFFICIAL';
 
   const grades = params.getAll('grade').map(Number);
   const envTypes =
@@ -50,6 +51,7 @@ export function useCourses({
   const search: CourseSearchParams = {
     radius: radius ?? Number(params.get('radius')),
     grade: grades.length ? grades : undefined,
+    courseType,
     envType: envTypes,
     shapeType: shapeTypes,
     minDist: params.get('minDist') ? Number(params.get('minDist')) : undefined,
@@ -72,6 +74,7 @@ export function useCourses({
       userLocation?.lng,
       search.radius,
       search.grade,
+      search.courseType,
       search.shapeType,
       search.envType,
       search.minDist,

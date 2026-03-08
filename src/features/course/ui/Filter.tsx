@@ -3,7 +3,10 @@ import { useNavigate, useSearchParams } from 'react-router';
 
 import { useCourseCount } from '@/features/course/hooks/useCourseCount';
 import { useCourses } from '@/features/course/hooks/useCourses';
-import { isMarathonCategory } from '@/features/course/model/category';
+import {
+  isMarathonCategory,
+  type CourseCategoryType
+} from '@/features/course/model/category';
 import {
   grades,
   envTypeNames,
@@ -146,7 +149,10 @@ const CourseFilter = memo(function CourseFilter({
   const navigate = useNavigate();
   const { lastSearchedCenter, lastSearchedRadius } = useLocationStore();
 
-  const isMarathon = isMarathonCategory(params.get('category') ?? undefined);
+  const category = params.get('category') ?? '';
+  const isMarathon = isMarathonCategory(category);
+  const courseType = category === 'user' ? 'USER' : 'OFFICIAL';
+
   const DEFAULTS = isMarathon ? MARATHON_DEFAULTS : RUNDDY_DEFAULTS;
   const elevationMax = isMarathon ? 400 : 1000;
 
@@ -188,6 +194,7 @@ const CourseFilter = memo(function CourseFilter({
 
   const payload: CourseFilterPayload = useMemo(
     () => ({
+      courseType,
       envTypeList:
         draft.envType.length > 0
           ? draft.envType.map(
@@ -216,7 +223,7 @@ const CourseFilter = memo(function CourseFilter({
         : undefined,
       isMarathon
     }),
-    [draft, DEFAULTS, isMarathon]
+    [draft, DEFAULTS, isMarathon, courseType]
   );
 
   const { courses } = useCourses({
