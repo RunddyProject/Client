@@ -21,7 +21,7 @@ const LoginSuccess = () => {
           navigate('/login', { replace: true });
         }
       } catch (error) {
-        console.error('[LoginSuccess] 로그인 처리 실패:', error);
+        console.error('[LoginSuccess] Failed to process login:', error);
         navigate('/login', { replace: true });
       }
     };
