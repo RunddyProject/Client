@@ -4,7 +4,6 @@ import { useNavigate, useSearchParams } from 'react-router';
 import {
   CATEGORY_LABELS,
   DEFAULT_CATEGORY,
-  isMarathonCategory,
   type CourseCategoryType
 } from '@/features/course/model/category';
 import { CategoryDropdown } from '@/features/course/ui/CategoryDropdown';
@@ -123,14 +122,12 @@ const Search = memo(function Search({
                     className='bg-g-90 text-caption-m12 text-w-100 flex shrink-0 items-center gap-1 rounded-full px-2 py-1'
                   >
                     {CATEGORY_LABELS[currentCategory]}
-                    {isMarathonCategory(currentCategory) && (
-                      <Icon
-                        name='close'
-                        size={10}
-                        color='currentColor'
-                        className='text-g-20'
-                      />
-                    )}
+                    <Icon
+                      name='close'
+                      size={10}
+                      color='currentColor'
+                      className='text-g-20'
+                    />
                   </button>
                 ) : (
                   <div className='bg-g-90 text-caption-m12 text-w-100 flex shrink-0 items-center gap-1 rounded-full px-2 py-1'>

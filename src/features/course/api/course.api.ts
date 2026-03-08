@@ -25,6 +25,7 @@ export const CoursesApi = {
       lng,
       radius: params.radius ?? 10,
       grade: params.grade,
+      courseType: params.courseType,
       shapeType: params.shapeType,
       envType: params.envType,
       minDist: params.minDist ? params.minDist * 1000 : undefined,
@@ -32,7 +33,12 @@ export const CoursesApi = {
       minEle: params.minEle ? params.minEle * 1000 : undefined,
       maxEle: params.maxEle ? params.maxEle * 1000 : undefined,
       keyword: params.keyword,
-      isMarathon: params.isMarathon ? 'true' : 'false'
+      isMarathon:
+        params.courseType === 'OFFICIAL'
+          ? params.isMarathon
+            ? 'true'
+            : 'false'
+          : undefined
     });
 
     return api.get<CoursesResponse>(`/course?${query}`);

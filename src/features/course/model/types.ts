@@ -2,7 +2,7 @@ import type { LatLngBounds } from '@/features/map/model/types';
 
 export type UserLocation = { lat: number; lng: number };
 
-export type CourseType = 'OFFICIAL' | 'UNOFFICIAL';
+export type CourseType = 'OFFICIAL' | 'USER';
 export type GradeType = 1 | 2 | 3;
 export type EnvType =
   | 'PARK'
@@ -51,6 +51,7 @@ export interface CoursesResponse {
 export type CourseSearchParams = {
   radius?: number; // (km)
   grade?: number | number[];
+  courseType?: CourseType;
   envType?: EnvType | EnvType[];
   shapeType?: ShapeType | ShapeType[];
   minDist?: number; // (m)
@@ -58,7 +59,7 @@ export type CourseSearchParams = {
   minEle?: number; // (m)
   maxEle?: number; // (m)
   keyword?: string; // text query
-  isMarathon?: boolean;
+  isMarathon?: boolean | null;
 };
 
 export type CourseFilterPayload = {
@@ -66,6 +67,7 @@ export type CourseFilterPayload = {
   lng?: string;
   radius?: number; // (km)
   gradeList?: number[];
+  courseType?: CourseType;
   envTypeList?: EnvType[];
   shapeTypeList?: ShapeType[];
   minDist?: number;
@@ -91,12 +93,14 @@ export interface CourseDetail
   extends Course,
     CoursePointResponse,
     LatLngBounds {
+  creatorName: string;
   startAddress: string;
   endAddress: string;
   elevationGain: number;
   elevationLoss: number;
   recommendCount: number;
   isMarathon: boolean;
+  isShared: boolean;
 }
 
 export interface CoursePointResponse {

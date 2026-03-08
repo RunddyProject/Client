@@ -57,10 +57,10 @@ const CourseInfoCard = memo(function CourseInfoCard({
       )}
       onClick={onClick ?? handleClick}
     >
-      {courseImageUrl[course.shapeType] ? (
+      {course.svg ? (
         <div className='relative h-[60px] w-[60px]'>
           <img
-            src={courseImageUrl[course.shapeType]}
+            src={courseImageUrl[course.shapeType] || CourseLoopImageUrl}
             width='60'
             height='60'
             className='rounded-xl'

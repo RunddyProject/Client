@@ -7,6 +7,7 @@ import { SelectButton } from '@/shared/ui/composites/select-button';
 import { Button } from '@/shared/ui/primitives/button';
 import { Input } from '@/shared/ui/primitives/input';
 import { Label } from '@/shared/ui/primitives/label';
+import { Switch } from '@/shared/ui/primitives/switch';
 import {
   ToggleGroup,
   ToggleGroupItem
@@ -99,6 +100,10 @@ export function CourseUploadForm({
     } else if (value === 'no') {
       onFormDataChange({ ...formData, isMarathon: false });
     }
+  };
+
+  const handleIsSharedChange = (checked: boolean) => {
+    onFormDataChange({ ...formData, isShared: checked });
   };
 
   const handleEnvTypeChange = (value: string) => {
@@ -278,6 +283,19 @@ export function CourseUploadForm({
             </div>
           </>
         )}
+
+        <div className='mb-8 flex items-center justify-between'>
+          <div className='space-y-0.5'>
+            <Label className='text-contents-b15 text-pri'>코스 공개</Label>
+            <div className='text-contents-r14 text-ter'>
+              다른 사용자가 이 코스를 볼 수 있어요
+            </div>
+          </div>
+          <Switch
+            checked={formData.isShared}
+            onCheckedChange={handleIsSharedChange}
+          />
+        </div>
       </div>
 
       {/* Submit Button - Fixed at bottom */}

@@ -31,6 +31,7 @@ export interface StravaPreviewState {
 export interface CourseUploadFormData {
   name: string;
   isMarathon: boolean | null;
+  isShared: boolean;
   envType: CourseEnvType | null;
   shapeType: CourseShapeType | null;
 }
@@ -40,6 +41,7 @@ export interface CourseUploadRequest {
   file: File;
   courseName: string;
   isMarathon: boolean;
+  isShared: boolean;
   courseEnvType?: CourseEnvType;
   courseShapeType?: CourseShapeType;
   startAddress: string;

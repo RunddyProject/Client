@@ -30,6 +30,7 @@ interface UseCourseUploadReturn {
 const initialFormData: CourseUploadFormData = {
   name: '',
   isMarathon: null,
+  isShared: false,
   envType: null,
   shapeType: null
 };
@@ -120,6 +121,7 @@ export function useCourseUpload(
         file,
         courseName: formData.name.trim(),
         isMarathon: formData.isMarathon!,
+        isShared: formData.isShared ?? false,
         courseEnvType: formData.envType ?? undefined,
         courseShapeType: formData.shapeType ?? undefined,
         startAddress,

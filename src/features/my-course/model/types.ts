@@ -1,4 +1,8 @@
-import type { CoursePoint, EnvType, ShapeType } from '@/features/course/model/types';
+import type {
+  CoursePoint,
+  EnvType,
+  ShapeType
+} from '@/features/course/model/types';
 
 // ─── GET /course/user ────────────────────────────
 export interface UserCourse {
@@ -40,6 +44,7 @@ export interface UserCourseGpxResponse {
 export interface EditUserCourseRequest {
   courseName: string;
   isMarathon: boolean;
+  isShared: boolean;
   courseEnvType: string | null;
   courseShapeType: string | null;
   startAddress: string;

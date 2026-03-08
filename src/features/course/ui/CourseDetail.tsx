@@ -90,8 +90,8 @@ const CourseDetail = ({ isUserCourse = false }: CourseDetailProps) => {
         <div className='space-y-8'>
           {!isUserCourse && (
             <div className='flex items-center justify-between gap-1'>
-              <div className='text-contents-b16'>난이도</div>
-              <Chip>{GRADE_TO_NAME[course.grade]}</Chip>
+              <div className='text-contents-b16'>등록한 사람</div>
+              <Chip>{course.creatorName}</Chip>
             </div>
           )}
 
@@ -99,6 +99,20 @@ const CourseDetail = ({ isUserCourse = false }: CourseDetailProps) => {
             <div className='flex items-center justify-between gap-1'>
               <div className='text-contents-b16'>등록 날짜</div>
               <div>{formatKST(course.createdAt)}</div>
+            </div>
+          )}
+
+          {GRADE_TO_NAME[course.grade] && (
+            <div className='flex items-center justify-between gap-1'>
+              <div className='text-contents-b16'>난이도</div>
+              <Chip>{GRADE_TO_NAME[course.grade]}</Chip>
+            </div>
+          )}
+
+          {isUserCourse && (
+            <div className='flex items-center justify-between gap-1'>
+              <div className='text-contents-b16'>공개 범위</div>
+              <div>{course.isShared ? '전체' : '나만보기'}</div>
             </div>
           )}
 

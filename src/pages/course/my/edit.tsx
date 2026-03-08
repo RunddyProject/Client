@@ -17,6 +17,7 @@ import { SelectButton } from '@/shared/ui/composites/select-button';
 import { Button } from '@/shared/ui/primitives/button';
 import { Input } from '@/shared/ui/primitives/input';
 import { Label } from '@/shared/ui/primitives/label';
+import { Switch } from '@/shared/ui/primitives/switch';
 import {
   ToggleGroup,
   ToggleGroupItem
@@ -29,6 +30,7 @@ import type { RUNDDY_COLOR } from '@/shared/model/types';
 interface EditFormData {
   name: string;
   isMarathon: boolean;
+  isShared: boolean;
   envType: string | null;
   shapeType: string | null;
 }
@@ -52,6 +54,7 @@ function MyCourseEdit() {
       setFormData({
         name: course.name,
         isMarathon: course.isMarathon ?? false,
+        isShared: course.isShared ?? false,
         envType: course.envType ?? null,
         shapeType: course.shapeType ?? null
       });
@@ -100,6 +103,7 @@ function MyCourseEdit() {
     const payload: EditUserCourseRequest = {
       courseName: formData.name.trim(),
       isMarathon: formData.isMarathon,
+      isShared: formData.isShared,
       courseEnvType: formData.isMarathon ? null : formData.envType,
       courseShapeType: formData.isMarathon ? null : formData.shapeType,
       startAddress: course.startAddress,
@@ -141,6 +145,10 @@ function MyCourseEdit() {
     } else if (value === 'no') {
       setFormData({ ...formData, isMarathon: false });
     }
+  };
+
+  const handleIsSharedChange = (checked: boolean) => {
+    setFormData({ ...formData, isShared: checked });
   };
 
   const handleEnvTypeChange = (value: string) => {
@@ -278,6 +286,19 @@ function MyCourseEdit() {
             <span>{(course.totalDistance / 1000).toFixed(1)}</span>
             <span className='text-ter'>km</span>
           </div>
+        </div>
+
+        <div className='mb-8 flex items-center justify-between'>
+          <div className='space-y-0.5'>
+            <Label className='text-contents-b15 text-pri'>코스 공개</Label>
+            <div className='text-contents-r14 text-ter'>
+              다른 사용자가 이 코스를 볼 수 있어요
+            </div>
+          </div>
+          <Switch
+            checked={formData.isShared}
+            onCheckedChange={handleIsSharedChange}
+          />
         </div>
       </div>
 
