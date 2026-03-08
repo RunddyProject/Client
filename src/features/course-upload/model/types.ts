@@ -33,6 +33,7 @@ export interface CourseUploadFormData {
   isMarathon: boolean | null;
   envType: CourseEnvType | null;
   shapeType: CourseShapeType | null;
+  isShared: boolean;
 }
 
 // API Request for POST /course/user/upload (direct GPX)
@@ -44,6 +45,7 @@ export interface CourseUploadRequest {
   courseShapeType?: CourseShapeType;
   startAddress: string;
   endAddress: string;
+  isShared: boolean;
 }
 
 // API Response for POST /course/user/upload

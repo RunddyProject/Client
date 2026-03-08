@@ -37,6 +37,7 @@ export const CourseUploadApi = {
     }
     formData.append('startAddress', request.startAddress);
     formData.append('endAddress', request.endAddress);
+    formData.append('isShared', String(request.isShared));
 
     return api.postForm<CourseUploadResponse>('/course/user/upload', formData);
   },

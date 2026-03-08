@@ -31,7 +31,8 @@ const initialFormData: CourseUploadFormData = {
   name: '',
   isMarathon: null,
   envType: null,
-  shapeType: null
+  shapeType: null,
+  isShared: true
 };
 
 export function useCourseUpload(
@@ -123,7 +124,8 @@ export function useCourseUpload(
         courseEnvType: formData.envType ?? undefined,
         courseShapeType: formData.shapeType ?? undefined,
         startAddress,
-        endAddress
+        endAddress,
+        isShared: formData.isShared
       };
 
       return CourseUploadApi.uploadCourse(request);

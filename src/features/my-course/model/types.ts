@@ -44,4 +44,5 @@ export interface EditUserCourseRequest {
   courseShapeType: string | null;
   startAddress: string;
   endAddress: string;
+  isShared: boolean;
 }

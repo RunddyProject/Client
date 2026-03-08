@@ -17,6 +17,7 @@ import { SelectButton } from '@/shared/ui/composites/select-button';
 import { Button } from '@/shared/ui/primitives/button';
 import { Input } from '@/shared/ui/primitives/input';
 import { Label } from '@/shared/ui/primitives/label';
+import { Switch } from '@/shared/ui/primitives/switch';
 import {
   ToggleGroup,
   ToggleGroupItem
@@ -31,6 +32,7 @@ interface EditFormData {
   isMarathon: boolean;
   envType: string | null;
   shapeType: string | null;
+  isShared: boolean;
 }
 
 function MyCourseEdit() {
@@ -53,7 +55,8 @@ function MyCourseEdit() {
         name: course.name,
         isMarathon: course.isMarathon ?? false,
         envType: course.envType ?? null,
-        shapeType: course.shapeType ?? null
+        shapeType: course.shapeType ?? null,
+        isShared: course.isShared ?? true
       });
     }
   }, [course, formData]);
@@ -103,7 +106,8 @@ function MyCourseEdit() {
       courseEnvType: formData.isMarathon ? null : formData.envType,
       courseShapeType: formData.isMarathon ? null : formData.shapeType,
       startAddress: course.startAddress,
-      endAddress: course.endAddress
+      endAddress: course.endAddress,
+      isShared: formData.isShared
     };
 
     try {
@@ -153,6 +157,10 @@ function MyCourseEdit() {
     if (value) {
       setFormData({ ...formData, shapeType: value });
     }
+  };
+
+  const handleIsSharedChange = (checked: boolean) => {
+    setFormData({ ...formData, isShared: checked });
   };
 
   return (
@@ -278,6 +286,20 @@ function MyCourseEdit() {
             <span>{(course.totalDistance / 1000).toFixed(1)}</span>
             <span className='text-ter'>km</span>
           </div>
+        </div>
+
+        {/* Course Visibility */}
+        <div className='flex items-center justify-between'>
+          <div>
+            <p className='text-contents-b15 text-pri'>코스 공개</p>
+            <p className='text-contents-r13 text-ter mt-0.5'>
+              다른 사용자가 이 코스를 볼 수 있어요
+            </p>
+          </div>
+          <Switch
+            checked={formData.isShared}
+            onCheckedChange={handleIsSharedChange}
+          />
         </div>
       </div>
 

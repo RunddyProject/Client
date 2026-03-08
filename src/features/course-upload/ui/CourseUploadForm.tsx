@@ -7,6 +7,7 @@ import { SelectButton } from '@/shared/ui/composites/select-button';
 import { Button } from '@/shared/ui/primitives/button';
 import { Input } from '@/shared/ui/primitives/input';
 import { Label } from '@/shared/ui/primitives/label';
+import { Switch } from '@/shared/ui/primitives/switch';
 import {
   ToggleGroup,
   ToggleGroupItem
@@ -117,6 +118,10 @@ export function CourseUploadForm({
         shapeType: value as CourseUploadFormData['shapeType']
       });
     }
+  };
+
+  const handleIsSharedChange = (checked: boolean) => {
+    onFormDataChange({ ...formData, isShared: checked });
   };
 
   return (
@@ -275,6 +280,20 @@ export function CourseUploadForm({
                   color={runddyColor.blue}
                 />
               </div>
+            </div>
+
+            {/* Course Visibility */}
+            <div className='flex items-center justify-between'>
+              <div>
+                <p className='text-contents-b15 text-pri'>코스 공개</p>
+                <p className='text-contents-r13 text-ter mt-0.5'>
+                  다른 사용자가 이 코스를 볼 수 있어요
+                </p>
+              </div>
+              <Switch
+                checked={formData.isShared}
+                onCheckedChange={handleIsSharedChange}
+              />
             </div>
           </>
         )}
