@@ -120,17 +120,13 @@ export class AuthService {
 
   getUserFromToken(): User | null {
     const token = this.getToken();
-    if (!token || this.isTokenExpired(token)) return null;
+    if (!token) return null;
     return this.decodeToken(token);
   }
 
   private async checkAuthOnServer(): Promise<boolean> {
     const token = this.getToken();
-    if (!token || this.isTokenExpired(token) || !this.decodeToken(token)) {
-      if (token && this.isTokenExpired(token)) {
-        console.warn('[Auth] Token expired, clearing');
-        this.clearToken();
-      }
+    if (!token || !this.decodeToken(token)) {
       return false;
     }
 
@@ -179,12 +175,7 @@ export class AuthService {
   async isAuthenticated(opts?: { validate?: boolean }): Promise<boolean> {
     const { validate = false } = opts ?? {};
     const token = this.getToken();
-    if (!token || this.isTokenExpired(token) || !this.decodeToken(token)) {
-      if (token && this.isTokenExpired(token)) {
-        this.clearToken();
-      }
-      return false;
-    }
+    if (!token || !this.decodeToken(token)) return false;
     if (!validate) return true;
     return this.checkAuthOnServer();
   }
@@ -213,7 +204,7 @@ export class AuthService {
   async initialize(): Promise<boolean> {
     if (import.meta.env.DEV) {
       const t = this.getToken();
-      return !!(t && this.decodeToken(t) && !this.isTokenExpired(t));
+      return !!(t && this.decodeToken(t));
     }
     const existing = this.getToken();
     // Check if token exists, is valid, and not expired
