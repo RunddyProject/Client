@@ -3,10 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router';
 
 import { useCourseCount } from '@/features/course/hooks/useCourseCount';
 import { useCourses } from '@/features/course/hooks/useCourses';
-import {
-  isMarathonCategory,
-  type CourseCategoryType
-} from '@/features/course/model/category';
+import { isMarathonCategory } from '@/features/course/model/category';
 import {
   grades,
   envTypeNames,

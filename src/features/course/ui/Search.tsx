@@ -4,7 +4,6 @@ import { useNavigate, useSearchParams } from 'react-router';
 import {
   CATEGORY_LABELS,
   DEFAULT_CATEGORY,
-  isMarathonCategory,
   type CourseCategoryType
 } from '@/features/course/model/category';
 import { CategoryDropdown } from '@/features/course/ui/CategoryDropdown';
