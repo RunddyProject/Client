@@ -2,6 +2,9 @@ import { authService } from '../../features/user/api/auth';
 
 type ResponseType = 'json' | 'text' | 'blob' | 'arrayBuffer';
 
+// Ensures concurrent 401 responses trigger only one token refresh call
+let refreshTokenPromise: Promise<string | null> | null = null;
+
 interface ApiRequestOptions extends RequestInit {
   responseType?: ResponseType;
 }
@@ -25,7 +28,8 @@ export class ApiError extends Error {
 // Fetch wrapper that automatically adds JWT token to headers
 export async function apiRequest<T = unknown>(
   endpoint: string,
-  options: ApiRequestOptions = {}
+  options: ApiRequestOptions = {},
+  isRetry = false
 ): Promise<T> {
   const { headers = {}, responseType = 'json', ...restOptions } = options;
 
@@ -54,6 +58,23 @@ export async function apiRequest<T = unknown>(
   const response = await fetch(url, config);
 
   if (!response.ok) {
+    // On 401, attempt one token refresh then retry — skip for the refresh endpoint itself
+    if (
+      response.status === 401 &&
+      !isRetry &&
+      !endpoint.includes('/auth/access-token')
+    ) {
+      if (!refreshTokenPromise) {
+        refreshTokenPromise = authService.getAccessToken().finally(() => {
+          refreshTokenPromise = null;
+        });
+      }
+      const newToken = await refreshTokenPromise;
+      if (newToken) {
+        return apiRequest<T>(endpoint, options, true);
+      }
+    }
+
     const body = await response.text().catch(() => '');
     throw new ApiError(response.status, response.statusText, body);
   }

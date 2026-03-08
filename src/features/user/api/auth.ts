@@ -81,7 +81,7 @@ export class AuthService {
       this.writeToken(token);
       return token;
     } catch (error: any) {
-      if (error?.response?.status === 401) {
+      if (error?.status === 401) {
         console.warn('[Auth] getAccessToken 401 - session expired');
       } else {
         console.error('[Auth] Failed to get access token:', error);
@@ -113,22 +113,20 @@ export class AuthService {
 
   // Public getters
   getToken(): string | null {
-    return this.readToken();
+    const token = this.readToken();
+    if (!token || this.isTokenExpired(token)) return null;
+    return token;
   }
 
   getUserFromToken(): User | null {
     const token = this.getToken();
-    if (!token || this.isTokenExpired(token)) return null;
+    if (!token) return null;
     return this.decodeToken(token);
   }
 
   private async checkAuthOnServer(): Promise<boolean> {
     const token = this.getToken();
-    if (!token || this.isTokenExpired(token) || !this.decodeToken(token)) {
-      if (token && this.isTokenExpired(token)) {
-        console.warn('[Auth] Token expired, clearing');
-        this.clearToken();
-      }
+    if (!token || !this.decodeToken(token)) {
       return false;
     }
 
@@ -139,7 +137,7 @@ export class AuthService {
       });
       return true;
     } catch (error: any) {
-      if (error?.response?.status === 401) {
+      if (error?.status === 401) {
         console.warn('[Auth] checkAuthOnServer 401');
         this.clearToken();
       } else {
@@ -169,7 +167,7 @@ export class AuthService {
         profileUrl: res?.profileUrl
       };
     } catch (error: any) {
-      if (error?.response?.status === 401) this.clearToken();
+      if (error?.status === 401) this.clearToken();
       return null;
     }
   }
@@ -177,12 +175,7 @@ export class AuthService {
   async isAuthenticated(opts?: { validate?: boolean }): Promise<boolean> {
     const { validate = false } = opts ?? {};
     const token = this.getToken();
-    if (!token || this.isTokenExpired(token) || !this.decodeToken(token)) {
-      if (token && this.isTokenExpired(token)) {
-        this.clearToken();
-      }
-      return false;
-    }
+    if (!token || !this.decodeToken(token)) return false;
     if (!validate) return true;
     return this.checkAuthOnServer();
   }
@@ -211,7 +204,7 @@ export class AuthService {
   async initialize(): Promise<boolean> {
     if (import.meta.env.DEV) {
       const t = this.getToken();
-      return !!(t && this.decodeToken(t) && !this.isTokenExpired(t));
+      return !!(t && this.decodeToken(t));
     }
     const existing = this.getToken();
     // Check if token exists, is valid, and not expired
