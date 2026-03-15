@@ -93,7 +93,7 @@ describe('useStravaConnect', () => {
 
   it('ApiError 발생 시 body 메시지를 error 상태에 저장', async () => {
     mockGetConnectUrl.mockRejectedValue(
-      new ApiError(500, 'Internal Server Error', '서버 오류가 발생했습니다.')
+      new ApiError(500, 'Internal Server Error', '서버 오류가 발생했어요')
     );
 
     const { result } = renderHook(() => useStravaConnect());
@@ -102,7 +102,7 @@ describe('useStravaConnect', () => {
       await result.current.connect();
     });
 
-    expect(result.current.error).toBe('서버 오류가 발생했습니다.');
+    expect(result.current.error).toBe('서버 오류가 발생했어요');
     expect(result.current.isConnecting).toBe(false);
   });
 
@@ -128,7 +128,7 @@ describe('useStravaConnect', () => {
       await result.current.connect();
     });
 
-    expect(result.current.error).toBe('Strava 연결에 실패했습니다.');
+    expect(result.current.error).toBe('Strava 연결에 실패했어요');
     expect(result.current.isConnecting).toBe(false);
   });
 

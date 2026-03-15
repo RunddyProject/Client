@@ -19,7 +19,7 @@ export function useStravaConnect() {
       const message =
         err instanceof ApiError
           ? err.body || err.message
-          : 'Strava 연결에 실패했습니다.';
+          : 'Strava 연결에 실패했어요';
       setError(message);
       setIsConnecting(false);
     }

@@ -48,12 +48,18 @@ const mockGetStatus = vi.mocked(StravaApi.getStatus);
 const mockGetConnectUrl = vi.mocked(StravaApi.getConnectUrl);
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
-function renderSheet(overrides: { onSelectMethod?: (m: string, f?: File) => void } = {}) {
+function renderSheet(
+  overrides: { onSelectMethod?: (m: string, f?: File) => void } = {}
+) {
   const onOpenChange = vi.fn();
   const onSelectMethod = overrides.onSelectMethod ?? vi.fn();
 
   render(
-    <UploadMethodSheet open={true} onOpenChange={onOpenChange} onSelectMethod={onSelectMethod} />
+    <UploadMethodSheet
+      open={true}
+      onOpenChange={onOpenChange}
+      onSelectMethod={onSelectMethod}
+    />
   );
 
   return { onOpenChange, onSelectMethod };
@@ -84,8 +90,12 @@ describe('UploadMethodSheet', () => {
   it('open=true 시 바텀시트 렌더', () => {
     renderSheet();
 
-    expect(screen.getByText('GPX 업로드 방식을 선택해 주세요')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '직접 업로드하기' })).toBeInTheDocument();
+    expect(
+      screen.getByText('GPX 업로드 방식을 선택해 주세요')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: '직접 업로드하기' })
+    ).toBeInTheDocument();
     // sr-only description에도 "Strava"가 포함되므로 버튼 role로 한정
     expect(screen.getByRole('button', { name: /Strava/i })).toBeInTheDocument();
   });
@@ -94,12 +104,18 @@ describe('UploadMethodSheet', () => {
     const { onOpenChange } = (() => {
       const onOpenChange = vi.fn();
       render(
-        <UploadMethodSheet open={false} onOpenChange={onOpenChange} onSelectMethod={vi.fn()} />
+        <UploadMethodSheet
+          open={false}
+          onOpenChange={onOpenChange}
+          onSelectMethod={vi.fn()}
+        />
       );
       return { onOpenChange };
     })();
 
-    expect(screen.queryByText('GPX 업로드 방식을 선택해 주세요')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('GPX 업로드 방식을 선택해 주세요')
+    ).not.toBeInTheDocument();
     void onOpenChange;
   });
 
@@ -112,7 +128,9 @@ describe('UploadMethodSheet', () => {
     const file = new File(['<?xml version="1.0"?>'], 'route.gpx', {
       type: 'application/gpx+xml'
     });
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
 
     await user.upload(fileInput, file);
 
@@ -179,7 +197,7 @@ describe('UploadMethodSheet', () => {
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
-        'Strava 연결에 실패했습니다. 다시 시도해주세요.'
+        'Strava 연결에 실패했어요 다시 시도해주세요.'
       );
     });
   });
@@ -188,11 +206,11 @@ describe('UploadMethodSheet', () => {
   it('Strava 버튼 클릭 중 중복 호출 방지', async () => {
     const user = userEvent.setup();
     let resolveStatus!: (v: { connected: boolean }) => void;
-    mockGetStatus.mockReturnValue(
-      new Promise((r) => (resolveStatus = r))
-    );
+    mockGetStatus.mockReturnValue(new Promise((r) => (resolveStatus = r)));
     // getStatus 이후 connected:false → getConnectUrl 호출됨
-    mockGetConnectUrl.mockResolvedValue({ authUrl: 'https://strava.com/oauth' });
+    mockGetConnectUrl.mockResolvedValue({
+      authUrl: 'https://strava.com/oauth'
+    });
 
     renderSheet();
 

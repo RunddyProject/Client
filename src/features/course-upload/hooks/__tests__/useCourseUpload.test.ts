@@ -77,6 +77,7 @@ describe('useCourseUpload', () => {
       expect(result.current.formData).toEqual({
         name: '',
         isMarathon: null,
+        isShared: false,
         envType: null,
         shapeType: null
       });
@@ -92,7 +93,9 @@ describe('useCourseUpload', () => {
   // ── Strava 이름 자동 입력 ──────────────────────────────────────────────────
   describe('Strava 활동명 자동 입력', () => {
     it('stravaPreview.activityName으로 name 사전 입력', async () => {
-      const { result } = renderHook(() => useCourseUpload(null, mockStravaPreview));
+      const { result } = renderHook(() =>
+        useCourseUpload(null, mockStravaPreview)
+      );
 
       await waitFor(() => {
         expect(result.current.formData.name).toBe('한강 새벽 러닝');
@@ -100,10 +103,15 @@ describe('useCourseUpload', () => {
     });
 
     it('이미 name이 있으면 덮어쓰지 않음', async () => {
-      const { result } = renderHook(() => useCourseUpload(null, mockStravaPreview));
+      const { result } = renderHook(() =>
+        useCourseUpload(null, mockStravaPreview)
+      );
 
       act(() => {
-        result.current.setFormData((prev) => ({ ...prev, name: '내가 지은 이름' }));
+        result.current.setFormData((prev) => ({
+          ...prev,
+          name: '내가 지은 이름'
+        }));
       });
 
       await waitFor(() => {
@@ -128,7 +136,9 @@ describe('useCourseUpload', () => {
     });
 
     it('stravaPreview 제공 시 주소 조회', async () => {
-      const { result } = renderHook(() => useCourseUpload(null, mockStravaPreview));
+      const { result } = renderHook(() =>
+        useCourseUpload(null, mockStravaPreview)
+      );
 
       await waitFor(() => {
         expect(result.current.startAddress).not.toBe('');
@@ -166,7 +176,10 @@ describe('useCourseUpload', () => {
     });
 
     it('coursePointList 없으면 주소 조회 안 함', () => {
-      const noPoints: CoursePreviewData = { ...mockPreviewData, coursePointList: [] };
+      const noPoints: CoursePreviewData = {
+        ...mockPreviewData,
+        coursePointList: []
+      };
       renderHook(() => useCourseUpload(noPoints));
 
       expect(mockReverseGeocode).not.toHaveBeenCalled();
@@ -192,7 +205,9 @@ describe('useCourseUpload', () => {
 
     it('isMarathon=false이면 envType + shapeType 필수', async () => {
       const { result } = renderHook(() => useCourseUpload(mockPreviewData));
-      await waitFor(() => expect(result.current.isLoadingAddresses).toBe(false));
+      await waitFor(() =>
+        expect(result.current.isLoadingAddresses).toBe(false)
+      );
 
       await act(async () => {
         result.current.setFormData({
@@ -227,7 +242,9 @@ describe('useCourseUpload', () => {
 
     it('name이 공백만이면 invalid', async () => {
       const { result } = renderHook(() => useCourseUpload(mockPreviewData));
-      await waitFor(() => expect(result.current.isLoadingAddresses).toBe(false));
+      await waitFor(() =>
+        expect(result.current.isLoadingAddresses).toBe(false)
+      );
 
       await act(async () => {
         result.current.setFormData({
@@ -243,7 +260,9 @@ describe('useCourseUpload', () => {
 
     it('isMarathon=null이면 invalid', async () => {
       const { result } = renderHook(() => useCourseUpload(mockPreviewData));
-      await waitFor(() => expect(result.current.isLoadingAddresses).toBe(false));
+      await waitFor(() =>
+        expect(result.current.isLoadingAddresses).toBe(false)
+      );
 
       await act(async () => {
         result.current.setFormData({
@@ -266,7 +285,9 @@ describe('useCourseUpload', () => {
 
       const { result } = renderHook(() => useCourseUpload(mockPreviewData));
 
-      await waitFor(() => expect(result.current.isLoadingAddresses).toBe(false));
+      await waitFor(() =>
+        expect(result.current.isLoadingAddresses).toBe(false)
+      );
 
       act(() => {
         result.current.setFormData({
@@ -295,7 +316,9 @@ describe('useCourseUpload', () => {
 
       const { result } = renderHook(() => useCourseUpload(mockPreviewData));
 
-      await waitFor(() => expect(result.current.isLoadingAddresses).toBe(false));
+      await waitFor(() =>
+        expect(result.current.isLoadingAddresses).toBe(false)
+      );
 
       act(() => {
         result.current.setFormData({
@@ -325,7 +348,9 @@ describe('useCourseUpload', () => {
         useCourseUpload(null, mockStravaPreview)
       );
 
-      await waitFor(() => expect(result.current.isLoadingAddresses).toBe(false));
+      await waitFor(() =>
+        expect(result.current.isLoadingAddresses).toBe(false)
+      );
 
       act(() => {
         result.current.setFormData({

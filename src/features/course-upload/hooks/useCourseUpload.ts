@@ -114,7 +114,7 @@ export function useCourseUpload(
     mutationFn: async (): Promise<CourseUploadResponse> => {
       const file = previewData?.file ?? stravaPreview?.file;
       if (!file) {
-        throw new Error('GPX 파일을 찾을 수 없습니다.');
+        throw new Error('GPX 파일을 찾을 수 없어요');
       }
 
       const request: CourseUploadRequest = {

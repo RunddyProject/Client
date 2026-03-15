@@ -65,7 +65,7 @@ export function UploadMethodSheet({
         toast.error('로그인이 필요합니다.');
         return;
       }
-      toast.error('Strava 연결에 실패했습니다. 다시 시도해주세요.');
+      toast.error('Strava 연결에 실패했어요 다시 시도해주세요');
     } finally {
       setIsStravaLoading(false);
     }

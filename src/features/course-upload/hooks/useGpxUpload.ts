@@ -41,14 +41,14 @@ export function useGpxUpload(): UseGpxUploadReturn {
     try {
       // Validate file type
       if (!file.name.toLowerCase().endsWith('.gpx')) {
-        throw new Error('GPX 파일만 업로드할 수 있습니다.');
+        throw new Error('GPX 파일만 업로드할 수 있어요');
       }
 
       // Call preview API
       const response = await CourseUploadApi.previewCourse(file);
 
       if (!response.coursePointList?.length) {
-        throw new Error('유효한 트랙 데이터가 없습니다.');
+        throw new Error('유효한 트랙 데이터가 없어요');
       }
 
       // Build elevation chart data using the utility
@@ -63,7 +63,7 @@ export function useGpxUpload(): UseGpxUploadReturn {
       });
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : 'GPX 파일 처리에 실패했습니다.';
+        err instanceof Error ? err.message : 'GPX 파일 처리에 실패했어요';
       setError(message);
       setPreviewData(null);
       setElevationChartData(EMPTY_ELEVATION_DATA);

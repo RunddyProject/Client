@@ -35,7 +35,7 @@ export function RegisterCourseFAB({
     if (!file) return;
 
     if (!file.name.toLowerCase().endsWith('.gpx')) {
-      toast.error('GPX 파일만 업로드할 수 있습니다.');
+      toast.error('GPX 파일만 업로드할 수 있어요');
       e.target.value = '';
       return;
     }

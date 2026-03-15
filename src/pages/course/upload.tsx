@@ -67,7 +67,7 @@ function CourseUpload() {
 
   useEffect(() => {
     if (uploadError) {
-      toast.error(uploadError.message || '코스 등록에 실패했습니다.');
+      toast.error(uploadError.message || '코스가 등록되지 않았어요');
     }
   }, [uploadError]);
 

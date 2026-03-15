@@ -222,7 +222,7 @@ describe('StravaActivitiesPage', () => {
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
-        '해당 활동의 GPX 데이터를 불러올 수 없습니다.'
+        '해당 활동의 GPX 데이터를 불러올 수 없어요'
       );
     });
     expect(mockNavigate).not.toHaveBeenCalled();
@@ -241,7 +241,7 @@ describe('StravaActivitiesPage', () => {
     await waitFor(() => {
       expect(mockConnect).toHaveBeenCalled();
       expect(toast.error).toHaveBeenCalledWith(
-        'Strava 연결이 해제되었습니다. 재연결합니다.'
+        'Strava 연결이 해제되었어요 재연결합니다'
       );
     });
   });
@@ -258,7 +258,7 @@ describe('StravaActivitiesPage', () => {
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
-        '활동 데이터를 불러오는 데 실패했습니다.'
+        '활동 데이터를 불러오는 데 실패했어요'
       );
     });
   });
@@ -278,7 +278,7 @@ describe('StravaActivitiesPage', () => {
     render(<StravaActivitiesPage />);
 
     expect(
-      screen.getByText('Strava 연결이 해제되었습니다. 재연결이 필요합니다.')
+      screen.getByText('Strava 연결이 해제되었어요 재연결이 필요합니다.')
     ).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: 'Strava 연결하기' })
@@ -299,7 +299,7 @@ describe('StravaActivitiesPage', () => {
     render(<StravaActivitiesPage />);
 
     expect(
-      screen.getByText('Strava 계정이 연결되어 있지 않습니다.')
+      screen.getByText('Strava 계정이 연결되어 있지 않어요')
     ).toBeInTheDocument();
   });
 

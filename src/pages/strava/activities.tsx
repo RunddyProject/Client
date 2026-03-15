@@ -89,7 +89,7 @@ function StravaActivitiesPage() {
       const gpxData = await StravaApi.getActivityGpx(selectedActivity.id);
 
       if (!gpxData.coursePointList?.length) {
-        toast.error('해당 활동의 GPX 데이터를 불러올 수 없습니다.');
+        toast.error('해당 활동의 GPX 데이터를 불러올 수 없어요');
         return;
       }
 
@@ -110,11 +110,11 @@ function StravaActivitiesPage() {
       navigate('/course/upload');
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
-        toast.error('Strava 연결이 해제되었습니다. 재연결합니다.');
+        toast.error('Strava 연결이 해제되었어요 재연결합니다');
         connect();
         return;
       }
-      toast.error('활동 데이터를 불러오는 데 실패했습니다.');
+      toast.error('활동 데이터를 불러오는 데 실패했어요');
     } finally {
       setIsConfirming(false);
     }
@@ -129,10 +129,10 @@ function StravaActivitiesPage() {
       <div className='flex flex-col items-center justify-center gap-6 px-5 pt-20'>
         <p className='text-contents-r15 text-sec text-center'>
           {isNotConnected
-            ? 'Strava 계정이 연결되어 있지 않습니다.'
+            ? 'Strava 계정이 연결되어 있지 않어요'
             : isUnauthorized
-              ? 'Strava 연결이 해제되었습니다. 재연결이 필요합니다.'
-              : '활동 목록을 불러오는 데 실패했습니다.'}
+              ? 'Strava 연결이 해제되었어요 재연결이 필요합니다.'
+              : '활동 목록을 불러오는 데 실패했어요'}
         </p>
         <Button onClick={connect} className='w-full max-w-xs' size='lg'>
           <span>Strava 연결하기</span>

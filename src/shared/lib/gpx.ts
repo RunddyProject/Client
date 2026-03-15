@@ -92,7 +92,7 @@ export const calculateGradeFromGradient = (
       gradeKo: '쉬움',
       color: 'text-runddy-green-600',
       bgColor: 'bg-green-50',
-      description: '평탄한 코스로 초보자도 편하게 달릴 수 있습니다.',
+      description: '평탄한 코스로 초보자도 편하게 달릴 수 있어요',
       gradient: avgGradient
     };
   } else if (avgGradient < 5) {
@@ -101,7 +101,7 @@ export const calculateGradeFromGradient = (
       gradeKo: '보통',
       color: 'text-yellow-600',
       bgColor: 'bg-yellow-50',
-      description: '적당한 경사가 있어 재미있는 러닝을 즐길 수 있습니다.',
+      description: '적당한 경사가 있어 재미있는 러닝을 즐길 수 있어요',
       gradient: avgGradient
     };
   } else if (avgGradient < 8) {
