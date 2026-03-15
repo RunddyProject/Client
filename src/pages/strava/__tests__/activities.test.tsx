@@ -146,7 +146,7 @@ describe('StravaActivitiesPage', () => {
 
     render(<StravaActivitiesPage />);
 
-    expect(screen.getByText('Strava 활동이 없습니다.')).toBeInTheDocument();
+    expect(screen.getByText('Strava 활동이 없어요')).toBeInTheDocument();
   });
 
   // ── 활동 목록 ──────────────────────────────────────────────────────────────

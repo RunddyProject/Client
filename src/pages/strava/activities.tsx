@@ -8,6 +8,7 @@ import { useStravaActivities } from '@/features/strava/hooks/useStravaActivities
 import { useStravaConnect } from '@/features/strava/hooks/useStravaConnect';
 import { useStravaUploadStore } from '@/features/strava/model/strava-upload.store';
 import { StravaActivityCard } from '@/features/strava/ui/StravaActivityCard';
+import { Icon } from '@/shared/icons/icon';
 import { ApiError } from '@/shared/lib/http';
 import { Button } from '@/shared/ui/primitives/button';
 
@@ -150,10 +151,9 @@ function StravaActivitiesPage() {
             <div className='border-runddy-blue h-8 w-8 animate-spin rounded-full border-2 border-t-transparent' />
           </div>
         ) : activities.length === 0 ? (
-          <div className='pt-20 text-center'>
-            <p className='text-contents-r15 text-sec'>
-              Strava 활동이 없습니다.
-            </p>
+          <div className='flex flex-col items-center space-y-4 pt-[150px]'>
+            <Icon name='empty_graphic' size={100} />
+            <div className='text-placeholder'>Strava 활동이 없어요</div>
           </div>
         ) : (
           <div className='divide-g-20 divide-y'>
