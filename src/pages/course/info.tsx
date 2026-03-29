@@ -73,7 +73,10 @@ const CourseInfo = () => {
 
   const { courseDetail: course, isLoading } = useCourseDetail(uuid ?? '');
   const { courseReviewCount } = useCourseReview(uuid ?? '');
-  const { toggle, isSaving, loginRequired, setLoginRequired } = useToggleBookmark();
+  const [loginRequired, setLoginRequired] = useState(false);
+  const { toggle, isSaving } = useToggleBookmark({
+    onLoginRequired: () => setLoginRequired(true)
+  });
 
   // User course ownership detection
   const isUserCourse = useIsUserCourse(uuid);

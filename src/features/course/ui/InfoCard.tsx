@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { useSanitizedSvg } from '@/features/course/hooks/useSanitizedSvg';
@@ -36,7 +36,10 @@ const CourseInfoCard = memo(function CourseInfoCard({
   className
 }: CourseInfoCardProps) {
   const navigate = useNavigate();
-  const { toggle, isSaving, loginRequired, setLoginRequired } = useToggleBookmark();
+  const [loginRequired, setLoginRequired] = useState(false);
+  const { toggle, isSaving } = useToggleBookmark({
+    onLoginRequired: () => setLoginRequired(true)
+  });
 
   // Performance optimization: Memoized SVG sanitization
   const sanitizedSvg = useSanitizedSvg(course.svg);
