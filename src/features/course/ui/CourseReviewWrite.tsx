@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router';
-import { toast } from 'sonner';
+import { useParams } from 'react-router';
 
 import { useAuth } from '@/app/providers/AuthContext';
 import { useCourseReviewForm } from '@/features/course/hooks/useCourseReviewForm';
 import { Icon } from '@/shared/icons/icon';
 import { deepEqual } from '@/shared/lib/utils';
+import { LoginRequiredDialog } from '@/shared/ui/composites/LoginRequiredDialog';
 import { Button } from '@/shared/ui/primitives/button';
 import {
   Dialog,
@@ -29,12 +29,12 @@ interface CourseReviewWriteProps {
 
 const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
   const { uuid } = useParams<{ uuid: string }>();
-  const navigator = useNavigate();
 
   const { isAuthenticated } = useAuth();
   const { formDetail, hasMyReview, patchReview } = useCourseReviewForm(uuid!);
 
   const [open, setOpen] = useState(false);
+  const [loginRequired, setLoginRequired] = useState(false);
   const [categories, setCategories] = useState<DisplayFormCategory[]>([]);
 
   useEffect(() => {
@@ -64,8 +64,7 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
 
   const handleClick = () => {
     if (!isAuthenticated) {
-      toast.error('로그인이 필요해요');
-      navigator('/login');
+      setLoginRequired(true);
       return;
     }
     setOpen(true);
@@ -118,6 +117,10 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
 
   return (
     <div className='relative'>
+      <LoginRequiredDialog
+        open={loginRequired}
+        onOpenChange={setLoginRequired}
+      />
       {Trigger(triggerMode)}
 
       <Dialog open={open} onOpenChange={setOpen}>

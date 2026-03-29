@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { UserApi } from '@/features/user/api/user.api';
@@ -19,6 +20,7 @@ type ToggleBookmarkContext = {
 
 export function useToggleBookmark() {
   const queryClient = useQueryClient();
+  const [loginRequired, setLoginRequired] = useState(false);
 
   const mutation = useMutation<
     void,
@@ -152,7 +154,7 @@ export function useToggleBookmark() {
     onError: (error, payload, ctx) => {
       console.error('bookmark toggle failed:', error);
       if (error.status === 401) {
-        toast.error('로그인이 필요해요');
+        setLoginRequired(true);
       } else {
         toast.error(
           payload.isBookmarked
@@ -191,6 +193,8 @@ export function useToggleBookmark() {
   return {
     toggle: mutation.mutate,
     toggleAsync: mutation.mutateAsync,
-    isSaving: mutation.isPending
+    isSaving: mutation.isPending,
+    loginRequired,
+    setLoginRequired
   };
 }

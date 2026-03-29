@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { UPLOAD_METHOD_LABELS } from '@/features/course-upload/model/constants';
 import { StravaApi } from '@/features/strava/api/strava.api';
 import { ApiError } from '@/shared/lib/http';
+import { LoginRequiredDialog } from '@/shared/ui/composites/LoginRequiredDialog';
 
 import type { UploadMethod } from '@/features/course-upload/model/types';
 
@@ -26,6 +27,7 @@ export function UploadMethodSheet({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const [isStravaLoading, setIsStravaLoading] = useState(false);
+  const [loginRequired, setLoginRequired] = useState(false);
 
   const handleDirectUpload = () => {
     fileInputRef.current?.click();
@@ -62,7 +64,7 @@ export function UploadMethodSheet({
       window.location.href = authUrl;
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
-        toast.error('로그인이 필요합니다.');
+        setLoginRequired(true);
         return;
       }
       toast.error('Strava 연결에 실패했어요 다시 시도해주세요');
@@ -72,6 +74,11 @@ export function UploadMethodSheet({
   };
 
   return (
+    <>
+    <LoginRequiredDialog
+      open={loginRequired}
+      onOpenChange={setLoginRequired}
+    />
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
         {/* Full-viewport overlay */}
@@ -132,5 +139,6 @@ export function UploadMethodSheet({
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
+    </>
   );
 }

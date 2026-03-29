@@ -10,6 +10,7 @@ import CourseLoopImageUrl from '@/shared/assets/course_loop.png';
 import CourseOutandbackImageUrl from '@/shared/assets/course_outandback.png';
 import { Icon } from '@/shared/icons/icon';
 import { cn } from '@/shared/lib/utils';
+import { LoginRequiredDialog } from '@/shared/ui/composites/LoginRequiredDialog';
 import { Badge } from '@/shared/ui/primitives/badge';
 import { Button } from '@/shared/ui/primitives/button';
 
@@ -35,7 +36,7 @@ const CourseInfoCard = memo(function CourseInfoCard({
   className
 }: CourseInfoCardProps) {
   const navigate = useNavigate();
-  const { toggle, isSaving } = useToggleBookmark();
+  const { toggle, isSaving, loginRequired, setLoginRequired } = useToggleBookmark();
 
   // Performance optimization: Memoized SVG sanitization
   const sanitizedSvg = useSanitizedSvg(course.svg);
@@ -50,6 +51,11 @@ const CourseInfoCard = memo(function CourseInfoCard({
   };
 
   return (
+    <>
+    <LoginRequiredDialog
+      open={loginRequired}
+      onOpenChange={setLoginRequired}
+    />
     <div
       className={cn(
         'bg-w-100 pointer-events-auto flex cursor-pointer items-center justify-between gap-4',
@@ -100,6 +106,7 @@ const CourseInfoCard = memo(function CourseInfoCard({
         </div>
       </div>
     </div>
+    </>
   );
 });
 

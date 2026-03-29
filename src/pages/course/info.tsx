@@ -23,6 +23,7 @@ import { useToggleBookmark } from '@/features/user/hooks/useToggleBookmark';
 import { Icon } from '@/shared/icons/icon';
 import { runddyColor } from '@/shared/model/constants';
 import { ShareButton } from '@/shared/ui/actions/ShareButton';
+import { LoginRequiredDialog } from '@/shared/ui/composites/LoginRequiredDialog';
 import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
 import { Button } from '@/shared/ui/primitives/button';
 import {
@@ -72,7 +73,7 @@ const CourseInfo = () => {
 
   const { courseDetail: course, isLoading } = useCourseDetail(uuid ?? '');
   const { courseReviewCount } = useCourseReview(uuid ?? '');
-  const { toggle, isSaving } = useToggleBookmark();
+  const { toggle, isSaving, loginRequired, setLoginRequired } = useToggleBookmark();
 
   // User course ownership detection
   const isUserCourse = useIsUserCourse(uuid);
@@ -254,6 +255,11 @@ const CourseInfo = () => {
           </TabsContent>
         </Tabs>
       )}
+
+      <LoginRequiredDialog
+        open={loginRequired}
+        onOpenChange={setLoginRequired}
+      />
 
       {/* User course management dialogs */}
       {isUserCourse && (
