@@ -5,7 +5,7 @@ import { useAuth } from '@/app/providers/AuthContext';
 import { useCourseReviewForm } from '@/features/course/hooks/useCourseReviewForm';
 import { Icon } from '@/shared/icons/icon';
 import { deepEqual } from '@/shared/lib/utils';
-import { LoginRequiredDialog } from '@/shared/ui/composites/LoginRequiredDialog';
+import { showLoginDialog } from '@/shared/model/login-dialog.store';
 import { Button } from '@/shared/ui/primitives/button';
 import {
   Dialog,
@@ -34,7 +34,6 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
   const { formDetail, hasMyReview, patchReview } = useCourseReviewForm(uuid!);
 
   const [open, setOpen] = useState(false);
-  const [loginRequired, setLoginRequired] = useState(false);
   const [categories, setCategories] = useState<DisplayFormCategory[]>([]);
 
   useEffect(() => {
@@ -64,7 +63,7 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
 
   const handleClick = () => {
     if (!isAuthenticated) {
-      setLoginRequired(true);
+      showLoginDialog();
       return;
     }
     setOpen(true);
@@ -117,10 +116,6 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
 
   return (
     <div className='relative'>
-      <LoginRequiredDialog
-        open={loginRequired}
-        onOpenChange={setLoginRequired}
-      />
       {Trigger(triggerMode)}
 
       <Dialog open={open} onOpenChange={setOpen}>

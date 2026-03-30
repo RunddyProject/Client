@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { UserApi } from '@/features/user/api/user.api';
+import { showLoginDialog } from '@/shared/model/login-dialog.store';
 
 import type { Course, CourseDetail } from '@/features/course/model/types';
 import type {
@@ -17,9 +18,7 @@ type ToggleBookmarkContext = {
   prevCoursesSnapshots?: [readonly unknown[], Course[] | undefined][];
 };
 
-export function useToggleBookmark({
-  onLoginRequired
-}: { onLoginRequired?: () => void } = {}) {
+export function useToggleBookmark() {
   const queryClient = useQueryClient();
 
   const mutation = useMutation<
@@ -154,7 +153,7 @@ export function useToggleBookmark({
     onError: (error, payload, ctx) => {
       console.error('bookmark toggle failed:', error);
       if (error.status === 401) {
-        onLoginRequired?.();
+        showLoginDialog();
       } else {
         toast.error(
           payload.isBookmarked
