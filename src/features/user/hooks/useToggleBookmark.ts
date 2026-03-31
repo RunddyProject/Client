@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { UserApi } from '@/features/user/api/user.api';
-import { showLoginDialog } from '@/shared/model/login-dialog.store';
+import { showLoginDialog } from '@/shared/lib/show-login-dialog';
 
 import type { Course, CourseDetail } from '@/features/course/model/types';
 import type {

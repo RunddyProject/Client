@@ -5,7 +5,7 @@ import { useAuth } from '@/app/providers/AuthContext';
 import { useCourseReviewForm } from '@/features/course/hooks/useCourseReviewForm';
 import { Icon } from '@/shared/icons/icon';
 import { deepEqual } from '@/shared/lib/utils';
-import { showLoginDialog } from '@/shared/model/login-dialog.store';
+import { showLoginDialog } from '@/shared/lib/show-login-dialog';
 import { Button } from '@/shared/ui/primitives/button';
 import {
   Dialog,

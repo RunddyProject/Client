@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { UPLOAD_METHOD_LABELS } from '@/features/course-upload/model/constants';
 import { StravaApi } from '@/features/strava/api/strava.api';
 import { ApiError } from '@/shared/lib/http';
-import { showLoginDialog } from '@/shared/model/login-dialog.store';
+import { showLoginDialog } from '@/shared/lib/show-login-dialog';
 
 import type { UploadMethod } from '@/features/course-upload/model/types';
 
