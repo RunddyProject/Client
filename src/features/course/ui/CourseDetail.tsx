@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { toast } from 'sonner';
 
+import { useAuth } from '@/app/providers/AuthContext';
 import { CoursesApi } from '@/features/course/api/course.api';
 import { useCourseDetail } from '@/features/course/hooks/useCourseDetail';
 import { buildElevationChartData } from '@/features/course/lib/elevation';
@@ -13,6 +14,7 @@ import {
 import { ElevationChart } from '@/features/course/ui/ElevationChart';
 import { Icon } from '@/shared/icons/icon';
 import { formatKST } from '@/shared/lib/date';
+import { showLoginDialog } from '@/shared/lib/show-login-dialog';
 import { runddyColor } from '@/shared/model/constants';
 import Feedback from '@/shared/ui/actions/Feedback';
 import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
@@ -38,6 +40,7 @@ const CourseDetail = ({ isUserCourse = false }: CourseDetailProps) => {
   const { uuid } = useParams<{ uuid: Course['uuid'] }>();
 
   const { courseDetail: course, isLoading } = useCourseDetail(uuid ?? '');
+  const { isAuthenticated } = useAuth();
   const activeColor: RUNDDY_COLOR = course
     ? SHAPE_TYPE_COLOR[course.shapeType]
     : 'default';
@@ -74,6 +77,10 @@ const CourseDetail = ({ isUserCourse = false }: CourseDetailProps) => {
   };
 
   const handleDownloadGPX = () => {
+    if (!isAuthenticated) {
+      showLoginDialog();
+      return;
+    }
     if (!uuid) return;
     CoursesApi.getCourseGpx(uuid);
   };

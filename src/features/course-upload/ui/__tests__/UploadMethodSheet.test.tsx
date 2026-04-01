@@ -5,11 +5,16 @@ import { act, render, screen, waitFor } from '@/test/utils';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 const mockNavigate = vi.fn();
+let mockIsAuthenticated = true;
 
 vi.mock('react-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react-router')>();
   return { ...actual, useNavigate: () => mockNavigate };
 });
+
+vi.mock('@/app/providers/AuthContext', () => ({
+  useAuth: () => ({ isAuthenticated: mockIsAuthenticated })
+}));
 
 vi.mock('sonner', () => ({
   toast: { error: vi.fn(), success: vi.fn() }
@@ -77,6 +82,7 @@ describe('UploadMethodSheet', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockIsAuthenticated = true;
     savedLocation = window.location;
     Object.defineProperty(window, 'location', {
       configurable: true,
@@ -125,6 +131,16 @@ describe('UploadMethodSheet', () => {
   });
 
   // ── 직접 업로드 ───────────────────────────────────────────────────────────
+  it('미인증 시 직접 업로드 버튼 클릭 → 로그인 다이얼로그 표시', async () => {
+    const user = userEvent.setup();
+    mockIsAuthenticated = false;
+    renderSheet();
+
+    await user.click(screen.getByRole('button', { name: '직접 업로드하기' }));
+
+    expect(showLoginDialog).toHaveBeenCalledOnce();
+  });
+
   it('직접 업로드 선택 시 onSelectMethod("direct", file) 호출', async () => {
     const user = userEvent.setup();
     const onSelectMethod = vi.fn();

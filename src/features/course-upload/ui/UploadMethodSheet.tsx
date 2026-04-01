@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
+import { useAuth } from '@/app/providers/AuthContext';
 import { UPLOAD_METHOD_LABELS } from '@/features/course-upload/model/constants';
 import { StravaApi } from '@/features/strava/api/strava.api';
 import { ApiError } from '@/shared/lib/http';
@@ -26,9 +27,14 @@ export function UploadMethodSheet({
 }: UploadMethodSheetProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [isStravaLoading, setIsStravaLoading] = useState(false);
 
   const handleDirectUpload = () => {
+    if (!isAuthenticated) {
+      showLoginDialog();
+      return;
+    }
     fileInputRef.current?.click();
   };
 
