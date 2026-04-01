@@ -38,9 +38,14 @@ vi.mock('@/features/strava/api/strava.api', () => ({
   }
 }));
 
+vi.mock('@/shared/lib/show-login-dialog', () => ({
+  showLoginDialog: vi.fn()
+}));
+
 import { toast } from 'sonner';
 import { ApiError } from '@/shared/lib/http';
 import { StravaApi } from '@/features/strava/api/strava.api';
+import { showLoginDialog } from '@/shared/lib/show-login-dialog';
 
 import { UploadMethodSheet } from '../UploadMethodSheet';
 
@@ -174,7 +179,7 @@ describe('UploadMethodSheet', () => {
   });
 
   // ── 에러 처리 ─────────────────────────────────────────────────────────────
-  it('401 에러 시 로그인 필요 토스트', async () => {
+  it('401 에러 시 로그인 다이얼로그 표시', async () => {
     const user = userEvent.setup();
     mockGetStatus.mockRejectedValue(new ApiError(401, 'Unauthorized'));
 
@@ -183,8 +188,9 @@ describe('UploadMethodSheet', () => {
     await user.click(screen.getByRole('button', { name: /Strava/i }));
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('로그인이 필요합니다.');
+      expect(showLoginDialog).toHaveBeenCalledOnce();
     });
+    expect(toast.error).not.toHaveBeenCalled();
   });
 
   it('일반 에러 시 연결 실패 토스트', async () => {
@@ -197,7 +203,7 @@ describe('UploadMethodSheet', () => {
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
-        'Strava 연결에 실패했어요 다시 시도해주세요.'
+        'Strava 연결에 실패했어요 다시 시도해주세요'
       );
     });
   });
