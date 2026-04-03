@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router';
-import { toast } from 'sonner';
+import { useParams } from 'react-router';
 
 import { useAuth } from '@/app/providers/AuthContext';
 import { useCourseReviewForm } from '@/features/course/hooks/useCourseReviewForm';
 import { Icon } from '@/shared/icons/icon';
 import { deepEqual } from '@/shared/lib/utils';
+import { showLoginDialog } from '@/shared/lib/show-login-dialog';
 import { Button } from '@/shared/ui/primitives/button';
 import {
   Dialog,
@@ -29,7 +29,6 @@ interface CourseReviewWriteProps {
 
 const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
   const { uuid } = useParams<{ uuid: string }>();
-  const navigator = useNavigate();
 
   const { isAuthenticated } = useAuth();
   const { formDetail, hasMyReview, patchReview } = useCourseReviewForm(uuid!);
@@ -64,8 +63,7 @@ const CourseReviewWrite = ({ triggerMode }: CourseReviewWriteProps) => {
 
   const handleClick = () => {
     if (!isAuthenticated) {
-      toast.error('로그인이 필요해요');
-      navigator('/login');
+      showLoginDialog();
       return;
     }
     setOpen(true);

@@ -3,9 +3,11 @@ import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
+import { useAuth } from '@/app/providers/AuthContext';
 import { UPLOAD_METHOD_LABELS } from '@/features/course-upload/model/constants';
 import { StravaApi } from '@/features/strava/api/strava.api';
 import { ApiError } from '@/shared/lib/http';
+import { showLoginDialog } from '@/shared/lib/show-login-dialog';
 
 import type { UploadMethod } from '@/features/course-upload/model/types';
 
@@ -25,9 +27,14 @@ export function UploadMethodSheet({
 }: UploadMethodSheetProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [isStravaLoading, setIsStravaLoading] = useState(false);
 
   const handleDirectUpload = () => {
+    if (!isAuthenticated) {
+      showLoginDialog();
+      return;
+    }
     fileInputRef.current?.click();
   };
 
@@ -62,7 +69,7 @@ export function UploadMethodSheet({
       window.location.href = authUrl;
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
-        toast.error('로그인이 필요합니다.');
+        showLoginDialog();
         return;
       }
       toast.error('Strava 연결에 실패했어요 다시 시도해주세요');

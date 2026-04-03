@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { UserApi } from '@/features/user/api/user.api';
+import { showLoginDialog } from '@/shared/lib/show-login-dialog';
 
 import type { Course, CourseDetail } from '@/features/course/model/types';
 import type {
@@ -152,7 +153,7 @@ export function useToggleBookmark() {
     onError: (error, payload, ctx) => {
       console.error('bookmark toggle failed:', error);
       if (error.status === 401) {
-        toast.error('로그인이 필요해요');
+        showLoginDialog();
       } else {
         toast.error(
           payload.isBookmarked

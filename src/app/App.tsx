@@ -3,6 +3,7 @@ import { Outlet } from 'react-router';
 
 import { AuthProvider } from '@/app/providers/AuthContext';
 import { HeaderProvider } from '@/app/providers/HeaderContext';
+import { GlobalDialog } from '@/shared/ui/composites/GlobalDialog';
 import Header from '@/shared/ui/navigations/Header';
 import { Toaster } from '@/shared/ui/primitives/sonner';
 
@@ -14,6 +15,7 @@ const App = () => (
       <HeaderProvider>
         <div className='bg-w-100 mx-auto min-h-dvh max-w-xl'>
           <Toaster />
+          <GlobalDialog />
           <Header />
           <Outlet />
         </div>
