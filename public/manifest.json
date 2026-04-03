@@ -1,0 +1,19 @@
+{
+  "name": "런디",
+  "short_name": "런디",
+  "description": "상세한 코스 정보와 러너들의 리뷰를 간편하게 확인할 수 있어요",
+  "icons": [
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/",
+  "lang": "ko"
+}
