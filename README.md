@@ -1,203 +1,125 @@
 <div align="center">
 
-<img src="public/logo.svg" alt="Runddy" width="72" height="72" />
+<img src="public/logo.svg" alt="Runddy" width="64" />
 
 # Runddy
-
-**러닝 코스 탐색 플랫폼 · Running Course Discovery Platform**
-
-내 주변의 다양한 러닝 코스를 쉽고 빠르게 탐색하세요.
-Discover running courses around you — fast, intuitive, and built for Korean runners.
-
-[![Production](https://img.shields.io/badge/Live-runddy.co.kr-4f86f7?style=flat-square)](https://www.runddy.co.kr)
-![React](https://img.shields.io/badge/React-19-61dafb?style=flat-square&logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178c6?style=flat-square&logo=typescript)
-![Vite](https://img.shields.io/badge/Vite-7-646cff?style=flat-square&logo=vite)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06b6d4?style=flat-square&logo=tailwindcss)
 
 </div>
 
 ---
 
-## 한국어
+<!-- 한국어 -->
+<details open>
+<summary><strong>한국어</strong></summary>
 
-- [소개](#소개)
-- [주요 기능](#주요-기능)
-- [화면 구성](#화면-구성)
-- [기술 스택](#기술-스택)
-- [아키텍처](#아키텍처)
-- [시작하기](#시작하기)
-- [스크립트](#스크립트)
-- [디자인 토큰](#디자인-토큰)
+## 문제 인식
 
-## English
+러닝 코스 정보는 네이버 블로그, 카카오맵 리뷰, 러닝 커뮤니티에 파편화되어 있습니다. "지금 내 위치에서 8km 이내, 고도차 200m 이하, 순환형 코스"를 한 번에 찾는 방법이 없었습니다. GPX 파일을 갖고 있어도 공유할 플랫폼이 없었고, 리뷰는 자유 텍스트라 집계가 불가능했습니다.
 
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Architecture](#architecture)
-- [Getting Started](#getting-started)
-- [Scripts](#scripts)
+Runddy는 이 문제를 해결하기 위해 만든 러닝 코스 탐색 플랫폼입니다. 지도 기반 탐색, 구조화된 필터, GPX 업로드/Strava 연동, 키워드 리뷰를 하나의 앱에서 제공합니다.
+
+**서비스 주소:** https://www.runddy.co.kr
 
 ---
 
-# 한국어
+## 화면 미리보기
 
-## 소개
-
-**Runddy**는 한국 러너를 위한 모바일 퍼스트 코스 탐색 앱입니다. 공식 코스부터 유저가 직접 등록한 코스까지, 지도와 목록으로 빠르게 찾고 리뷰를 나눌 수 있습니다.
-
-- Naver Maps 기반 인터랙티브 지도
-- GPX 직접 업로드 + Strava 연동으로 코스 등록
-- 키워드 기반 리뷰 시스템 (코스톡)
-- Kakao · Naver 소셜 로그인
+> 스크린샷 / GIF 예정 — 지도 탐색, 코스 상세, 코스 등록, 마이페이지
 
 ---
 
 ## 주요 기능
 
-### 코스 탐색
+**코스 탐색**
+- 지도/목록 뷰 전환 — Naver Maps 마커 지도와 카드 리스트를 탭 하나로 전환
+- 5개 축 동시 필터링 — 난도(초급/중급/고급), 환경(공원/산책로/트랙/도심/해변/산/숲/강), 코스 모양(순환/직선/왕복/아트), 거리(0–40km+), 고도(0–400m+)
+- 코스 유형 — 검증된 공식 코스, 유저 등록 런디 코스, 마라톤 코스 구분
+- 현위치 탐색 + 키워드 검색 — GPS 기반 자동 로드, 지역명/코스명 키워드 지오코딩
 
-| 기능 | 설명 |
-|---|---|
-| 지도 / 목록 뷰 | Naver Maps 기반 마커 지도와 카드 리스트 전환 |
-| 코스 유형 | 공식 코스 · 런디 코스 · 마라톤 코스 |
-| 현위치 탐색 | GPS 위치 기반 자동 탐색, 지역명·코스명 키워드 검색 |
-| 상세 필터 | 난도(초급/중급/고급), 환경(공원/산책로/트랙/도심/해변/산/숲/강), 코스 모양(순환/직선/왕복/아트), 거리(0–40km+), 고도(0–400m+) |
-| 코스 상세 | 경로 지도, 고도 프로파일 차트, 거리·고도·주소 정보, GPX 다운로드, 코스 공유 |
+**코스 상세**
+- 경로 미리보기 지도, 고도 프로파일 차트 (Recharts)
+- 거리·고도 통계, 출발/도착 주소, GPX 다운로드, 공유
 
-### 코스 등록
+**코스 등록**
+- GPX 직접 업로드 — 로컬 파일 파싱 후 환경·모양·공개 여부 설정
+- Strava OAuth 연동 — 활동 목록에서 선택하면 이름·경로 자동 완성
+- 공개/비공개 토글, 코스 수정·삭제
 
-| 기능 | 설명 |
-|---|---|
-| GPX 업로드 | 기기 로컬 파일에서 GPX를 불러와 코스 정보 입력 후 등록 |
-| Strava 연동 | Strava OAuth로 활동 목록을 불러와 코스로 등록 (이름 자동 완성) |
-| 공개/비공개 | 코스 등록 및 수정 시 공개 여부 토글 |
-| 코스 수정·삭제 | 내 코스 상세에서 이름·공개 여부 수정, 삭제 확인 다이얼로그 |
+**리뷰 (코스톡)**
+- 3개 카테고리(코스 컨디션/환경/편의시설), 14개 키워드 선택형 리뷰
+- 키워드 집계로 코스별 특성을 한눈에 파악
 
-### 리뷰 (코스톡)
-
-키워드 기반 구조화 리뷰 시스템. 코스 컨디션·환경·편의시설 세 카테고리로 빠르게 평가합니다.
-
-```
-코스 컨디션  → 오르막 훈련 좋음 · 노면 양호 · 초보 친화 · 인기 코스 ...
-환경        → 경치 좋음 · 석양 뷰 · 조용함 · 그늘 · 야간 조명 ...
-편의시설    → 화장실 있음 · 음수대 있음 · 주차 편함 · 접근성 좋음 ...
-```
-
-### 마이페이지
-
-| 기능 | 설명 |
-|---|---|
-| 저장한 코스 | 북마크 코스 목록 |
-| 내가 남긴 코스 | 내 코스톡 리뷰 목록 |
-| 프로필 수정 | 닉네임·프로필 사진 변경 |
-| 로그아웃 · 회원탈퇴 | 탈퇴 전 이유 수집 다이얼로그 |
+**마이페이지 & 인증**
+- Kakao / Naver 소셜 로그인
+- 저장한 코스, 내 코스, 프로필 수정, 회원탈퇴
 
 ---
 
-## 화면 구성
+## 기술 선택과 이유
 
-```
-/                      → 코스 탐색 (지도/목록)
-/course/:uuid          → 코스 상세
-/course/:uuid/map      → 경로 상세 지도
-/course/upload         → 코스 등록하기 (로그인 필요)
-/course/my             → 내 코스 (로그인 필요)
-/course/my/:uuid/edit  → 내 코스 수정 (로그인 필요)
-/strava/activities     → Strava 활동 목록 (로그인 필요)
-/login                 → 카카오 · 네이버 로그인
-/me                    → 마이페이지 (로그인 필요)
-/me/edit               → 프로필 수정 (로그인 필요)
-/me/delete             → 회원탈퇴 (로그인 필요)
-```
-
----
-
-## 기술 스택
-
-### 코어
-
-| | 버전 |
+| 기술 | 선택 이유 |
 |---|---|
-| React | 19.1 |
-| TypeScript | 5.8 |
-| Vite | 7 |
+| **Naver Maps** | 한국 주소/지오코딩 정확도가 Google Maps 대비 높음. 국내 지명 검색 결과 품질 차이가 명확함 |
+| **TanStack React Query** | 지도를 이동할 때마다 동일한 좌표 범위 쿼리가 반복됨. `keepPreviousData` + `staleTime` 조합으로 불필요한 리페치 제거 |
+| **Zustand** | 지도 뷰포트(center, zoom), 마지막 검색 영역, 활성 코스 ID, 스크롤 위치를 라우트 간에 유지해야 함. sessionStorage persist로 탭 유지·새탭 초기화를 자연스럽게 처리 |
+| **shadcn/ui (Radix UI)** | 모바일 터치 인터랙션과 접근성을 처음부터 보장하면서 빠르게 UI를 구성하기 위해 선택. Sheet, Dialog, Slider 등 복잡한 컴포넌트를 직접 구현하지 않음 |
+| **Feature-Sliced Design** | 기능이 늘어날수록(course → my-course → strava) 각 feature 간 의존 방향을 강제로 단방향으로 유지하기 위해 도입. 파일 위치만 보고 레이어 역할을 파악할 수 있음 |
+| **Design Token 자동화** | 색상/타이포그래피 값을 스크립트로 CSS 변수·Tailwind 설정·shadcn 테마에 동시 적용. 디자이너와 협업 시 토큰 변경이 전체 UI에 즉시 반영됨 |
 
-### UI / 스타일
+**주목할 구현 포인트**
 
-| | 버전 | 용도 |
-|---|---|---|
-| Tailwind CSS | 4 | 유틸리티 CSS |
-| shadcn/ui (Radix UI) | latest | 접근성 컴포넌트 |
-| Lucide React | 0.543 | 아이콘 |
-| Recharts | — | 고도 프로파일 차트 |
-
-### 상태 / 데이터
-
-| | 버전 | 용도 |
-|---|---|---|
-| TanStack React Query | 5 | 서버 상태 캐싱 |
-| Zustand | 5 | 클라이언트 상태 (위치, 지도, Strava) |
-| React Router | 7 | 클라이언트 라우팅 |
-| React Hook Form | 7 | 폼 관리 |
-
-### 외부 연동
-
-| | 용도 |
-|---|---|
-| Naver Maps API | 지도 렌더링 · 지오코딩 |
-| Kakao / Naver OAuth | 소셜 로그인 |
-| Strava OAuth | GPX 활동 데이터 가져오기 |
-| gpxparser | GPX 파일 파싱 |
+- **JWT 401 중복 갱신 방지** — 동시에 여러 요청이 401을 받으면 토큰 갱신 요청이 중복 발생함. `refreshTokenPromise` 싱글턴으로 이미 진행 중인 갱신이 있으면 같은 Promise를 공유하도록 처리 (`src/shared/lib/http.ts`)
+- **Strava Polyline → SVG 변환** — Strava API 응답의 인코딩된 polyline을 서버 없이 클라이언트에서 SVG path로 변환해 활동 카드에 경로 미리보기 렌더링 (`src/features/strava/ui/`)
+- **지도 뷰 상태 보존** — 코스 상세로 진입했다가 돌아왔을 때 이전 지도 위치와 활성 코스를 복원. Zustand sessionStorage persist 활용
 
 ---
 
 ## 아키텍처
 
-Feature-Sliced Design(FSD) 변형 구조를 사용합니다.
+Feature-Sliced Design(FSD) 변형 구조를 적용했습니다. 각 feature는 `api / model / hooks / ui` 레이어를 독립적으로 갖고, `shared`에만 의존합니다.
 
 ```
 src/
 ├── app/
-│   ├── providers/          # AuthContext, HeaderContext
-│   └── routing/            # router.tsx, ProtectedRoute
+│   ├── providers/        # AuthContext (JWT + refresh), HeaderContext
+│   └── routing/          # router.tsx, ProtectedRoute
 ├── features/
-│   ├── course/             # 코스 조회·검색·필터·상세·리뷰
-│   ├── course-upload/      # GPX 업로드 & 코스 등록 폼
-│   ├── map/                # Naver Maps 통합, 위치 Zustand store
-│   ├── my-course/          # 내 코스 CRUD
-│   ├── strava/             # Strava OAuth & 활동 목록
-│   └── user/               # 인증, 프로필, 북마크, 피드백
-├── pages/                  # 라우트별 페이지 컴포지션
+│   ├── course/           # 탐색·필터·상세·리뷰 — 코어 도메인
+│   ├── course-upload/    # GPX 업로드 폼, 등록 플로우
+│   ├── map/              # NaverMap 컴포넌트, location Zustand store
+│   ├── my-course/        # 내 코스 CRUD
+│   ├── strava/           # OAuth 연동, 활동 목록, polyline 변환
+│   └── user/             # 인증, 프로필, 북마크, 피드백
+├── pages/                # 라우트별 컴포지션 (비즈니스 로직 없음)
 └── shared/
-    ├── ui/
-    │   ├── primitives/     # shadcn/ui 컴포넌트
-    │   ├── composites/     # LoadingSpinner, InputClearable 등
-    │   ├── navigations/    # Header, Menu
-    │   └── actions/        # ShareButton, Feedback
-    ├── lib/                # HTTP 클라이언트, 유틸리티
-    ├── hooks/              # 공유 훅
-    ├── model/              # 공유 타입·상수
-    ├── icons/              # SVG 아이콘 시스템
-    └── design/             # 디자인 토큰 (자동 생성)
+    ├── lib/              # HTTP 클라이언트 (JWT 자동 주입, 401 처리)
+    ├── ui/               # primitives(shadcn), composites, navigations
+    ├── design/           # 자동 생성 디자인 토큰
+    └── model/            # 공유 타입·상수
 ```
 
-### 상태 관리 레이어
+**상태 레이어**
 
 ```
-서버 상태     →  TanStack React Query  (코스 목록, 상세, 리뷰, 북마크)
-클라이언트 상태 →  Zustand             (위치, 지도 뷰포트, Strava 미리보기)
-전역 UI 상태  →  Context API          (Auth, Header 설정)
+서버 상태   → React Query  (코스 목록, 상세, 리뷰, 북마크 — staleTime 캐싱)
+클라이언트  → Zustand      (위치, 지도 뷰포트, 스크롤 위치, Strava 미리보기)
+전역 UI    → Context API   (Auth, Header 설정)
 ```
 
-### Path Aliases
+**주요 라우트**
 
-```ts
-@/app/*       → src/app/*
-@/features/*  → src/features/*
-@/pages/*     → src/pages/*
-@/shared/*    → src/shared/*
+```
+/                      # 코스 탐색 (지도/목록)
+/course/:uuid          # 코스 상세
+/course/:uuid/map      # 경로 전체보기
+/course/upload         # 코스 등록 (로그인 필요)
+/course/my             # 내 코스 (로그인 필요)
+/course/my/:uuid/edit  # 내 코스 수정 (로그인 필요)
+/strava/activities     # Strava 활동 선택 (로그인 필요)
+/login                 # 소셜 로그인
+/me                    # 마이페이지 (로그인 필요)
+/me/edit               # 프로필 수정 (로그인 필요)
+/me/delete             # 회원탈퇴 (로그인 필요)
 ```
 
 ---
@@ -209,7 +131,7 @@ src/
 - Node.js 20+
 - Yarn (Berry)
 
-### 환경 변수 설정
+### 환경 변수
 
 ```bash
 cp .env.example .env.local
@@ -217,7 +139,7 @@ cp .env.example .env.local
 
 | 변수 | 설명 |
 |---|---|
-| `VITE_API_BASE_URL` | 백엔드 REST API Base URL |
+| `VITE_SERVER_DOMAIN` | 백엔드 REST API Base URL |
 | `VITE_NAVER_MAP_CLIENT_ID` | Naver Maps Client ID |
 | `VITE_KAKAO_CLIENT_ID` | Kakao OAuth Client ID |
 | `VITE_NAVER_CLIENT_ID` | Naver OAuth Client ID |
@@ -228,197 +150,128 @@ cp .env.example .env.local
 
 ```bash
 yarn install
-
-# 개발 서버 (디자인 토큰 생성 포함)
-yarn dev:tokens
-
-# 또는 빠르게
-yarn dev
+yarn dev          # 개발 서버
+yarn build        # 프로덕션 빌드
+yarn lint:fix     # 린트 자동 수정
+yarn tokens:all   # 디자인 토큰 재생성
 ```
 
----
-
-## 스크립트
-
-```bash
-yarn dev            # 개발 서버
-yarn dev:tokens     # 토큰 생성 후 개발 서버
-yarn build          # 프로덕션 빌드 (토큰 생성 포함)
-yarn lint           # ESLint 검사
-yarn lint:fix       # 자동 수정
-yarn format         # Prettier 포맷
-yarn tokens:all     # 디자인 토큰 전체 재생성
-yarn test           # 유닛 테스트
-yarn test:coverage  # 커버리지 리포트
-```
+</details>
 
 ---
 
-## 디자인 토큰
+<!-- English -->
+<details>
+<summary><strong>English</strong></summary>
 
-컬러·타이포그래피·shadcn 테마는 `scripts/tokens/`에서 자동 생성됩니다.
+## Problem
 
-```bash
-yarn tokens:all
-# → src/shared/design/tokens/variables.css   (CSS 변수)
-# → src/shared/design/tokens/tw-typography.ts (타이포그래피 유틸리티)
-# → src/shared/design/tokens/shadcn-theme.css (shadcn 테마)
-```
+Running course information in Korea is scattered — Naver blog posts, Kakao Maps comments, running community forums. There was no way to answer a simple question: *"What loop courses are within 8km of me, under 200m elevation gain?"* Runners with GPX files had nowhere to share them, and reviews were free-text with no structure to aggregate.
 
-> `src/shared/design/tokens/` 하위 파일은 직접 수정하지 마세요. 소스 스크립트를 수정 후 `yarn tokens:all`을 실행하세요.
+Runddy is a mobile-first course discovery platform built to fix this. It brings map-based exploration, structured filtering, GPX import, Strava integration, and keyword reviews into a single app.
 
-CI가 `main` 푸시 시 토큰을 자동 재생성하고 커밋합니다.
+**Live:** https://www.runddy.co.kr
 
 ---
 
----
+## Preview
 
-# English
-
-## Overview
-
-**Runddy** is a mobile-first running course discovery app for Korean runners. Find official courses, community-submitted routes, and marathon courses — on an interactive map or a scrollable list — then leave keyword reviews and export GPX files.
-
-- Naver Maps integration for real-time course exploration
-- GPX upload + Strava OAuth for course registration
-- Structured keyword review system ("Course Talk")
-- Kakao & Naver social authentication
+> Screenshots / GIF coming — map view, course detail, course registration, my page
 
 ---
 
 ## Features
 
-### Course Discovery
+**Discovery**
+- Map / list toggle — Naver Maps marker view and card list, one tap to switch
+- Multi-axis filtering — grade (beginner/intermediate/advanced), environment (8 types), shape (loop/linear/out-and-back/art), distance (0–40km+), elevation gain (0–400m+)
+- Course types — verified official courses, user-submitted Runddy courses, marathon courses
+- Location search — GPS auto-discovery + keyword geocoding for area and course name
 
-| Feature | Description |
-|---|---|
-| Map / List view | Toggle between Naver Maps marker view and card list |
-| Course types | Official · Runddy (user-submitted) · Marathon |
-| Location search | GPS-based auto-discovery + keyword geocoding fallback |
-| Advanced filters | Grade (beginner/intermediate/advanced), environment (park/trail/track/urban/beach/mountain/forest/river), shape (loop/linear/out-and-back/art), distance (0–40km+), elevation gain (0–400m+) |
-| Course detail | Route preview map, elevation profile chart, distance & elevation stats, start/end address, GPX download, share button |
+**Course Detail**
+- Route preview map, elevation profile chart (Recharts)
+- Distance/elevation stats, start/end address, GPX download, share
 
-### Course Registration
+**Course Registration**
+- GPX upload — parse a local file, set environment, shape, visibility, and submit
+- Strava import — OAuth connect → select an activity → name and route auto-filled
+- Public/private toggle, edit and delete
 
-| Feature | Description |
-|---|---|
-| GPX upload | Parse a local GPX file, fill in course metadata, and submit |
-| Strava import | OAuth connect → select an activity → auto-populate name and route |
-| Visibility toggle | Set course as public or private on create and edit |
-| Edit / Delete | Update name or visibility, delete with confirmation dialog |
+**Reviews (Course Talk)**
+- 14 keywords across 3 categories (condition / environment / facilities)
+- Keyword counts give an at-a-glance profile for each course
 
-### Reviews (Course Talk)
-
-Structured keyword review system across three categories:
-
-```
-Course Condition  → Uphill training · Good surface · Beginner friendly · Popular ...
-Environment       → Scenic · Sunset view · Quiet · Shaded · Well lit at night ...
-Facilities        → Has restroom · Has water · Easy parking · Accessible ...
-```
-
-### My Page
-
-| Feature | Description |
-|---|---|
-| Saved courses | Bookmarked course list |
-| My reviews | Courses I've reviewed |
-| Profile edit | Update nickname and profile photo |
-| Logout / Delete account | Reason survey before account deletion |
+**Auth & Profile**
+- Kakao / Naver social login
+- Saved courses, my courses, profile edit, account deletion
 
 ---
 
-## Tech Stack
+## Tech Stack & Why
 
-### Core
-
-| | Version |
+| Technology | Reason |
 |---|---|
-| React | 19.1 |
-| TypeScript | 5.8 |
-| Vite | 7 |
+| **Naver Maps** | Noticeably more accurate geocoding and Korean address resolution than Google Maps — critical for a location-first app in Korea |
+| **TanStack React Query** | Map panning triggers repeated queries over overlapping coordinate ranges. `keepPreviousData` + `staleTime` eliminates redundant fetches and keeps the UI stable during transitions |
+| **Zustand** | Map viewport (center, zoom), last searched area, active course ID, and scroll position all need to survive route changes. Zustand's `persist` middleware with sessionStorage handles this cleanly — state survives in-tab navigation, resets on new tab |
+| **shadcn/ui (Radix UI)** | Accessibility and touch interactions come built-in. Sheet, Dialog, Slider — no need to reimplement complex primitives; focus went to product logic instead |
+| **Feature-Sliced Design** | As features grew (course → my-course → strava), FSD enforced unidirectional dependencies. Each feature owns its `api / model / hooks / ui` layers independently and only reaches into `shared` |
+| **Design Token pipeline** | A script generates CSS variables, Tailwind config, and shadcn theme from a single source. Token changes propagate across the entire UI automatically; CI commits the generated files on every push |
 
-### UI / Styling
+**Notable implementation details**
 
-| | Version | Purpose |
-|---|---|---|
-| Tailwind CSS | 4 | Utility-first CSS |
-| shadcn/ui (Radix UI) | latest | Accessible component primitives |
-| Lucide React | 0.543 | Icons |
-| Recharts | — | Elevation profile chart |
-
-### State / Data
-
-| | Version | Purpose |
-|---|---|---|
-| TanStack React Query | 5 | Server-state caching |
-| Zustand | 5 | Client state (location, map viewport, Strava preview) |
-| React Router | 7 | Client-side routing |
-| React Hook Form | 7 | Form management |
-
-### External Integrations
-
-| | Purpose |
-|---|---|
-| Naver Maps API | Map rendering & geocoding |
-| Kakao / Naver OAuth | Social login |
-| Strava OAuth | Import GPX activity data |
-| gpxparser | GPX file parsing |
+- **JWT refresh deduplication** — Concurrent 401 responses can trigger multiple refresh requests. A `refreshTokenPromise` singleton ensures in-flight refreshes are shared across all waiting calls (`src/shared/lib/http.ts`)
+- **Strava polyline → SVG** — Strava's encoded polyline is decoded and converted to an SVG path on the client, rendering a route preview on each activity card with no server round-trip (`src/features/strava/ui/`)
+- **Map state persistence** — Returning from a course detail page restores the previous map position and active course marker, using Zustand with sessionStorage
 
 ---
 
 ## Architecture
 
-Modified Feature-Sliced Design (FSD).
+Modified Feature-Sliced Design. Each feature is self-contained with its own `api / model / hooks / ui` layers and only depends on `shared`. Pages are thin composition layers with no business logic.
 
 ```
 src/
 ├── app/
-│   ├── providers/          # AuthContext, HeaderContext
-│   └── routing/            # router.tsx, ProtectedRoute
+│   ├── providers/        # AuthContext (JWT + refresh), HeaderContext
+│   └── routing/          # router.tsx, ProtectedRoute
 ├── features/
-│   ├── course/             # Discovery, search, filters, detail, reviews
-│   ├── course-upload/      # GPX upload flow & registration form
-│   ├── map/                # Naver Maps, location Zustand store
-│   ├── my-course/          # My courses CRUD
-│   ├── strava/             # Strava OAuth & activity list
-│   └── user/               # Auth, profile, bookmarks, feedback
-├── pages/                  # Route-level page composition
+│   ├── course/           # Discovery, filters, detail, reviews — core domain
+│   ├── course-upload/    # GPX upload form and registration flow
+│   ├── map/              # NaverMap component, location Zustand store
+│   ├── my-course/        # My courses CRUD
+│   ├── strava/           # OAuth, activity list, polyline conversion
+│   └── user/             # Auth, profile, bookmarks, feedback
+├── pages/                # Route-level composition only
 └── shared/
-    ├── ui/
-    │   ├── primitives/     # shadcn/ui components
-    │   ├── composites/     # LoadingSpinner, InputClearable, etc.
-    │   ├── navigations/    # Header, Menu
-    │   └── actions/        # ShareButton, Feedback
-    ├── lib/                # HTTP client, utilities
-    ├── hooks/              # Shared hooks
-    ├── model/              # Shared types & constants
-    ├── icons/              # SVG icon system
-    └── design/             # Auto-generated design tokens
+    ├── lib/              # HTTP client (JWT injection, 401 handling)
+    ├── ui/               # primitives (shadcn), composites, navigation
+    ├── design/           # Auto-generated design tokens
+    └── model/            # Shared types and constants
 ```
 
-### State Management
+**State layers**
 
 ```
-Server state    →  TanStack React Query  (courses, detail, reviews, bookmarks)
-Client state    →  Zustand              (location, map viewport, Strava preview)
-Global UI       →  Context API          (Auth, Header config)
+Server state   → React Query  (courses, detail, reviews, bookmarks — staleTime caching)
+Client state   → Zustand      (location, map viewport, scroll, Strava preview)
+Global UI      → Context API  (Auth, Header config)
 ```
 
-### Route Map
+**Routes**
 
 ```
-/                      → Course discovery (map/list)
-/course/:uuid          → Course detail
-/course/:uuid/map      → Full route map
-/course/upload         → Register a course (auth required)
-/course/my             → My courses (auth required)
-/course/my/:uuid/edit  → Edit my course (auth required)
-/strava/activities     → Strava activity picker (auth required)
-/login                 → Kakao · Naver login
-/me                    → My page (auth required)
-/me/edit               → Profile edit (auth required)
-/me/delete             → Account deletion (auth required)
+/                      # Course discovery (map / list)
+/course/:uuid          # Course detail
+/course/:uuid/map      # Full route map
+/course/upload         # Register a course (auth required)
+/course/my             # My courses (auth required)
+/course/my/:uuid/edit  # Edit my course (auth required)
+/strava/activities     # Strava activity picker (auth required)
+/login                 # Social login
+/me                    # My page (auth required)
+/me/edit               # Profile edit (auth required)
+/me/delete             # Account deletion (auth required)
 ```
 
 ---
@@ -438,7 +291,7 @@ cp .env.example .env.local
 
 | Variable | Description |
 |---|---|
-| `VITE_API_BASE_URL` | Backend REST API base URL |
+| `VITE_SERVER_DOMAIN` | Backend REST API base URL |
 | `VITE_NAVER_MAP_CLIENT_ID` | Naver Maps Client ID |
 | `VITE_KAKAO_CLIENT_ID` | Kakao OAuth Client ID |
 | `VITE_NAVER_CLIENT_ID` | Naver OAuth Client ID |
@@ -449,43 +302,25 @@ cp .env.example .env.local
 
 ```bash
 yarn install
-
-# Start dev server with design token generation
-yarn dev:tokens
-
-# Or start quickly without token generation
-yarn dev
+yarn dev          # Development server
+yarn build        # Production build
+yarn lint:fix     # Auto-fix lint issues
+yarn tokens:all   # Regenerate design tokens
 ```
 
----
-
-## Scripts
+### Project Commands
 
 ```bash
-yarn dev            # Development server
 yarn dev:tokens     # Generate tokens then start dev server
-yarn build          # Production build (includes token generation)
-yarn lint           # ESLint check
-yarn lint:fix       # Auto-fix lint issues
-yarn format         # Prettier format
-yarn tokens:all     # Regenerate all design tokens
-yarn test           # Unit tests
+yarn test           # Unit tests (Vitest)
 yarn test:coverage  # Coverage report
+yarn format         # Prettier
 ```
 
----
-
-## CI/CD
-
-GitHub Actions (`.github/workflows/tokens-ci.yml`) runs on push to `main` and on pull requests:
-
-1. Install dependencies (`yarn install --immutable`)
-2. Regenerate design tokens (`yarn tokens:all`)
-3. Auto-commit any token changes
-4. Production build (`yarn build`)
+</details>
 
 ---
 
-## License
+## Stack
 
-Private — All rights reserved. © Runddy
+React 19 · TypeScript 5.8 · Vite 7 · Tailwind CSS 4 · shadcn/ui · TanStack React Query 5 · Zustand 5 · React Router 7 · Naver Maps · Strava OAuth · Recharts · gpxparser
