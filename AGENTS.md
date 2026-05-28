@@ -1,6 +1,6 @@
-# CLAUDE.md - AI Assistant Guide for Runddy Client
+# AGENTS.md - AI Assistant Guide for Runddy Client
 
-> **Last Updated**: 2026-01-24
+> **Last Updated**: 2026-05-28
 > **Project**: Runddy Client - Running Course Discovery Platform
 > **Version**: 0.0.0 (Private)
 
@@ -32,6 +32,7 @@ This document provides comprehensive guidance for AI assistants working on the R
 **Runddy Client** is a mobile-first React application for discovering, reviewing, and exploring running courses in Korea. The app integrates with Naver Maps and provides advanced filtering, bookmarking, and social authentication features.
 
 ### Key Features
+
 - 🗺️ Interactive map and list views for course discovery
 - 🔍 Advanced filtering (grade, environment, shape, distance, elevation)
 - 📍 Geolocation-based search with keyword geocoding fallback
@@ -42,6 +43,7 @@ This document provides comprehensive guidance for AI assistants working on the R
 - 🔐 OAuth authentication (Kakao, Naver)
 
 ### Project Characteristics
+
 - **Mobile-First**: Designed primarily for mobile devices (max-width: `xl`)
 - **Korean Market**: Uses Korean fonts (Pretendard), Naver Maps, and Korean OAuth providers
 - **Design System**: Custom design tokens with auto-generation from scripts
@@ -52,47 +54,53 @@ This document provides comprehensive guidance for AI assistants working on the R
 ## Technology Stack
 
 ### Core Framework
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| React | 19.1.1 | UI framework |
-| TypeScript | 5.8.3 | Type safety |
-| Vite | 7.1.2 | Build tool & dev server |
+
+| Technology | Version | Purpose                 |
+| ---------- | ------- | ----------------------- |
+| React      | 19.1.1  | UI framework            |
+| TypeScript | 5.8.3   | Type safety             |
+| Vite       | 7.1.2   | Build tool & dev server |
 
 ### UI & Styling
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| Tailwind CSS | 4.1.12 | Utility-first CSS framework |
-| shadcn/ui | Latest | Accessible component library (Radix UI) |
-| Lucide React | 0.543.0 | Icon library |
-| Custom SVG Icons | - | Brand-specific icons |
+
+| Technology       | Version | Purpose                                 |
+| ---------------- | ------- | --------------------------------------- |
+| Tailwind CSS     | 4.1.12  | Utility-first CSS framework             |
+| shadcn/ui        | Latest  | Accessible component library (Radix UI) |
+| Lucide React     | 0.543.0 | Icon library                            |
+| Custom SVG Icons | -       | Brand-specific icons                    |
 
 ### State & Data Management
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| TanStack React Query | 5.85.6 | Server state management |
-| Zustand | 5.0.8 | Client state (location, map) |
-| React Context | Built-in | Auth & Header state |
+
+| Technology           | Version  | Purpose                      |
+| -------------------- | -------- | ---------------------------- |
+| TanStack React Query | 5.85.6   | Server state management      |
+| Zustand              | 5.0.8    | Client state (location, map) |
+| React Context        | Built-in | Auth & Header state          |
 
 ### Routing & Forms
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| React Router | 7.9.1 | Client-side routing |
-| React Hook Form | 7.62.0 | Form handling |
+
+| Technology      | Version | Purpose             |
+| --------------- | ------- | ------------------- |
+| React Router    | 7.9.1   | Client-side routing |
+| React Hook Form | 7.62.0  | Form handling       |
 
 ### Maps & Data
-| Technology | Purpose |
-|------------|---------|
+
+| Technology     | Purpose                   |
+| -------------- | ------------------------- |
 | Naver Maps API | Map rendering & geocoding |
-| GPX Parser | GPX file parsing |
-| Recharts | Data visualization |
+| GPX Parser     | GPX file parsing          |
+| Recharts       | Data visualization        |
 
 ### Development Tools
-| Tool | Purpose |
-|------|---------|
-| ESLint 9 | Linting with import ordering |
-| Prettier | Code formatting |
-| Style Dictionary | Design token generation |
-| tsx | TypeScript execution for scripts |
+
+| Tool             | Purpose                          |
+| ---------------- | -------------------------------- |
+| ESLint 9         | Linting with import ordering     |
+| Prettier         | Code formatting                  |
+| Style Dictionary | Design token generation          |
+| tsx              | TypeScript execution for scripts |
 
 ---
 
@@ -181,6 +189,7 @@ yarn tokens:all           # Generate all tokens
 ### Development Workflow
 
 1. **Start Development**
+
    ```bash
    yarn dev
    ```
@@ -191,6 +200,7 @@ yarn tokens:all           # Generate all tokens
    - Run linter frequently: `yarn lint`
 
 3. **Before Committing**
+
    ```bash
    yarn lint:fix
    yarn format
@@ -199,9 +209,11 @@ yarn tokens:all           # Generate all tokens
 
 4. **Design Token Changes**
    - If you modify design tokens in `scripts/tokens/`:
+
    ```bash
    yarn tokens:all
    ```
+
    - Tokens are auto-committed by CI on push
 
 ---
@@ -232,6 +244,7 @@ import type { Course, CourseSearchParams } from '@/features/course/model/types';
 ```
 
 **Rules:**
+
 - Alphabetically sorted within each group
 - Newline between groups
 - Type imports separated at the end
@@ -271,6 +284,7 @@ export function CourseCard({ course, onClick }: CourseCardProps) {
 ```
 
 **Key Points:**
+
 - Named exports (not default exports)
 - Props destructuring with TypeScript types
 - Hooks at the top
@@ -324,8 +338,7 @@ export const CoursesApi = {
   getCourses: (lat: number, lng: number, params?: SearchParams) =>
     api.get<CoursesResponse>('/courses', { params: { lat, lng, ...params } }),
 
-  getCourseDetail: (uuid: string) =>
-    api.get<Course>(`/courses/${uuid}`)
+  getCourseDetail: (uuid: string) => api.get<Course>(`/courses/${uuid}`)
 };
 ```
 
@@ -343,8 +356,8 @@ export function useCourseDetail(uuid: string) {
   return useQuery({
     queryKey: ['course', uuid],
     queryFn: () => CoursesApi.getCourseDetail(uuid),
-    staleTime: 5 * 60_000,  // 5 minutes
-    gcTime: 10 * 60_000     // 10 minutes
+    staleTime: 5 * 60_000, // 5 minutes
+    gcTime: 10 * 60_000 // 10 minutes
   });
 }
 
@@ -353,6 +366,7 @@ const { data: course, isLoading } = useCourseDetail(uuid);
 ```
 
 **Query Configuration Standards:**
+
 - `staleTime: 60_000` (1 minute) for frequently changing data
 - `gcTime: 5 * 60_000` (5 minutes) for garbage collection
 - `placeholderData: keepPreviousData` for smooth transitions
@@ -370,6 +384,7 @@ const { currentMapCenter, setCurrentMapView } = useLocationStore();
 ```
 
 **When to use Zustand:**
+
 - Map viewport state (center, zoom)
 - User location tracking
 - UI preferences (view mode, scroll position)
@@ -388,6 +403,7 @@ const { setHeaderConfig } = useHeader();
 ```
 
 **When to use Context:**
+
 - Authentication state
 - Theme/dark mode
 - Header configuration
@@ -420,6 +436,7 @@ await api.download(`/courses/${uuid}/gpx`);
 ```
 
 **Features:**
+
 - Automatic JWT token injection
 - Bearer authentication
 - Typed responses
@@ -500,6 +517,7 @@ shared/ui/
 The project uses **shadcn/ui** components based on Radix UI primitives. These are located in `@/shared/ui/primitives/`.
 
 **Available Components:**
+
 - Button, Input, Textarea, Label
 - Dialog, AlertDialog, Popover, DropdownMenu
 - Tabs, Slider, Toggle, ToggleGroup
@@ -527,6 +545,7 @@ import { Dialog, DialogContent, DialogTrigger } from '@/shared/ui/primitives/dia
 Two icon sources:
 
 1. **Lucide Icons** (external library):
+
 ```typescript
 import { MapPin, Heart, Share2 } from 'lucide-react';
 
@@ -534,6 +553,7 @@ import { MapPin, Heart, Share2 } from 'lucide-react';
 ```
 
 2. **Custom SVG Icons** (brand-specific):
+
 ```typescript
 import { Icon } from '@/shared/icons/icon';
 
@@ -562,6 +582,7 @@ scripts/tokens/
 ```
 
 **Generated Files (Don't Edit Manually):**
+
 ```
 src/shared/design/tokens/
 ├── variables.css            # CSS custom properties
@@ -604,6 +625,7 @@ Use custom typography utilities (auto-generated):
 ```
 
 **Typography Pattern:** `{category}-{weight}{size}`
+
 - Categories: `title`, `contents`, `caption`
 - Weights: `b` (bold), `m` (medium), `r` (regular)
 - Sizes: `21`, `18`, `15`, `13`, `12`, `11`
@@ -666,7 +688,7 @@ export interface Course {
   id: string;
   name: string;
   distance: number;
-  elevation?: number;  // Optional fields
+  elevation?: number; // Optional fields
 }
 
 export type CourseSearchParams = {
@@ -721,7 +743,7 @@ ESLint warns on `any` usage. Use `unknown` or specific types:
 
 ```typescript
 // Bad
-function handleData(data: any) { }
+function handleData(data: any) {}
 
 // Good
 function handleData(data: unknown) {
@@ -737,17 +759,19 @@ function handleData(data: unknown) {
 
 ### Current State
 
-**No testing framework is currently configured.**
+Vitest and Testing Library are configured for unit and component tests.
 
 The project relies on:
+
 - TypeScript for type safety
 - ESLint for code quality
 - Prettier for consistency
+- Vitest for unit and component tests
 - CI/CD build validation
 
-### If Adding Tests
+### Test Structure
 
-Consider this structure:
+Use colocated `__tests__` folders near the feature or shared module under test:
 
 ```
 src/
@@ -758,10 +782,11 @@ src/
 │       │   └── CoursesApi.test.ts
 ```
 
-**Recommended Testing Stack:**
+**Testing Stack:**
+
 - **Vitest**: Fast unit test runner
 - **Testing Library**: React component testing
-- **MSW**: API mocking
+- **MSW**: Recommended for API mocking when broader network mocking is needed
 
 ---
 
@@ -773,10 +798,10 @@ src/
 
 ```bash
 # Feature branches
-claude/feature-description-session-id
+codex/feature-description
 
-# Always develop on the designated branch
-git checkout claude/claude-md-mkruj6g345nsvq3j-yIFw1
+# Create a task branch from the current base
+git switch -c codex/feature-description
 ```
 
 **Commit Message Format:**
@@ -796,10 +821,12 @@ docs: update API documentation
 **GitHub Actions:** `.github/workflows/tokens-ci.yml`
 
 **Triggers:**
+
 - Push to `main` branch
 - Pull requests
 
 **Steps:**
+
 1. Checkout repository
 2. Setup Node.js 20 with Yarn cache
 3. Install dependencies (`yarn install --immutable`)
@@ -810,6 +837,7 @@ docs: update API documentation
 **Auto-Generated Files:**
 
 The CI automatically commits changes to:
+
 - `src/shared/design/tokens/variables.css`
 - `src/shared/design/tokens/tw-typography.ts`
 - `src/shared/design/tokens/shadcn-theme.css`
@@ -823,6 +851,7 @@ The CI automatically commits changes to:
 ### Adding a New Feature
 
 1. **Create Feature Module**
+
    ```bash
    features/
    └── new-feature/
@@ -838,6 +867,7 @@ The CI automatically commits changes to:
    ```
 
 2. **Define Types**
+
    ```typescript
    // features/new-feature/model/types.ts
    export interface Feature {
@@ -847,6 +877,7 @@ The CI automatically commits changes to:
    ```
 
 3. **Create API Layer**
+
    ```typescript
    // features/new-feature/api/feature.api.ts
    import { api } from '@/shared/lib/http';
@@ -858,6 +889,7 @@ The CI automatically commits changes to:
    ```
 
 4. **Create React Query Hook**
+
    ```typescript
    // features/new-feature/hooks/useFeature.ts
    import { useQuery } from '@tanstack/react-query';
@@ -872,6 +904,7 @@ The CI automatically commits changes to:
    ```
 
 5. **Create Page**
+
    ```typescript
    // pages/feature/index.tsx
    import { useFeatures } from '@/features/new-feature/hooks/useFeature';
@@ -899,6 +932,7 @@ The CI automatically commits changes to:
    - Place in `src/shared/ui/primitives/`
 
 2. **Composite Components** (custom):
+
    ```typescript
    // src/shared/ui/composites/custom-input.tsx
    import { Input } from '@/shared/ui/primitives/input';
@@ -917,16 +951,19 @@ The CI automatically commits changes to:
 ### Modifying Design Tokens
 
 1. **Edit Source Scripts**
+
    ```bash
    scripts/tokens/build-tokens.ts
    ```
 
 2. **Regenerate Tokens**
+
    ```bash
    yarn tokens:all
    ```
 
 3. **Verify Changes**
+
    ```bash
    git diff src/shared/design/tokens/
    ```
@@ -1006,7 +1043,7 @@ export function MyPage() {
    - Use `useMemo` for expensive calculations
 
 3. **Bundle Size**
-   - Vite automatically code-splits by route
+   - Route pages are lazy-loaded; keep heavy feature code behind route or component boundaries where possible
    - Console/debugger statements removed in production
    - Icons tree-shaken via Lucide
 
@@ -1080,6 +1117,7 @@ Before finalizing changes, verify:
 ## Quick Reference
 
 ### Project Commands
+
 ```bash
 yarn dev              # Start development
 yarn build            # Production build
@@ -1089,6 +1127,7 @@ yarn tokens:all       # Regenerate design tokens
 ```
 
 ### Path Aliases
+
 ```typescript
 @/app/*       → src/app/*
 @/shared/*    → src/shared/*
@@ -1097,6 +1136,7 @@ yarn tokens:all       # Regenerate design tokens
 ```
 
 ### Key Files
+
 ```
 src/main.tsx                          # Application entry
 src/app/routing/router.tsx            # Route definitions
@@ -1108,13 +1148,14 @@ vite.config.ts                        # Vite configuration
 ```
 
 ### Useful Hooks
+
 ```typescript
-useAuth()              // Authentication state
-useHeader()            // Header configuration
-useLocationStore()     // Map/location state
-useCourses()           // Fetch courses
-useCourseDetail(uuid)  // Fetch course detail
-useToggleBookmark()    // Bookmark mutation
+useAuth(); // Authentication state
+useHeader(); // Header configuration
+useLocationStore(); // Map/location state
+useCourses(); // Fetch courses
+useCourseDetail(uuid); // Fetch course detail
+useToggleBookmark(); // Bookmark mutation
 ```
 
 ---
