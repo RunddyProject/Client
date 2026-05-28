@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 export interface DialogConfig {
   title: string;
+  description?: string;
   cancelLabel?: string;
   confirmLabel?: string;
   onConfirm?: () => void;

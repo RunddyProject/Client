@@ -1,8 +1,8 @@
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { act, render, screen, waitFor } from '@/test/utils';
 import { showDialog, useDialogStore } from '@/shared/model/dialog.store';
+import { act, render, screen, waitFor } from '@/test/utils';
 
 import { GlobalDialog } from '../GlobalDialog';
 
@@ -28,7 +28,9 @@ describe('GlobalDialog', () => {
 
   it('cancelLabel / confirmLabel 렌더', () => {
     renderDialog();
-    act(() => showDialog({ title: '삭제', cancelLabel: '아니요', confirmLabel: '삭제' }));
+    act(() =>
+      showDialog({ title: '삭제', cancelLabel: '아니요', confirmLabel: '삭제' })
+    );
     expect(screen.getByRole('button', { name: '아니요' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '삭제' })).toBeInTheDocument();
   });

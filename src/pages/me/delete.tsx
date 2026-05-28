@@ -32,7 +32,6 @@ function MeDelete() {
   const { deleteAccount } = useAuth();
 
   const [reasonList, setReasonList] = useState<string[]>([]);
-  console.log('reasonList>>', reasonList);
 
   const handleToggle = (value: string) => {
     setReasonList((prev) => {
@@ -78,7 +77,7 @@ function MeDelete() {
         <AlertDialog>
           <AlertDialogOverlay />
           <AlertDialogTrigger asChild>
-            <div className='fixed bottom-0 w-full mx-auto max-w-xl p-5'>
+            <div className='fixed bottom-0 mx-auto w-full max-w-xl p-5'>
               <Button
                 type='submit'
                 size='lg'

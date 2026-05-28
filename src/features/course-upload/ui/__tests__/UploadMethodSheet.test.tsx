@@ -1,6 +1,10 @@
 import userEvent from '@testing-library/user-event';
+import { toast } from 'sonner';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { StravaApi } from '@/features/strava/api/strava.api';
+import { ApiError } from '@/shared/lib/http';
+import { showLoginDialog } from '@/shared/lib/show-login-dialog';
 import { act, render, screen, waitFor } from '@/test/utils';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
@@ -46,11 +50,6 @@ vi.mock('@/features/strava/api/strava.api', () => ({
 vi.mock('@/shared/lib/show-login-dialog', () => ({
   showLoginDialog: vi.fn()
 }));
-
-import { toast } from 'sonner';
-import { ApiError } from '@/shared/lib/http';
-import { StravaApi } from '@/features/strava/api/strava.api';
-import { showLoginDialog } from '@/shared/lib/show-login-dialog';
 
 import { UploadMethodSheet } from '../UploadMethodSheet';
 

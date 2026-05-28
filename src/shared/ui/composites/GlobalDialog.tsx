@@ -4,6 +4,7 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle
@@ -17,6 +18,11 @@ export function GlobalDialog() {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{config?.title}</AlertDialogTitle>
+          <AlertDialogDescription
+            className={config?.description ? undefined : 'sr-only'}
+          >
+            {config?.description ?? '확인 또는 취소를 선택해주세요.'}
+          </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>{config?.cancelLabel ?? '취소'}</AlertDialogCancel>

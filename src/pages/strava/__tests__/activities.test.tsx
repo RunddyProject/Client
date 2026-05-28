@@ -1,5 +1,13 @@
 import userEvent from '@testing-library/user-event';
+import { toast } from 'sonner';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { StravaApi } from '@/features/strava/api/strava.api';
+import { useStravaActivities } from '@/features/strava/hooks/useStravaActivities';
+import { ApiError } from '@/shared/lib/http';
+import { render, screen, waitFor } from '@/test/utils';
+
+import StravaActivitiesPage from '../activities';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 const mockNavigate = vi.fn();
@@ -62,15 +70,6 @@ vi.mock('@/features/strava/model/strava-upload.store', () => ({
     })
 }));
 
-import { toast } from 'sonner';
-
-import { StravaApi } from '@/features/strava/api/strava.api';
-import { useStravaActivities } from '@/features/strava/hooks/useStravaActivities';
-import { ApiError } from '@/shared/lib/http';
-import { render, screen, waitFor } from '@/test/utils';
-
-import StravaActivitiesPage from '../activities';
-
 const mockUseStravaActivities = vi.mocked(useStravaActivities);
 const mockGetActivityGpx = vi.mocked(StravaApi.getActivityGpx);
 
@@ -112,7 +111,7 @@ function mockActivitiesSuccess(
     fetchNextPage: vi.fn(),
     hasNextPage: false,
     isFetchingNextPage: false
-  } as ReturnType<typeof useStravaActivities>);
+  } as unknown as ReturnType<typeof useStravaActivities>);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -132,7 +131,7 @@ describe('StravaActivitiesPage', () => {
       fetchNextPage: vi.fn(),
       hasNextPage: false,
       isFetchingNextPage: false
-    } as ReturnType<typeof useStravaActivities>);
+    } as unknown as ReturnType<typeof useStravaActivities>);
 
     render(<StravaActivitiesPage />);
 
@@ -273,7 +272,7 @@ describe('StravaActivitiesPage', () => {
       fetchNextPage: vi.fn(),
       hasNextPage: false,
       isFetchingNextPage: false
-    } as ReturnType<typeof useStravaActivities>);
+    } as unknown as ReturnType<typeof useStravaActivities>);
 
     render(<StravaActivitiesPage />);
 
@@ -294,7 +293,7 @@ describe('StravaActivitiesPage', () => {
       fetchNextPage: vi.fn(),
       hasNextPage: false,
       isFetchingNextPage: false
-    } as ReturnType<typeof useStravaActivities>);
+    } as unknown as ReturnType<typeof useStravaActivities>);
 
     render(<StravaActivitiesPage />);
 
@@ -313,7 +312,7 @@ describe('StravaActivitiesPage', () => {
       fetchNextPage: vi.fn(),
       hasNextPage: false,
       isFetchingNextPage: false
-    } as ReturnType<typeof useStravaActivities>);
+    } as unknown as ReturnType<typeof useStravaActivities>);
 
     render(<StravaActivitiesPage />);
 
@@ -332,7 +331,7 @@ describe('StravaActivitiesPage', () => {
       fetchNextPage: vi.fn(),
       hasNextPage: true,
       isFetchingNextPage: true
-    } as ReturnType<typeof useStravaActivities>);
+    } as unknown as ReturnType<typeof useStravaActivities>);
 
     render(<StravaActivitiesPage />);
 

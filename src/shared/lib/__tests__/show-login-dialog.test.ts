@@ -1,14 +1,14 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { router } from '@/app/routing/router';
 import { useDialogStore } from '@/shared/model/dialog.store';
+
+import { showLoginDialog } from '../show-login-dialog';
 
 // vi.mock 팩토리 안에서 외부 변수 참조 불가(호이스팅) → 모킹 후 import로 참조
 vi.mock('@/app/routing/router', () => ({
   router: { navigate: vi.fn() }
 }));
-
-import { router } from '@/app/routing/router';
-import { showLoginDialog } from '../show-login-dialog';
 
 afterEach(() => {
   useDialogStore.getState().hide();

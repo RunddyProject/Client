@@ -1,7 +1,13 @@
 import { act, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
+import { CourseUploadApi } from '@/features/course-upload/api/course-upload.api';
+import { reverseGeocode } from '@/features/map/lib/geocode';
 import { renderHook } from '@/test/utils';
+
+import { useCourseUpload } from '../useCourseUpload';
+
+import type { CoursePreviewData, StravaPreviewState } from '../../model/types';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 vi.mock('@/features/course-upload/api/course-upload.api', () => ({
@@ -13,13 +19,6 @@ vi.mock('@/features/course-upload/api/course-upload.api', () => ({
 vi.mock('@/features/map/lib/geocode', () => ({
   reverseGeocode: vi.fn().mockResolvedValue('서울특별시 강남구')
 }));
-
-import { CourseUploadApi } from '@/features/course-upload/api/course-upload.api';
-import { reverseGeocode } from '@/features/map/lib/geocode';
-
-import { useCourseUpload } from '../useCourseUpload';
-
-import type { CoursePreviewData, StravaPreviewState } from '../../model/types';
 
 const mockUploadCourse = vi.mocked(CourseUploadApi.uploadCourse);
 const mockReverseGeocode = vi.mocked(reverseGeocode);
@@ -195,6 +194,7 @@ describe('useCourseUpload', () => {
         result.current.setFormData({
           name: '테스트 코스',
           isMarathon: true,
+          isShared: false,
           envType: null,
           shapeType: null
         });
@@ -213,6 +213,7 @@ describe('useCourseUpload', () => {
         result.current.setFormData({
           name: '코스',
           isMarathon: false,
+          isShared: false,
           envType: null,
           shapeType: null
         });
@@ -223,6 +224,7 @@ describe('useCourseUpload', () => {
         result.current.setFormData({
           name: '코스',
           isMarathon: false,
+          isShared: false,
           envType: 'PARK',
           shapeType: null
         });
@@ -233,6 +235,7 @@ describe('useCourseUpload', () => {
         result.current.setFormData({
           name: '코스',
           isMarathon: false,
+          isShared: false,
           envType: 'PARK',
           shapeType: 'LOOP'
         });
@@ -250,6 +253,7 @@ describe('useCourseUpload', () => {
         result.current.setFormData({
           name: '   ',
           isMarathon: true,
+          isShared: false,
           envType: null,
           shapeType: null
         });
@@ -268,6 +272,7 @@ describe('useCourseUpload', () => {
         result.current.setFormData({
           name: '코스',
           isMarathon: null,
+          isShared: false,
           envType: null,
           shapeType: null
         });
@@ -293,6 +298,7 @@ describe('useCourseUpload', () => {
         result.current.setFormData({
           name: '한강 코스',
           isMarathon: true,
+          isShared: false,
           envType: null,
           shapeType: null
         });
@@ -324,6 +330,7 @@ describe('useCourseUpload', () => {
         result.current.setFormData({
           name: '코스',
           isMarathon: true,
+          isShared: false,
           envType: null,
           shapeType: null
         });
@@ -356,6 +363,7 @@ describe('useCourseUpload', () => {
         result.current.setFormData({
           name: '한강 새벽 러닝',
           isMarathon: false,
+          isShared: false,
           envType: 'RIVER',
           shapeType: 'LINEAR'
         });
@@ -388,6 +396,7 @@ describe('useCourseUpload', () => {
         result.current.setFormData({
           name: '테스트',
           isMarathon: true,
+          isShared: false,
           envType: null,
           shapeType: null
         });

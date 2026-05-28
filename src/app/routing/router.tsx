@@ -1,31 +1,40 @@
+import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router';
 
 import App from '@/app/App';
 import ProtectedRoute from '@/app/routing/ProtectedRoute';
-import Course from '@/pages/course/index';
-import CourseInfo from '@/pages/course/info';
-import CourseInfoLayout from '@/pages/course/info-layout';
-import CourseInfoMap from '@/pages/course/info-map';
-import MyCourseEdit from '@/pages/course/my/edit';
-import MyCourses from '@/pages/course/my/index';
-import CourseUpload from '@/pages/course/upload';
-import Error from '@/pages/error';
-import Login from '@/pages/login/index';
-import LoginSuccess from '@/pages/login/success';
-import MeDelete from '@/pages/me/delete';
-import MeEdit from '@/pages/me/edit';
-import Me from '@/pages/me/index';
-import NotFound from '@/pages/not-found';
-import StravaActivities from '@/pages/strava/activities';
-import StravaSuccess from '@/pages/strava/success';
 import { ShareButton } from '@/shared/ui/actions/ShareButton';
+import LoadingSpinner from '@/shared/ui/composites/loading-spinner';
+
+import type { ReactNode } from 'react';
+
+const Course = lazy(() => import('@/pages/course/index'));
+const CourseInfo = lazy(() => import('@/pages/course/info'));
+const CourseInfoLayout = lazy(() => import('@/pages/course/info-layout'));
+const CourseInfoMap = lazy(() => import('@/pages/course/info-map'));
+const MyCourseEdit = lazy(() => import('@/pages/course/my/edit'));
+const MyCourses = lazy(() => import('@/pages/course/my/index'));
+const CourseUpload = lazy(() => import('@/pages/course/upload'));
+const Error = lazy(() => import('@/pages/error'));
+const Login = lazy(() => import('@/pages/login/index'));
+const LoginSuccess = lazy(() => import('@/pages/login/success'));
+const Me = lazy(() => import('@/pages/me/index'));
+const MeDelete = lazy(() => import('@/pages/me/delete'));
+const MeEdit = lazy(() => import('@/pages/me/edit'));
+const NotFound = lazy(() => import('@/pages/not-found'));
+const StravaActivities = lazy(() => import('@/pages/strava/activities'));
+const StravaSuccess = lazy(() => import('@/pages/strava/success'));
+
+function withSuspense(node: ReactNode) {
+  return <Suspense fallback={<LoadingSpinner />}>{node}</Suspense>;
+}
 
 type HeaderMeta = {
   title?: string;
   showBackButton?: boolean;
   showMenu?: boolean;
-  leftButton?: React.ReactNode;
-  rightButton?: React.ReactNode;
+  leftButton?: ReactNode;
+  rightButton?: ReactNode;
 };
 
 export const router = createBrowserRouter([
@@ -33,19 +42,19 @@ export const router = createBrowserRouter([
     path: '/',
     element: <App />,
     handle: { header: { showMenu: true } satisfies HeaderMeta },
-    errorElement: <Error />,
+    errorElement: withSuspense(<Error />),
     children: [
-      { index: true, element: <Course /> },
+      { index: true, element: withSuspense(<Course />) },
       {
         path: 'course',
         children: [
-          { index: true, element: <Course /> },
+          { index: true, element: withSuspense(<Course />) },
           {
             path: 'my',
             children: [
               {
                 index: true,
-                element: (
+                element: withSuspense(
                   <ProtectedRoute>
                     <MyCourses />
                   </ProtectedRoute>
@@ -56,7 +65,7 @@ export const router = createBrowserRouter([
               },
               {
                 path: ':uuid/edit',
-                element: (
+                element: withSuspense(
                   <ProtectedRoute>
                     <MyCourseEdit />
                   </ProtectedRoute>
@@ -69,7 +78,7 @@ export const router = createBrowserRouter([
           },
           {
             path: 'upload',
-            element: (
+            element: withSuspense(
               <ProtectedRoute>
                 <CourseUpload />
               </ProtectedRoute>
@@ -78,18 +87,18 @@ export const router = createBrowserRouter([
           },
           {
             path: ':uuid',
-            element: <CourseInfoLayout />,
+            element: withSuspense(<CourseInfoLayout />),
             children: [
               {
                 index: true,
-                element: <CourseInfo />,
+                element: withSuspense(<CourseInfo />),
                 handle: {
                   header: { title: '코스 정보', rightButton: <ShareButton /> }
                 }
               },
               {
                 path: 'map',
-                element: <CourseInfoMap />,
+                element: withSuspense(<CourseInfoMap />),
                 handle: { header: { title: '상세보기', rightButton: null } }
               }
             ]
@@ -101,12 +110,12 @@ export const router = createBrowserRouter([
         children: [
           {
             path: 'success',
-            element: <StravaSuccess />,
+            element: withSuspense(<StravaSuccess />),
             handle: { header: { showHeader: false } }
           },
           {
             path: 'activities',
-            element: (
+            element: withSuspense(
               <ProtectedRoute>
                 <StravaActivities />
               </ProtectedRoute>
@@ -126,14 +135,14 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: (
+            element: withSuspense(
               <ProtectedRoute requireAuth={false}>
                 <Login />
               </ProtectedRoute>
             ),
             handle: { header: { showHeader: false } }
           },
-          { path: 'success', element: <LoginSuccess /> }
+          { path: 'success', element: withSuspense(<LoginSuccess />) }
         ]
       },
       {
@@ -141,7 +150,7 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: (
+            element: withSuspense(
               <ProtectedRoute>
                 <Me />
               </ProtectedRoute>
@@ -149,7 +158,7 @@ export const router = createBrowserRouter([
           },
           {
             path: 'edit',
-            element: (
+            element: withSuspense(
               <ProtectedRoute>
                 <MeEdit />
               </ProtectedRoute>
@@ -158,7 +167,7 @@ export const router = createBrowserRouter([
           },
           {
             path: 'delete',
-            element: (
+            element: withSuspense(
               <ProtectedRoute>
                 <MeDelete />
               </ProtectedRoute>
@@ -167,7 +176,7 @@ export const router = createBrowserRouter([
           },
           {
             path: '*',
-            element: <NotFound />
+            element: withSuspense(<NotFound />)
           }
         ]
       }
