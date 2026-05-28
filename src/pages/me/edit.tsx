@@ -62,7 +62,6 @@ function MeEdit() {
     try {
       await api.patch('/users/info', { userName });
       toast.success('프로필이 저장되었어요');
-      console.log('profile updated');
       navigate('/me');
     } catch (error) {
       toast.error('프로필이 저장되지 않았어요');
@@ -126,7 +125,7 @@ function MeEdit() {
             </div>
           </div>
           {/* TODO: sticky footer */}
-          <div className='fixed bottom-0 w-full mx-auto max-w-xl p-5'>
+          <div className='fixed bottom-0 mx-auto w-full max-w-xl p-5'>
             <Button
               type='submit'
               size='lg'

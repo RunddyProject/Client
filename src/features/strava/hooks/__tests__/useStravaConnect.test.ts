@@ -27,8 +27,8 @@ vi.mock('@/features/strava/api/strava.api', () => ({
   }
 }));
 
-import { ApiError } from '@/shared/lib/http';
 import { StravaApi } from '@/features/strava/api/strava.api';
+import { ApiError } from '@/shared/lib/http';
 
 import { useStravaConnect } from '../useStravaConnect';
 
